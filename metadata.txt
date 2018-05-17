@@ -1,0 +1,22 @@
+
+[general]
+name=FS3
+description=Basic statistics for numeric and text fields.
+about=Summary information and basic statistics for numeric and text fields in a vector layer.
+category=Vector
+version=0.1
+qgisMinimumVersion=3.0
+
+author=Orden, McKenna, Andreas, and Tanner
+email=afoulk@mines.edu
+
+icon=fieldstats.png
+
+tags=vector,analysis,statistics
+
+homepage=https://github.com/andreasfoulk/FS3
+tracker=https://github.com/andreasfoulk/FS3
+repository=https://github.com/andreasfoulk/FS3
+
+experimental=True
+deprecated=False
