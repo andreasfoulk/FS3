@@ -10,34 +10,45 @@ from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QApplication, QDialog
 from PyQt5.uic import loadUi
 
-class SimpleCounter(QDialog):
-    """ Our test class to ensure proper Qt functionality """
-    def __init__(self):
-        super(SimpleCounter, self).__init__()
-        loadUi('test_ui.ui', self)
-        self.counter = 0
-        self.setWindowTitle('Counter Interface')
-        self.pushButton.clicked.connect(self.increaseCounter)
-        self.dial.setWrapping(False)
-        self.dial.setNotchesVisible(True)
-        self.dial.valueChanged.connect(self.increaseCounterDial)
+import resources
 
-    #pyqtSlot decorate declares the following pythod method into a QT slot
-    #Allows a C++ signature to be provided
-    #Slightly reduces memory used and is slightly faster
-    @pyqtSlot()
-    def increaseCounter(self):
-        """ Is this a docstring? """
-        self.counter += 1
-        self.lcdNumber.display(self.counter)
+class TestPlugin:
+    """
+    This is the skeleton code from
+    https://docs.qgis.org/testing/en/docs/pyqgis_developer_cookbook/plugins.html
+    """
+    def __init__(self, iface):
+        # save reference to the QGIS interface
+        self.iface = iface
 
-    @pyqtSlot()
-    def increaseCounterDial(self):
-        """ Yes this a docstring, method does the thing it is named for... """
-        self.counter = self.dial.value()
-        self.lcdNumber.display(self.counter)
+    def initGui(self):
+        # create action that will start plugin configuration
+        self.action = QAction(QIcon(":/plugins/testplug/icon.png"), "Test plugin", self.iface.mainWindow())
+        self.action.setObjectName("testAction")
+        self.action.setWhatsThis("Configuration for test plugin")
+        self.action.setStatusTip("This is status tip")
+        QObject.connect(self.action, SIGNAL("triggered()"), self.run)
 
-app = QApplication(sys.argv)
-widget = SimpleCounter()
-widget.show()
-sys.exit(app.exec_())
+        # add toolbar button and menu item
+        self.iface.addToolBarIcon(self.action)
+        self.iface.addPluginToMenu("&Test plugins", self.action)
+
+        # connect to signal renderComplete which is emitted when canvas
+        # rendering is done
+        QObject.connect(self.iface.mapCanvas(), SIGNAL("renderComplete(QPainter *)"), self.renderTest)
+
+    def unload(self):
+        # remove the plugin menu item and icon
+        self.iface.removePluginMenu("&Test plugins", self.action)
+        self.iface.removeToolBarIcon(self.action)
+
+        # disconnect form signal of the canvas
+        QObject.disconnect(self.iface.mapCanvas(), SIGNAL("renderComplete(QPainter *)"), self.renderTest)
+
+    def run(self):
+        # create and show a configuration dialog or something similar
+        print("TestPlugin: run called!")
+
+    def renderTest(self, painter):
+        # use painter for drawing to map canvas
+        print("TestPlugin: renderTest called!")

@@ -51,7 +51,7 @@ def qgisMinimumVersion():
 
 
 def author():
-    return "Orden, McKenna, Andreas, and Tanner"
+    return "Orden Aitchedji, McKenna Duzac, Andreas Foulk, Tanner Lee"
 
 
 def email():
@@ -59,4 +59,9 @@ def email():
 
 
 def icon():
-    return "icons/fieldstats.png"
+    return "icon.png"
+
+def classFactory(iface):
+  from mainPlugin import TestPlugin
+  return TestPlugin(iface)
+

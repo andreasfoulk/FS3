@@ -7,10 +7,11 @@ category=Vector
 version=0.1
 qgisMinimumVersion=3.0
 
-author=Orden, McKenna, Andreas, and Tanner
+author=Orden Aitchedji, McKenna Duzac, Andreas Foulk, Tanner Lee
+
 email=afoulk@mines.edu
 
-icon=fieldstats.png
+icon=icon.png
 
 tags=vector,analysis,statistics
 
