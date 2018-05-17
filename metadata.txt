@@ -1,23 +1,39 @@
+# This file contains metadata for your plugin. Since 
+# version 2.0 of QGIS this is the proper way to supply 
+# information about a plugin. The old method of 
+# embedding metadata in __init__.py will 
+# is no longer supported since version 2.0.
+
+# This file should be included when you package your plugin.# Mandatory items:
 
 [general]
 name=FS3
-description=Basic statistics for numeric and text fields.
-about=Summary information and basic statistics for numeric and text fields in a vector layer.
-category=Vector
-version=0.1
 qgisMinimumVersion=3.0
-
-author=Orden Aitchedji, McKenna Duzac, Andreas Foulk, Tanner Lee
-
+description=Generate basic statistic for numeric and text field in a vector layer
+version=0.1
+author=Orden Aitchedji, Mckenna Duzac, Andreas Foulk, Tanner Lee
 email=afoulk@mines.edu
 
-icon=icon.png
+about=This plugin was created by Orden Aitchedji, Mckenna Duzac, Andreas foulk and Tanner Lee durring the 2018 summer field section at the Colorado School Of Mines. In Colaboration with Brian Krzys at Newmont Exploration.
 
-tags=vector,analysis,statistics
-
-homepage=https://github.com/andreasfoulk/FS3
 tracker=https://github.com/andreasfoulk/FS3
 repository=https://github.com/andreasfoulk/FS3
+# End of mandatory metadata
 
-experimental=True
+# Recommended items:
+
+# Uncomment the following line and add your changelog:
+# changelog=
+
+# Tags are comma separated with spaces allowed
+tags=python, vector, field, statistics, mines, analysis, plugin
+
+homepage=https://github.com/andreasfoulk/FS3
+category=Plugins
+icon=icon.png
+# experimental flag
+experimental=False
+
+# deprecated flag (applies to the whole plugin, not just a single version)
 deprecated=False
+

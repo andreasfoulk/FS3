@@ -1,6 +1,5 @@
 <RCC>
-    <qresource prefix="/plugins/FS3" >
+    <qresource prefix="/plugins/fs_3" >
         <file>icon.png</file>
-        <file>copy16px.png</file>
     </qresource>
 </RCC>
