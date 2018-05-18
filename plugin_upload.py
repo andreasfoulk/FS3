@@ -8,6 +8,8 @@
 import sys
 import getpass
 import xmlrpc.client
+
+# FIXME optparse is depreciated, should use argparse instead
 from optparse import OptionParser
 
 # Configuration
@@ -31,18 +33,18 @@ def main(parameters, arguments):
         parameters.server,
         parameters.port,
         ENDPOINT)
-    print("Connecting to: %s" % hide_password(address))
+    print("Connecting to: %s" % hidePassword(address))
 
     server = xmlrpc.client.ServerProxy(address, verbose=VERBOSE)
 
     try:
-        plugin_id, version_id = server.plugin.upload(
+        pluginId, versionId = server.plugin.upload(
             xmlrpc.client.Binary(open(arguments[0]).read()))
-        print("Plugin ID: %s" % plugin_id)
-        print("Version ID: %s" % version_id)
+        print("Plugin ID: %s" % pluginId)
+        print("Version ID: %s" % versionId)
     except xmlrpc.client.ProtocolError as err:
         print("A protocol error occurred")
-        print("URL: %s" % hide_password(err.url, 0))
+        print("URL: %s" % hidePassword(err.url, 0))
         print("HTTP/HTTPS headers: %s" % err.headers)
         print("Error code: %d" % err.errcode)
         print("Error message: %s" % err.errmsg)
@@ -52,7 +54,7 @@ def main(parameters, arguments):
         print("Fault string: %s" % err.faultString)
 
 
-def hide_password(url, start=6):
+def hidePassword(url, start=6):
     """Returns the http url with password part replaced with '*'.
 
     :param url: URL to upload the plugin to.
@@ -61,12 +63,12 @@ def hide_password(url, start=6):
     :param start: Position of start of password.
     :type start: int
     """
-    start_position = url.find(':', start) + 1
-    end_position = url.find('@')
+    startPosition = url.find(':', start) + 1
+    endPosition = url.find('@')
     return "%s%s%s" % (
-        url[:start_position],
-        '*' * (end_position - start_position),
-        url[end_position:])
+        url[:startPosition],
+        '*' * (endPosition - startPosition),
+        url[endPosition:])
 
 
 if __name__ == "__main__":

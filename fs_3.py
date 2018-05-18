@@ -8,7 +8,8 @@
                               -------------------
         begin                : 2018-05-17
         git sha              : $Format:%H$
-        copyright            : (C) 2018 by Orden Aitchedji, Mckenna Duzac, Andreas Foulk, Tanner Lee
+        copyright            : (C) 2018 by Orden Aitchedji, Mckenna Duzac,
+                                           Andreas Foulk, Tanner Lee
         email                : afoulk@mines.edu
  ***************************************************************************/
 
@@ -21,15 +22,16 @@
  *                                                                         *
  ***************************************************************************/
 """
+import os.path
+
 from PyQt5.QtCore import QSettings, QTranslator, qVersion, QCoreApplication
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QAction
 
 # Initialize Qt resources from file resources.py
-from .resources import *
+# from .resources import * FIXME This is unused...
 # Import the code for the dialog
 from .fs_3_dialog import FieldStatsDialog
-import os.path
 
 
 class FieldStats:
@@ -46,17 +48,17 @@ class FieldStats:
         # Save reference to the QGIS interface
         self.iface = iface
         # initialize plugin directory
-        self.plugin_dir = os.path.dirname(__file__)
+        self.pluginDir = os.path.dirname(__file__)
         # initialize locale
         locale = QSettings().value('locale/userLocale')[0:2]
-        locale_path = os.path.join(
-            self.plugin_dir,
+        localePath = os.path.join(
+            self.pluginDir,
             'i18n',
             'FieldStats_{}.qm'.format(locale))
 
-        if os.path.exists(locale_path):
+        if os.path.exists(localePath):
             self.translator = QTranslator()
-            self.translator.load(locale_path)
+            self.translator.load(localePath)
 
             if qVersion() > '4.3.3':
                 QCoreApplication.installTranslator(self.translator)
@@ -87,20 +89,20 @@ class FieldStats:
         return QCoreApplication.translate('FieldStats', message)
 
 
-    def add_action(
-        self,
-        icon_path,
-        text,
-        callback,
-        enabled_flag=True,
-        add_to_menu=True,
-        add_to_toolbar=True,
-        status_tip=None,
-        whats_this=None,
-        parent=None):
+    def addAction(
+            self,
+            iconPath,
+            text,
+            callback,
+            enabledFlag=True,
+            addToMenu=True,
+            addToToolbar=True,
+            statusTip=None,
+            whatsThis=None,
+            parent=None):
         """Add a toolbar icon to the toolbar.
 
-        :param icon_path: Path to the icon for this action. Can be a resource
+        :param iconPath: Path to the icon for this action. Can be a resource
             path (e.g. ':/plugins/foo/bar.png') or a normal file system path.
         :type icon_path: str
 
@@ -110,26 +112,26 @@ class FieldStats:
         :param callback: Function to be called when the action is triggered.
         :type callback: function
 
-        :param enabled_flag: A flag indicating if the action should be enabled
+        :param enabledFlag: A flag indicating if the action should be enabled
             by default. Defaults to True.
         :type enabled_flag: bool
 
-        :param add_to_menu: Flag indicating whether the action should also
+        :param addToMenu: Flag indicating whether the action should also
             be added to the menu. Defaults to True.
         :type add_to_menu: bool
 
-        :param add_to_toolbar: Flag indicating whether the action should also
+        :param addToToolbar: Flag indicating whether the action should also
             be added to the toolbar. Defaults to True.
         :type add_to_toolbar: bool
 
-        :param status_tip: Optional text to show in a popup when mouse pointer
+        :param statusTip: Optional text to show in a popup when mouse pointer
             hovers over the action.
         :type status_tip: str
 
         :param parent: Parent widget for the new action. Defaults None.
         :type parent: QWidget
 
-        :param whats_this: Optional text to show in the status bar when the
+        :param whatsThis: Optional text to show in the status bar when the
             mouse pointer hovers over the action.
 
         :returns: The action that was created. Note that the action is also
@@ -137,21 +139,21 @@ class FieldStats:
         :rtype: QAction
         """
 
-        icon = QIcon(icon_path)
+        icon = QIcon(iconPath)
         action = QAction(icon, text, parent)
         action.triggered.connect(callback)
-        action.setEnabled(enabled_flag)
+        action.setEnabled(enabledFlag)
 
-        if status_tip is not None:
-            action.setStatusTip(status_tip)
+        if statusTip is not None:
+            action.setStatusTip(statusTip)
 
-        if whats_this is not None:
-            action.setWhatsThis(whats_this)
+        if whatsThis is not None:
+            action.setWhatsThis(whatsThis)
 
-        if add_to_toolbar:
+        if addToToolbar:
             self.toolbar.addAction(action)
 
-        if add_to_menu:
+        if addToMenu:
             self.iface.addPluginToMenu(
                 self.menu,
                 action)
@@ -163,9 +165,9 @@ class FieldStats:
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
 
-        icon_path = ':/plugins/fs_3/icon.png'
-        self.add_action(
-            icon_path,
+        iconPath = ':/plugins/fs_3/icon.png'
+        self.addAction(
+            iconPath,
             text=self.tr(u'Lauch FS3'),
             callback=self.run,
             parent=self.iface.mainWindow())

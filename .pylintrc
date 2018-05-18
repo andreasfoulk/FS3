@@ -7,7 +7,7 @@ extension-pkg-whitelist=PyQt5
 
 # Add files or directories to the blacklist. They should be base names, not
 # paths.
-ignore=CVS
+ignore=CVS,resources.py,test
 
 # Add files or directories matching the regex patterns to the blacklist. The
 # regex matches against base names, not paths.
@@ -362,7 +362,7 @@ bad-names=foo,
           tata
 
 # Naming style matching correct class attribute names
-class-attribute-naming-style=any
+class-attribute-naming-style=camelCase
 
 # Regular expression matching correct class attribute names. Overrides class-
 # attribute-naming-style
@@ -375,11 +375,11 @@ class-naming-style=PascalCase
 #class-rgx=
 
 # Naming style matching correct constant names
-const-naming-style=camelCase
+const-naming-style=any
 
 # Regular expression matching correct constant names. Overrides const-naming-
 # style
-#const-rgx=
+#const-rgx="[a-zA-Z0-9]+"
 
 # Minimum line length for functions/classes that require docstrings, shorter
 # ones are exempt.
@@ -396,6 +396,8 @@ function-naming-style=camelCase
 good-names=i,
            j,
            k,
+           tr,
+           pro,
            ex,
            Run,
            _
