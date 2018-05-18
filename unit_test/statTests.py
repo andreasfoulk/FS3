@@ -34,10 +34,11 @@ class NumericStatTests(unittest.TestCase):
     NumericStatTests
     Contains several test cases for our statistics calculations
     """
+
     def testCountFunction(self):
         """
         testCountFunction
-        Used to test item count functionality       
+        Used to test item count functionality
         """
         inputArray = ['a', 'b', 'c', 'd']
         expected = len(inputArray)
@@ -47,56 +48,89 @@ class NumericStatTests(unittest.TestCase):
     def testMaxFunction(self):
         """
         testMaxFunction
-        Used to test max value functionality       
+        Used to test max value functionality
         """
-        input = [1, 4, 8, 3, 6]
-        expected = max(input)
-        actual = maxValue(input)
+        inputArray = [1, 4, 8, 3, 6]
+        expected = max(inputArray)
+        actual = maxValue(inputArray)
         self.assertTrue(expected == actual)
 
     def testMinFunction(self):
-        input = [1, 4, 8, 3, 6]
-        expected = min(input)
-        actual = minValue(input)
+        """
+        testCountFunction
+        Used to test min value functionality
+        """
+        inputArray = [1, 4, 8, 3, 6]
+        expected = min(inputArray)
+        actual = minValue(inputArray)
         self.assertTrue(expected == actual)
 
     def testMeanFunction(self):
-        input = [1, 4, 8, 3, 6]
-        expected = sum(input)/float(len(input))
-        actual = meanValue(input)
+        """
+        testCountFunction
+        Used to test mean value functionality
+        """
+        inputArray = [1, 4, 8, 3, 6]
+        expected = sum(inputArray)/float(len(inputArray))
+        actual = meanValue(inputArray)
         self.assertTrue(expected == actual)
 
     def testMedianFunction(self):
-        input = [1, 4, 8, 3, 6]
-        expected = statistics.median(input)
-        actual = medianValue(input)
+        """
+        testCountFunction
+        Used to test median value functionality
+        """
+        inputArray = [1, 4, 8, 3, 6]
+        expected = statistics.median(inputArray)
+        actual = medianValue(inputArray)
         self.assertTrue(expected == actual)
 
     def testSumFunction(self):
-        input = [1, 4, 8, 3, 6]
-        expected = sum(input)
-        actual = sumValue(input)
+        """
+        testCountFunction
+        Used to test sum value functionality
+        """
+        inputArray = [1, 4, 8, 3, 6]
+        expected = sum(inputArray)
+        actual = sumValue(inputArray)
         self.assertTrue(expected == actual)
 
     def testStandardDeviation(self):
-        input = [1, 4, 8, 3, 6]
+        """
+        testCountFunction
+        Used to test standard deviation value
+        """
+        inputArray = [1, 4, 8, 3, 6]
         expected = 2.7018512172213
-        actual = stdDevValue(input)
+        actual = stdDevValue(inputArray)
         self.assertTrue(expected == actual)
 
     def testCoefficientOfVariation(self):
-        input = [1, 4, 8, 3, 6]
+        """
+        testCountFunction
+        Used to test coefficient of variation value
+        """
+        inputArray = [1, 4, 8, 3, 6]
         expected = 0.614057094823
-        actual = coeffVarValue(input)
+        actual = coeffVarValue(inputArray)
         self.assertTrue(expected == actual)
 
 
 class CharacterStatTests(unittest.TestCase):
+    """
+    CharacterStatTests
+    Contains several test cases for our statistics calculations
+    """
+
 
     def testMaxFieldLength(self):
-        input = ['a', 'cat', 'went', 'home', 'yesterday']
+        """
+        testCountFunction
+        Used to test max field length value
+        """
+        inputArray = ['a', 'cat', 'went', 'home', 'yesterday']
         expected = 9
-        actual = maxLength(input)
+        actual = maxLength(inputArray)
         self.assertTrue(expected == actual)
 
 
