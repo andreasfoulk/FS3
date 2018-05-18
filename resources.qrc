@@ -1,5 +1,0 @@
-<RCC>
-    <qresource prefix="/plugins/fs_3" >
-        <file>icon.png</file>
-    </qresource>
-</RCC>
