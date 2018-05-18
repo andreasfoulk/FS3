@@ -1,14 +1,7 @@
-#required to run unit tests
-import unittest
-import statistics
-#TODO: import stat files
-
-
+"""
 #Created by: McKenna Duzac
 #Last Edited: 18 May 2018
 
-
-"""
 All of these tests written with the following assumptions:
     -functions take in a list of values
 
@@ -26,20 +19,36 @@ The following functions need to be created for CharacterStats:
     maxLength()     << finds the length of the longest item in the list
 
 TODO:
+    import stat files
     Fringe cases not currently checked
     Improper input cases not currently checked
     Most of the CharcterStats functions currently unknown
 """
 
-class NumericStatTests(unittest.TestCase):
+#These imports are required for unit tests
+import unittest
+import statistics
 
+class NumericStatTests(unittest.TestCase):
+    """
+    NumericStatTests
+    Contains several test cases for our statistics calculations
+    """
     def testCountFunction(self):
-        input = ['a','b','c','d']
-        expected = len(input)
-        actual = itemCount(input)
+        """
+        testCountFunction
+        Used to test item count functionality       
+        """
+        inputArray = ['a', 'b', 'c', 'd']
+        expected = len(inputArray)
+        actual = itemCount(inputArray)
         self.assertTrue(expected == actual)
 
     def testMaxFunction(self):
+        """
+        testMaxFunction
+        Used to test max value functionality       
+        """
         input = [1, 4, 8, 3, 6]
         expected = max(input)
         actual = maxValue(input)
