@@ -28,6 +28,9 @@ TODO:
 #These imports are required for unit tests
 import unittest
 import statistics
+from fs3Stats import itemCount, maxValue, minValue
+from fs3Stats import meanValue, medianValue, sumValue
+from fs3Stats import stdDevValue, coeffVarValue, maxLength
 
 class NumericStatTests(unittest.TestCase):
     """
