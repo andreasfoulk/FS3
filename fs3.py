@@ -10,6 +10,8 @@ from PyQt5.QtWidgets import QAction
 from PyQt5.QtGui import QIcon
 from .fs3Run import FS3MainWindow
 
+from .resources import *
+
 class FS3Plugin:
     """
     FS3Plugin handles the linking to QGIS.
@@ -20,7 +22,7 @@ class FS3Plugin:
     def __init__(self, iface):
         self.iface = iface
         self.mainWindow = FS3MainWindow()
-        self.iconPath = ":/plugins/FS3/icon.png"
+        self.iconPath = ":/plugins/FS3/FS3Icon.png"
         self.icon = QIcon(self.iconPath)
         self.action = QAction(self.icon,
                               "FS3 -- FieldStats3",
@@ -36,7 +38,6 @@ class FS3Plugin:
         self.action.setWhatsThis("Configuration for FS3")
         self.action.setStatusTip("This is a tip")
         self.action.triggered.connect(self.run)
-
         self.iface.addToolBarIcon(self.action)
         self.iface.addPluginToMenu("&FS3 Plugin", self.action)
 

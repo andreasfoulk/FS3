@@ -1,0 +1,5 @@
+<RCC>
+  <qresource prefix="/plugins/FS3">
+     <file>FS3Icon.png</file>
+  </qresource>
+</RCC>

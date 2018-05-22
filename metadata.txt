@@ -30,7 +30,7 @@ tags=python, vector, field, statistics, mines, analysis, plugin
 
 homepage=https://github.com/andreasfoulk/FS3
 category=Plugins
-icon=icon.png
+icon=FS3Icon.png
 # experimental flag
 experimental=False
 
