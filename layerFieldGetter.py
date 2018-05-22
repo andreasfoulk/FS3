@@ -2,13 +2,17 @@ import locale
 
 #from PyQt4.QtCore import *
 #from PyQt4.QtGui import *
-from PyQt4.QtCore import QVariant
+from PyQt5.QtCore import QVariant
 
-from qgis.core import *
+from qgis.core import QgsProject, QgsMapLayer
 from qgis.gui import *
 
-class LayerFieldGetter:
+#https://qgis.org/api/classQgsProject.html
 
+#Class seems unnecessary?
+#Turn static methods into functions?
+class LayerFieldGetter:
+    
     def __init__(self):
 
         """
@@ -21,11 +25,13 @@ class LayerFieldGetter:
         """
         The current map layer is loaded into qgis
         """
-        layerMap = QgsMapLayerRegistry.instance().mapLayers()
+        project = QgsProject.instance()
+        #QgsMapLayerRegistry doesnt exist anymore
+        layerMap = project.mapLayers()
         layerList = []
-        for name, layer in layerMap.iteritems():
+        for name, layer in layerMap.items():
             if layer.type() == QgsMapLayer.VectorLayer:
-                layerList.append(unicode(layer.name()))
+                layerList.append((layer.name()))
         return sorted(layerList)
 
     @staticmethod

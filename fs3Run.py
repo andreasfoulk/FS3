@@ -10,6 +10,7 @@ from PyQt5 import uic
 from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import QApplication, QMainWindow
 
+from .layerFieldGetter import LayerFieldGetter
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
 
@@ -34,6 +35,12 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.percentile10.clicked.connect(self.percentile10_update)
         self.percentile5.clicked.connect(self.percentile5_update)
         self.percentileHighEnd.clicked.connect(self.percentileHighEnd_update)
+        
+        ### Layer Combo Box
+        #Create the getter
+        fieldGetterInst = LayerFieldGetter()
+        layers = fieldGetterInst.get_vector_layers()
+        self.selectLayerComboBox.insertItems(0, layers)
 
     @pyqtSlot()
     def percentile25_update(self):
