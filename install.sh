@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#pyrcc5 resources.qrc -o resources.py
+pyrcc5 resources.qrc -o resources.py
 
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
 
@@ -12,7 +12,7 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
     cp *png ~/.local/share/QGIS/QGIS3/profiles/default/python/plugins/FS3/.
 
     cp metadata.txt ~/.local/share/QGIS/QGIS3/profiles/default/python/plugins/FS3/.
-    #cp resources.qrc ~/.local/share/QGIS/QGIS3/profiles/default/python/plugins/FS3/.
+    cp resources.qrc ~/.local/share/QGIS/QGIS3/profiles/default/python/plugins/FS3/.
 
 
 elif [[ "$OSTYPE" == "darwin"* ]]; then
@@ -25,7 +25,7 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
     cp *png ~/Library/Application\ Support/QGIS/QGIS3/profiles/default/python/plugins/FS3/.
 
     cp metadata.txt ~/Library/Application\ Support/QGIS/QGIS3/profiles/default/python/plugins/FS3/.
-    #cp resources.qrc ~/Library/Application\ Support/QGIS/QGIS3/profiles/default/python/plugins/FS3/.
+    cp resources.qrc ~/Library/Application\ Support/QGIS/QGIS3/profiles/default/python/plugins/FS3/.
 
 else
     echo "Your OS is not supported with this installer"
