@@ -26,5 +26,4 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         super(FS3MainWindow, self).__init__(parent)
         self.setupUi(self)
         self.mainWindowSplitter.setStretchFactor(1, 10)
-        self.counter = 0
         self.setWindowTitle('FS3 -- FieldStats3')
