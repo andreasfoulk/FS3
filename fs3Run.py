@@ -112,6 +112,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                 (self.selectLayerComboBox.currentText())
         if layer != None:
             self.currentLayer = layer
+            self.selectFieldComboBox.insertItem(0, "All")
             self.selectFieldComboBox.insertItems \
                 (1, self.fieldGetterInst.get_all_fields(layer))
 
@@ -146,7 +147,10 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                     self.tableWidget.setItem(row, col, QTableWidgetItem(str(attribute)))
                     col += 1
                 row += 1
-                names.append(feature["name"])
+                try:
+                    names.append(feature["name"])
+                except KeyError:
+                    names.append(str(row))
 
             fields = self.fieldGetterInst.get_all_fields(self.currentLayer)
             self.tableWidget.setHorizontalHeaderLabels(fields)
