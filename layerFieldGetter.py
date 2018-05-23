@@ -26,7 +26,6 @@ class LayerFieldGetter:
         The current map layer is loaded into qgis
         """
         project = QgsProject.instance()
-        #QgsMapLayerRegistry doesnt exist anymore
         layerMap = project.mapLayers()
         layerList = []
         for name, layer in layerMap.items():
@@ -40,8 +39,9 @@ class LayerFieldGetter:
         """
         Returns a single vector layer
         """
-        layerMap = QgsMapLayerRegistry.instance().mapLayers()
-        for name, layer in layerMap.iteritems():
+        project = QgsProject.instance()
+        layerMap = project.mapLayers()
+        for name, layer in layerMap.items():
             if layer.type() == QgsMapLayer.VectorLayer and layer.name() == layerName:
                 if layer.isValid():
                     return layer
@@ -55,12 +55,12 @@ class LayerFieldGetter:
         Returns the name of the fields
         """
         fieldTypes = [QVariant.String, QVariant.Int, QVariant.Double]
-        fields = layer.pendingFields()
+        fields = layer.fields()
         fieldLists = []
         for field in fields:
             if field.type() in fieldTypes and not field.name() in fieldLists:
                 fieldLists.append(unicode(field.name))
-        return fieldNames
+        return fieldLists
 
     @staticmethod
     def get_next_field(layer, fieldName):

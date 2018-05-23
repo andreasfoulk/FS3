@@ -37,10 +37,14 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.percentileHighEnd.clicked.connect(self.percentileHighEnd_update)
         
         ### Layer Combo Box
-        #Create the getter
-        fieldGetterInst = LayerFieldGetter()
-        layers = fieldGetterInst.get_vector_layers()
-        self.selectLayerComboBox.insertItems(0, layers)
+        self.refresh_layers()
+        self.refresh_fields()
+        self.selectLayerComboBox.currentIndexChanged.connect(self.refresh_fields)
+        #layers = fieldGetterInst.get_vector_layers()
+        #self.selectLayerComboBox.insertItems(0, layers)
+        
+        #field = fieldGetterInst.get_single_layer(self.selectLayerComboBox.currentText())
+        #self.selectFieldComboBox.insertItems(self, field)
 
     @pyqtSlot()
     def percentile25_update(self):
@@ -59,3 +63,24 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
     @pyqtSlot()
     def percentileHighEnd_update(self):
         self.percentilesLineEdit.setText("50, 80, 95")
+    
+    def refresh_layers(self):
+        """
+        Reload the layers coboBox with the current content of the layers list
+        """
+        self.selectLayerComboBox.clear()
+        fieldGetterInst = LayerFieldGetter()
+        layers = fieldGetterInst.get_vector_layers()
+        self.selectLayerComboBox.insertItems(0, layers)
+        
+    def refresh_fields(self):
+        """
+        Reload the fields coboBox with the current content of the field lists 
+        """
+        self.selectFieldComboBox.clear()
+
+        fieldGetterInst = LayerFieldGetter()
+        layer = fieldGetterInst.get_single_layer(self.selectLayerComboBox.currentText())
+        if layer != None:
+            self.selectFieldComboBox.insertItems(1, fieldGetterInst.get_all_fields(layer))
+
