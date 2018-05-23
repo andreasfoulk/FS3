@@ -31,40 +31,44 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
 
         ### Buttons
         # Percentile
-        self.percentile25.clicked.connect(self.percentile25_update)
-        self.percentile10.clicked.connect(self.percentile10_update)
-        self.percentile5.clicked.connect(self.percentile5_update)
-        self.percentileHighEnd.clicked.connect(self.percentileHighEnd_update)
-        
+        self.percentile25.clicked.connect(self.percentile25Update)
+        self.percentile10.clicked.connect(self.percentile10Update)
+        self.percentile5.clicked.connect(self.percentile5Update)
+        self.percentileHighEnd.clicked.connect(self.percentileHighEndUpdate)
+
         ### Layer Combo Box
-        self.refresh_layers()
-        self.refresh_fields()
-        self.selectLayerComboBox.currentIndexChanged.connect(self.refresh_fields)
+        self.refreshLayers()
+        self.refreshFields()
+        self.selectLayerComboBox.currentIndexChanged.connect(self.refreshFields)
         #layers = fieldGetterInst.get_vector_layers()
         #self.selectLayerComboBox.insertItems(0, layers)
-        
-        #field = fieldGetterInst.get_single_layer(self.selectLayerComboBox.currentText())
+
+        #field = (fieldGetterInst
+        #    .get_single_layer(self.selectLayerComboBox.currentText()))
         #self.selectFieldComboBox.insertItems(self, field)
 
+    """
+    Fill LineEdit with percentile numbers when the buttons are pressed
+    """
     @pyqtSlot()
-    def percentile25_update(self):
+    def percentile25Update(self):
         self.percentilesLineEdit.setText("25, 50, 75, 100")
 
     @pyqtSlot()
-    def percentile10_update(self):
-        percentile10_str = ", ".join(str(x * 10) for x in range(1,11))
-        self.percentilesLineEdit.setText(percentile10_str)
+    def percentile10Update(self):
+        percentile10Str = ", ".join(str(x * 10) for x in range(1, 11))
+        self.percentilesLineEdit.setText(percentile10Str)
 
     @pyqtSlot()
-    def percentile5_update(self):
-        percentile5_str = ", ".join(str(x * 5) for x in range(1,21))
-        self.percentilesLineEdit.setText(percentile5_str)
+    def percentile5Update(self):
+        percentile5Str = ", ".join(str(x * 5) for x in range(1, 21))
+        self.percentilesLineEdit.setText(percentile5Str)
 
     @pyqtSlot()
-    def percentileHighEnd_update(self):
+    def percentileHighEndUpdate(self):
         self.percentilesLineEdit.setText("50, 80, 95")
-    
-    def refresh_layers(self):
+
+    def refreshLayers(self):
         """
         Reload the layers coboBox with the current content of the layers list
         """
@@ -72,15 +76,16 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         fieldGetterInst = LayerFieldGetter()
         layers = fieldGetterInst.get_vector_layers()
         self.selectLayerComboBox.insertItems(0, layers)
-        
-    def refresh_fields(self):
+
+    def refreshFields(self):
         """
-        Reload the fields coboBox with the current content of the field lists 
+        Reload the fields coboBox with the current content of the field lists
         """
         self.selectFieldComboBox.clear()
 
         fieldGetterInst = LayerFieldGetter()
-        layer = fieldGetterInst.get_single_layer(self.selectLayerComboBox.currentText())
+        layer = fieldGetterInst.get_single_layer \
+                (self.selectLayerComboBox.currentText())
         if layer != None:
-            self.selectFieldComboBox.insertItems(1, fieldGetterInst.get_all_fields(layer))
-
+            self.selectFieldComboBox.insertItems \
+            (1, fieldGetterInst.get_all_fields(layer))

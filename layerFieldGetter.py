@@ -12,16 +12,16 @@ from qgis.gui import *
 #Class seems unnecessary?
 #Turn static methods into functions?
 class LayerFieldGetter:
-    
+    """
+    TODO This classes docstring
+    """
     def __init__(self):
-
         """
         Must have for self construtor?
         """
-    
+
     @staticmethod
-    def get_vector_layers():        
-    #---------------------------------------------------------------------------
+    def get_vector_layers():
         """
         The current map layer is loaded into qgis
         """
@@ -35,22 +35,21 @@ class LayerFieldGetter:
 
     @staticmethod
     def get_single_layer(layerName):
-    #---------------------------------------------------------------------------
         """
         Returns a single vector layer
         """
         project = QgsProject.instance()
         layerMap = project.mapLayers()
         for name, layer in layerMap.items():
-            if layer.type() == QgsMapLayer.VectorLayer and layer.name() == layerName:
+            if layer.type() == QgsMapLayer.VectorLayer and \
+            layer.name() == layerName:
                 if layer.isValid():
                     return layer
                 else:
                     return None
 
     @staticmethod
-    def get_all_fields(layer):    
-    #---------------------------------------------------------------------------
+    def get_all_fields(layer):
         """
         Returns the name of the fields
         """
@@ -64,7 +63,6 @@ class LayerFieldGetter:
 
     @staticmethod
     def get_next_field(layer, fieldName):
-    #---------------------------------------------------------------------------
         """
         Get the next field to work with
         """
@@ -76,13 +74,12 @@ class LayerFieldGetter:
                     return fields[current + 1]
                 else:
                     return field[0]
-            current +=1
+            current += 1
         return None
 
-    
+
     @staticmethod
     def get_previous_field(layer, fieldName):
-    #---------------------------------------------------------------------------
         """
         Get the next field to work with
         """
@@ -94,12 +91,11 @@ class LayerFieldGetter:
                     return fields[current - 1]
                 else:
                     return field[len(fields) - 1]
-            current +=1
+            current += 1
         return None
 
     @staticmethod
     def get_field_type(layer, fieldName):
-    #---------------------------------------------------------------------------
         """
         Returns the selected field type
         """
@@ -111,7 +107,6 @@ class LayerFieldGetter:
 
     @staticmethod
     def get_field_length(layer, fieldName):
-    #---------------------------------------------------------------------------
         """
         Returns the selected field length
         """
@@ -123,7 +118,6 @@ class LayerFieldGetter:
 
     @staticmethod
     def get_field_precision(layer, fieldName):
-    #---------------------------------------------------------------------------
         """
         Return the precision for the field selected
         """
