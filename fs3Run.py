@@ -29,6 +29,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.mainWindowSplitter.setStretchFactor(1, 10)
         self.setWindowTitle('FS3 -- FieldStats3')
 
+        self.fieldGetterInst = LayerFieldGetter()
         self.currentLayer = None
 
         ### Buttons
@@ -96,8 +97,8 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         Reload the layers coboBox with the current content of the layers list
         """
         self.selectLayerComboBox.clear()
-        fieldGetterInst = LayerFieldGetter()
-        layers = fieldGetterInst.get_vector_layers()
+
+        layers = self.fieldGetterInst.get_vector_layers()
         self.selectLayerComboBox.insertItems(0, layers)
 
     @pyqtSlot()
@@ -107,13 +108,12 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         """
         self.selectFieldComboBox.clear()
 
-        fieldGetterInst = LayerFieldGetter()
-        layer = fieldGetterInst.get_single_layer \
+        layer = self.fieldGetterInst.get_single_layer \
                 (self.selectLayerComboBox.currentText())
         if layer != None:
             self.currentLayer = layer
             self.selectFieldComboBox.insertItems \
-            (1, fieldGetterInst.get_all_fields(layer))
+                (1, self.fieldGetterInst.get_all_fields(layer))
 
     def refreshTable(self):
         """
@@ -122,16 +122,28 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.fieldTableLayout = QVBoxLayout()
 
         self.tableWidget = QTableWidget()
-        self.tableWidget.setRowCount(4)
-        self.tableWidget.setColumnCount(2)
-        self.tableWidget.setItem(0,0, QTableWidgetItem("Cell (1,1)"))
-        self.tableWidget.setItem(0,1, QTableWidgetItem("Cell (1,2)"))
-        self.tableWidget.setItem(1,0, QTableWidgetItem("Cell (2,1)"))
-        self.tableWidget.setItem(1,1, QTableWidgetItem("Cell (2,2)"))
-        self.tableWidget.setItem(2,0, QTableWidgetItem("Cell (3,1)"))
-        self.tableWidget.setItem(2,1, QTableWidgetItem("Cell (3,2)"))
-        self.tableWidget.setItem(3,0, QTableWidgetItem("Cell (4,1)"))
-        self.tableWidget.setItem(3,1, QTableWidgetItem("Cell (4,2)"))
+
+        if self.currentLayer:
+
+            # Should add a default to fieldsComboBox, all where all the layer data can be displayed... and ability to select multiple...
+
+            fields = self.fieldGetterInst.get_all_fields(self.currentLayer)
+            self.tableWidget.setColumnCount(len(fields))
+            self.tableWidget.setRowCount(1) # Not loading in the data yet.... not sure where it will be loaded from or how we want to process it either
+
+            col = 0
+            for field in fields:
+                self.tableWidget.setItem(0, col, QTableWidgetItem(field))
+                col += 1
+
+        else:
+            self.tableWidget.setRowCount(100)
+            self.tableWidget.setColumnCount(100)
+            # Dummy Data
+            for i in range(100):
+                for j in range(100):
+                    self.tableWidget.setItem(i, j, QTableWidgetItem("Cell ({},{})".format(i,j)))
+
         self.tableWidget.move(0,0)
 
         self.fieldTableLayout.addWidget(self.tableWidget)
