@@ -215,7 +215,7 @@
       </widget>
       <widget class="QTabWidget" name="tabFields">
        <property name="currentIndex">
-        <number>3</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="fieldTab">
         <attribute name="title">

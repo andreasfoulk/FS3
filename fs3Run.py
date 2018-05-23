@@ -45,7 +45,8 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         ### Layer Combo Box
         self.refreshLayers()
         self.refreshFields()
-        self.selectLayerComboBox.currentIndexChanged.connect(self.refreshFields)
+        self.selectLayerComboBox.currentIndexChanged \
+                        .connect(self.refreshFields)
         #layers = fieldGetterInst.get_vector_layers()
         #self.selectLayerComboBox.insertItems(0, layers)
 
@@ -98,6 +99,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         layers = fieldGetterInst.get_vector_layers()
         self.selectLayerComboBox.insertItems(0, layers)
 
+    @pyqtSlot()
     def refreshFields(self):
         """
         Reload the fields coboBox with the current content of the field lists
