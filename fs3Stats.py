@@ -5,6 +5,10 @@ Created on Fri May 18 14:26:25 2018
 @author: Tanner Lee
 https://github.com/tleecsm
 """
+
+import statistics
+import numpy
+
 #pylint: disable=unused-argument
 def itemCount(inputArray):
     """
@@ -14,7 +18,7 @@ def itemCount(inputArray):
     @return itemCountReturn The integer value returned by the calculation
     """
 
-    itemCountReturn = 0
+    itemCountReturn = len(inputArray)
     return itemCountReturn
 
 def maxValue(inputArray):
@@ -24,7 +28,7 @@ def maxValue(inputArray):
     @param inputArray Array passed for calculation
     @return maxValueReturn The integer value returned by the calculation
     """
-    maxValueReturn = 0
+    maxValueReturn = max(inputArray)
     return maxValueReturn
 
 def minValue(inputArray):
@@ -34,7 +38,7 @@ def minValue(inputArray):
     @param inputArray Array passed for calculation
     @return minValueReturn The integer value returned by the calculation
     """
-    minValueReturn = 0
+    minValueReturn = min(inputArray)
     return minValueReturn
 
 def meanValue(inputArray):
@@ -44,7 +48,7 @@ def meanValue(inputArray):
     @param inputArray Array passed for calculation
     @return meanValueReturn The integer value returned by the calculation
     """
-    meanValueReturn = 0
+    meanValueReturn = sum(inputArray)/float(len(inputArray))
     return meanValueReturn
 
 def medianValue(inputArray):
@@ -54,7 +58,7 @@ def medianValue(inputArray):
     @param inputArray Array passed for calculation
     @return medianValueReturn The integer value returned by the calculation
     """
-    medianValueReturn = 0
+    medianValueReturn = statistics.median(inputArray)
     return medianValueReturn
 
 def sumValue(inputArray):
@@ -64,7 +68,7 @@ def sumValue(inputArray):
     @param inputArray Array passed for calculation
     @return sumValueReturn The integer value returned by the calculation
     """
-    sumValueReturn = 0
+    sumValueReturn = sum(inputArray)
     return sumValueReturn
 
 def stdDevValue(inputArray):
@@ -74,7 +78,7 @@ def stdDevValue(inputArray):
     @param inputArray Array passed for calculation
     @return stdDevValueReturn The integer value returned by the calculation
     """
-    stdDevValueReturn = 0
+    stdDevValueReturn = statistics.stdev(inputArray)
     return stdDevValueReturn
 
 def coeffVarValue(inputArray):
@@ -84,7 +88,7 @@ def coeffVarValue(inputArray):
     @param inputArray Array passed for calculation
     @return coeffVarReturn The integer value returned by the calculation
     """
-    coeffVarReturn = 0
+    coeffVarReturn = statistics.variance(inputArray)
     return coeffVarReturn
 
 def maxLength(inputArray):
@@ -95,4 +99,7 @@ def maxLength(inputArray):
     @return maxLengthReturn The integer value returned by the calculation
     """
     maxLengthReturn = 0
+    for i in inputArray:
+        if len(i) > maxLengthReturn:
+            maxLengthReturn = len(i)
     return maxLengthReturn
