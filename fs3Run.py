@@ -29,12 +29,18 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.mainWindowSplitter.setStretchFactor(1, 10)
         self.setWindowTitle('FS3 -- FieldStats3')
 
+        self.currentLayer = None
+
         ### Buttons
         # Percentile
         self.percentile25.clicked.connect(self.percentile25Update)
         self.percentile10.clicked.connect(self.percentile10Update)
         self.percentile5.clicked.connect(self.percentile5Update)
         self.percentileHighEnd.clicked.connect(self.percentileHighEndUpdate)
+
+        # Next/Prev
+        self.nextButton.clicked.connect(self.setNextField)
+        self.previousButton.clicked.connect(self.setPrevField)
 
         ### Layer Combo Box
         self.refreshLayers()
@@ -68,6 +74,21 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
     def percentileHighEndUpdate(self):
         self.percentilesLineEdit.setText("50, 80, 95")
 
+    """
+    Next/Previous
+    """
+    @pyqtSlot()
+    def setNextField(self):
+        index = self.selectFieldComboBox.currentIndex()
+        index = (index + 1) % self.selectFieldComboBox.count()
+        self.selectFieldComboBox.setCurrentIndex(index)
+
+    @pyqtSlot()
+    def setPrevField(self):
+        index = self.selectFieldComboBox.currentIndex()
+        index = (index - 1) % self.selectFieldComboBox.count()
+        self.selectFieldComboBox.setCurrentIndex(index)
+
     def refreshLayers(self):
         """
         Reload the layers coboBox with the current content of the layers list
@@ -87,5 +108,6 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         layer = fieldGetterInst.get_single_layer \
                 (self.selectLayerComboBox.currentText())
         if layer != None:
+            self.currentLayer = layer
             self.selectFieldComboBox.insertItems \
             (1, fieldGetterInst.get_all_fields(layer))
