@@ -127,14 +127,16 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
 
             # Should add a default to fieldsComboBox, all where all the layer data can be displayed... and ability to select multiple...
 
-            fields = self.fieldGetterInst.get_all_fields(self.currentLayer)
-            self.tableWidget.setColumnCount(len(fields))
-            self.tableWidget.setRowCount(1) # Not loading in the data yet.... not sure where it will be loaded from or how we want to process it either
-
+            self.tableWidget.setColumnCount(1)
+            self.currentFeatures = self.currentLayer.getFeatures()
             col = 0
-            for field in fields:
-                self.tableWidget.setItem(0, col, QTableWidgetItem(field))
-                col += 1
+            for feature in self.currentFeatures:
+                attributes = feature.attributes()
+                self.tableWidget.setRowCount(len(attributes)) # Not loading in the data yet.... not sure where it will be loaded from or how we want to process it either
+                print(attributes)
+                for attribute in attributes:
+                    self.tableWidget.setItem(col, 0, QTableWidgetItem(str(attribute)))
+                    col += 1
 
         else:
             self.tableWidget.setRowCount(100)
