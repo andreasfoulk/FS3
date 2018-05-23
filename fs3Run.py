@@ -8,7 +8,7 @@ Created on Tue May 15 11:12:02 2018
 import os
 from PyQt5 import uic
 from PyQt5.QtCore import Qt, pyqtSlot
-from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QTableWidget, QTableWidgetItem
 
 from .layerFieldGetter import LayerFieldGetter
 
@@ -53,6 +53,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         #field = (fieldGetterInst
         #    .get_single_layer(self.selectLayerComboBox.currentText()))
         #self.selectFieldComboBox.insertItems(self, field)
+        self.refreshTable()
 
     """
     Fill LineEdit with percentile numbers when the buttons are pressed
@@ -113,3 +114,26 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
             self.currentLayer = layer
             self.selectFieldComboBox.insertItems \
             (1, fieldGetterInst.get_all_fields(layer))
+
+    def refreshTable(self):
+        """
+        docstring
+        """
+        self.fieldTableLayout = QVBoxLayout()
+
+        self.tableWidget = QTableWidget()
+        self.tableWidget.setRowCount(4)
+        self.tableWidget.setColumnCount(2)
+        self.tableWidget.setItem(0,0, QTableWidgetItem("Cell (1,1)"))
+        self.tableWidget.setItem(0,1, QTableWidgetItem("Cell (1,2)"))
+        self.tableWidget.setItem(1,0, QTableWidgetItem("Cell (2,1)"))
+        self.tableWidget.setItem(1,1, QTableWidgetItem("Cell (2,2)"))
+        self.tableWidget.setItem(2,0, QTableWidgetItem("Cell (3,1)"))
+        self.tableWidget.setItem(2,1, QTableWidgetItem("Cell (3,2)"))
+        self.tableWidget.setItem(3,0, QTableWidgetItem("Cell (4,1)"))
+        self.tableWidget.setItem(3,1, QTableWidgetItem("Cell (4,2)"))
+        self.tableWidget.move(0,0)
+
+        self.fieldTableLayout.addWidget(self.tableWidget)
+
+        self.fieldTab.setLayout(self.fieldTableLayout)
