@@ -1,11 +1,11 @@
 """
-#Created by: McKenna Duzac
-#Last Edited: 18 May 2018
+Created by: McKenna Duzac
+Last Edited: 23 May 2018
 
 All of these tests written with the following assumptions:
     -functions take in a list of values
     -using standard deviation, not population stdev
-        -just statistics.pstdev vs statistics.stdev 
+        -just statistics.pstdev vs statistics.stdev
 
 The following functions need to be created for NumericStats:
 
@@ -37,7 +37,7 @@ class NumericStatTests(unittest.TestCase):
         inputArray = ['a', 'b', 'c', 'd']
         expected = 4
         actual = itemCount(inputArray)
-        self.assertTrue(expected == actual)
+        self.assertEqual(actual, expected)
 
     def testMaxFunction(self):
         """
@@ -47,7 +47,7 @@ class NumericStatTests(unittest.TestCase):
         inputArray = [1, 4, 8, 3, 6]
         expected = 8
         actual = maxValue(inputArray)
-        self.assertTrue(expected == actual)
+        self.assertEqual(actual, expected)
 
     def testMinFunction(self):
         """
@@ -57,7 +57,7 @@ class NumericStatTests(unittest.TestCase):
         inputArray = [1, 4, 8, 3, 6]
         expected = 1
         actual = minValue(inputArray)
-        self.assertTrue(expected == actual)
+        self.assertEqual(actual, expected)
 
     def testMeanFunction(self):
         """
@@ -67,7 +67,7 @@ class NumericStatTests(unittest.TestCase):
         inputArray = [1, 4, 8, 3, 6]
         expected = 4.4
         actual = meanValue(inputArray)
-        self.assertTrue(expected == actual)
+        self.assertEqual(actual, expected)
 
     def testMedianFunction(self):
         """
@@ -77,7 +77,7 @@ class NumericStatTests(unittest.TestCase):
         inputArray = [1, 4, 8, 3, 6]
         expected = 4
         actual = medianValue(inputArray)
-        self.assertTrue(expected == actual)
+        self.assertEqual(actual, expected)
 
     def testSumFunction(self):
         """
@@ -87,7 +87,7 @@ class NumericStatTests(unittest.TestCase):
         inputArray = [1, 4, 8, 3, 6]
         expected = 22
         actual = sumValue(inputArray)
-        self.assertTrue(expected == actual)
+        self.assertEqual(actual, expected)
 
     def testStandardDeviation(self):
         """
@@ -97,7 +97,7 @@ class NumericStatTests(unittest.TestCase):
         inputArray = [1, 4, 8, 3, 6]
         expected = 2.701851217221259
         actual = stdDevValue(inputArray)
-        self.assertTrue(expected == actual)
+        self.assertEqual(actual, expected)
 
     def testCoefficientOfVariation(self):
         """
@@ -107,7 +107,7 @@ class NumericStatTests(unittest.TestCase):
         inputArray = [1, 4, 8, 3, 6]
         expected = 7.3
         actual = coeffVarValue(inputArray)
-        self.assertTrue(expected == actual)
+        self.assertEqual(actual, expected)
 
 
 class CharacterStatTests(unittest.TestCase):
@@ -125,7 +125,7 @@ class CharacterStatTests(unittest.TestCase):
         inputArray = ['a', 'cat', 'went', 'home', 'yesterday']
         expected = 9
         actual = maxLength(inputArray)
-        self.assertTrue(expected == actual)
+        self.assertEqual(actual, expected)
 
 
 def main():
