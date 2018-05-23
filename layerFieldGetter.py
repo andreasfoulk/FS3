@@ -58,7 +58,7 @@ class LayerFieldGetter:
         fieldLists = []
         for field in fields:
             if field.type() in fieldTypes and not field.name() in fieldLists:
-                fieldLists.append(unicode(field.name))
+                fieldLists.append(unicode(field.name()))
         return fieldLists
 
     @staticmethod
