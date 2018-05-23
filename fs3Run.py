@@ -8,7 +8,7 @@ Created on Tue May 15 11:12:02 2018
 import os
 from PyQt5 import uic
 from PyQt5.QtCore import Qt, pyqtSlot
-from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QTableWidget, QTableWidgetItem
 
 from .layerFieldGetter import LayerFieldGetter
 
@@ -29,6 +29,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.mainWindowSplitter.setStretchFactor(1, 10)
         self.setWindowTitle('FS3 -- FieldStats3')
 
+        self.fieldGetterInst = LayerFieldGetter()
         self.currentLayer = None
 
         ### Buttons
@@ -53,6 +54,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         #field = (fieldGetterInst
         #    .get_single_layer(self.selectLayerComboBox.currentText()))
         #self.selectFieldComboBox.insertItems(self, field)
+        self.refreshTable()
 
     """
     Fill LineEdit with percentile numbers when the buttons are pressed
@@ -95,8 +97,8 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         Reload the layers coboBox with the current content of the layers list
         """
         self.selectLayerComboBox.clear()
-        fieldGetterInst = LayerFieldGetter()
-        layers = fieldGetterInst.get_vector_layers()
+
+        layers = self.fieldGetterInst.get_vector_layers()
         self.selectLayerComboBox.insertItems(0, layers)
 
     @pyqtSlot()
@@ -106,10 +108,44 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         """
         self.selectFieldComboBox.clear()
 
-        fieldGetterInst = LayerFieldGetter()
-        layer = fieldGetterInst.get_single_layer \
+        layer = self.fieldGetterInst.get_single_layer \
                 (self.selectLayerComboBox.currentText())
         if layer != None:
             self.currentLayer = layer
             self.selectFieldComboBox.insertItems \
-            (1, fieldGetterInst.get_all_fields(layer))
+                (1, self.fieldGetterInst.get_all_fields(layer))
+
+    def refreshTable(self):
+        """
+        docstring
+        """
+        self.fieldTableLayout = QVBoxLayout()
+
+        self.tableWidget = QTableWidget()
+
+        if self.currentLayer:
+
+            # Should add a default to fieldsComboBox, all where all the layer data can be displayed... and ability to select multiple...
+
+            fields = self.fieldGetterInst.get_all_fields(self.currentLayer)
+            self.tableWidget.setColumnCount(len(fields))
+            self.tableWidget.setRowCount(1) # Not loading in the data yet.... not sure where it will be loaded from or how we want to process it either
+
+            col = 0
+            for field in fields:
+                self.tableWidget.setItem(0, col, QTableWidgetItem(field))
+                col += 1
+
+        else:
+            self.tableWidget.setRowCount(100)
+            self.tableWidget.setColumnCount(100)
+            # Dummy Data
+            for i in range(100):
+                for j in range(100):
+                    self.tableWidget.setItem(i, j, QTableWidgetItem("Cell ({},{})".format(i,j)))
+
+        self.tableWidget.move(0,0)
+
+        self.fieldTableLayout.addWidget(self.tableWidget)
+
+        self.fieldTab.setLayout(self.fieldTableLayout)
