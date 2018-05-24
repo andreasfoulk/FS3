@@ -127,6 +127,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                 (self.selectLayerComboBox.currentText())
         if layer != None:
             self.currentLayer = layer
+            self.fields = self.currentLayer.fields()
             self.selectFieldComboBox.insertItem(0, "All")
             self.selectFieldComboBox.insertItems \
                 (1, self.fieldGetterInst.get_all_fields(layer))
@@ -153,6 +154,11 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
             row = 0
             names = []
             features = self.currentLayer.getFeatures()
+            
+            #Create an index and a list to track Column content
+            fieldIndex = 0
+            columnValues = []
+            
 
             # for each row
             for feature in features:
@@ -168,8 +174,9 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                             
                 else:
                     self.tableWidget.setColumnCount(1) # TODO not 1 if we are selecting multiple...
-                    idx = feature.fieldNameIndex(field)
-                    self.tableWidget.setItem(row, 0, QTableWidgetItem(str(feature.attributes()[idx])))
+                    fieldIndex = feature.fieldNameIndex(field)
+                    columnValues.append(feature.attributes()[fieldIndex])
+                    self.tableWidget.setItem(row, 0, QTableWidgetItem(str(feature.attributes()[fieldIndex])))
 
                 row += 1
 
@@ -180,13 +187,16 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                 except KeyError:
                     names.append(str(row))
 
-            print("Loop done")
             if field == 'All':
                 fields = self.fieldGetterInst.get_all_fields(self.currentLayer)
                 self.tableWidget.setHorizontalHeaderLabels(fields)
             else:
                 self.tableWidget.setHorizontalHeaderLabels([field])
+                if self.fields.at(fieldIndex).isNumeric:
+                    self.createStatistics(columnValues)
+                    self.numericalStatistics.print()
             self.tableWidget.setVerticalHeaderLabels(names)
+            
 
         else:
             # TODO display this in the gui or a pop up
@@ -204,6 +214,9 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         createStatistics
         Methods that instantiates both Statistics classes and initializes them
         """
+        intArray = []
+        for string in inputArray:
+            intArray.append(int(string))
         self.numericalStatistics = FS3NumericalStatistics()
-        self.numericalStatistics.initialize(inputArray)
+        self.numericalStatistics.initialize(intArray)
         
