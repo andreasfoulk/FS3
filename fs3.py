@@ -53,7 +53,8 @@ class FS3Plugin:
     def run(self):
         """
         Acts as the entry point to the main program
+        Runs when a window is opened
         Creates and runs an instance of the window
         """
-        print("Running!")
+        self.mainWindow.refresh()
         self.mainWindow.show()

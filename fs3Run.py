@@ -32,6 +32,11 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.fieldGetterInst = LayerFieldGetter()
         self.currentLayer = None
 
+        ### Tabs
+        # Data Table
+        self.dataTableLayout = QVBoxLayout()
+        self.tableWidget = QTableWidget()
+
         ### Buttons
         # Percentile
         self.percentile25.clicked.connect(self.percentile25Update)
@@ -44,16 +49,24 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.previousButton.clicked.connect(self.setPrevField)
 
         ### Layer Combo Box
-        self.refreshLayers()
-        self.refreshFields()
         self.selectLayerComboBox.currentIndexChanged \
                         .connect(self.refreshFields)
+
         #layers = fieldGetterInst.get_vector_layers()
         #self.selectLayerComboBox.insertItems(0, layers)
 
         #field = (fieldGetterInst
         #    .get_single_layer(self.selectLayerComboBox.currentText()))
         #self.selectFieldComboBox.insertItems(self, field)
+
+        self.refresh()
+
+    def refresh(self):
+        """
+        Reload data
+        """
+        self.refreshLayers()
+        self.refreshFields()
         self.refreshTable()
 
     """
@@ -120,9 +133,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         """
         docstring
         """
-        self.fieldTableLayout = QVBoxLayout()
-
-        self.tableWidget = QTableWidget()
+        self.tableWidget.clear()
 
         if self.currentLayer:
 
@@ -139,15 +150,23 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
             row = 0
             names = []
             features = self.currentLayer.getFeatures()
+
+            # for each row
             for feature in features:
                 attributes = feature.attributes()
                 self.tableWidget.setColumnCount(len(attributes)) # Not loading in the data yet.... not sure where it will be loaded from or how we want to process it either
                 col = 0
+
+                # for each column value
                 for attribute in attributes:
                     self.tableWidget.setItem(row, col, QTableWidgetItem(str(attribute)))
                     col += 1
+
                 row += 1
+
                 try:
+                    # Not all data has a "name"
+                    # TODO look through other datasets and find what else this might be called
                     names.append(feature["name"])
                 except KeyError:
                     names.append(str(row))
@@ -157,15 +176,11 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
             self.tableWidget.setVerticalHeaderLabels(names)
 
         else:
-            self.tableWidget.setRowCount(100)
-            self.tableWidget.setColumnCount(100)
-            # Dummy Data
-            for i in range(100):
-                for j in range(100):
-                    self.tableWidget.setItem(i, j, QTableWidgetItem("Cell ({},{})".format(i,j)))
+            # TODO display this in the gui or a pop up
+            print("Please select a layer to look at it's data")
 
         self.tableWidget.move(0,0)
 
-        self.fieldTableLayout.addWidget(self.tableWidget)
+        self.dataTableLayout.addWidget(self.tableWidget)
 
-        self.fieldTab.setLayout(self.fieldTableLayout)
+        self.dataTab.setLayout(self.dataTableLayout)
