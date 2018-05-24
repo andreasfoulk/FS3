@@ -8,8 +8,19 @@ https://github.com/tleecsm
 
 import statistics
 
-class fs3NumericStatistics:    
+class FS3NumericalStatistics:
+    """
+    FS3NumericStatistics
+    Class that contains all of the statistics calculated for numeric fields
+    Contains an initialize function to run all calculations
+    Overloads print function for debugging purposes
+    """    
     def initialize(self, inputArray):
+        """
+        initialize
+        Runs all numerical analysis
+        Stores the output in class self.variables
+        """
         self.itemCount = itemCount(inputArray)
         self.maxValue = maxValue(inputArray)
         self.minValue = minValue(inputArray)
@@ -19,6 +30,22 @@ class fs3NumericStatistics:
         self.stdDevValue = stdDevValue(inputArray)
         self.coeffVarValue = coeffVarValue(inputArray)
         self.maxLength = maxLength(inputArray)
+        
+    def print(self):
+        """
+        print
+        Overloads the print function to display statistics
+        Used for debugging purposes
+        """
+        print('Item Count: ' + str(self.itemCount))
+        print('Max Value: ' + str(self.maxValue))
+        print('Min Value: ' + str(self.minValue))
+        print('Mean Value: ' + str(self.meanValue))
+        print('Median Value: ' + str(self.medianValue))
+        print('Sum Value: ' + str(self.sumValue))
+        print('Standard Deviation: ' + str(self.stdDevValue))
+        print('Coefficient of Variation: ' + str(self.coeffVarValue))
+        print('Max Length: ' + str(self.maxLength))
 
 def itemCount(inputArray):
     """
