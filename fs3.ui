@@ -215,11 +215,11 @@
       </widget>
       <widget class="QTabWidget" name="tabFields">
        <property name="currentIndex">
-        <number>3</number>
+        <number>0</number>
        </property>
-       <widget class="QWidget" name="fieldTab">
+       <widget class="QWidget" name="dataTab">
         <attribute name="title">
-         <string>Field</string>
+         <string>Data Table</string>
         </attribute>
        </widget>
        <widget class="QWidget" name="statisticsTab">

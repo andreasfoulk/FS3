@@ -71,7 +71,6 @@ class LayerFieldGetter:
             current += 1
         return None
 
-
     @staticmethod
     def get_previous_field(layer, fieldName):
         """
