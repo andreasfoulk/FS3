@@ -11,6 +11,7 @@ from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QTableWidget, QTableWidgetItem
 
 from .layerFieldGetter import LayerFieldGetter
+from .fs3Stats import FS3NumericalStatistics
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
 
@@ -178,5 +179,11 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
 
         self.dataTab.setLayout(self.dataTableLayout)
         
-    def createStatistics(self):
+    def createStatistics(self, inputArray):
+        """
+        createStatistics
+        Methods that instantiates both Statistics classes and initializes them
+        """
+        self.numericalStatistics = FS3NumericalStatistics()
+        self.numericalStatistics.initialize(inputArray)
         
