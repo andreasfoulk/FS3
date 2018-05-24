@@ -52,13 +52,6 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.selectLayerComboBox.currentIndexChanged \
                         .connect(self.refreshFields)
 
-        #layers = fieldGetterInst.get_vector_layers()
-        #self.selectLayerComboBox.insertItems(0, layers)
-
-        #field = (fieldGetterInst
-        #    .get_single_layer(self.selectLayerComboBox.currentText()))
-        #self.selectFieldComboBox.insertItems(self, field)
-
         self.refresh()
 
     def refresh(self):
@@ -184,3 +177,6 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.dataTableLayout.addWidget(self.tableWidget)
 
         self.dataTab.setLayout(self.dataTableLayout)
+        
+    def createStatistics(self):
+        

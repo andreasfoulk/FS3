@@ -7,9 +7,19 @@ https://github.com/tleecsm
 """
 
 import statistics
-import numpy
 
-#pylint: disable=unused-argument
+class fs3NumericStatistics:    
+    def initialize(self, inputArray):
+        self.itemCount = itemCount(inputArray)
+        self.maxValue = maxValue(inputArray)
+        self.minValue = minValue(inputArray)
+        self.meanValue = meanValue(inputArray)
+        self.medianValue = medianValue(inputArray)
+        self.sumValue = sumValue(inputArray)
+        self.stdDevValue = stdDevValue(inputArray)
+        self.coeffVarValue = coeffVarValue(inputArray)
+        self.maxLength = maxLength(inputArray)
+
 def itemCount(inputArray):
     """
     itemCount
