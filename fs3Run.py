@@ -141,6 +141,10 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
 
         # Get selected field
         field = self.selectFieldComboBox.currentText()
+        # If the field is not set yet (Layer was swapped)
+        # Return until the refresh is ready
+        if field == '':
+            return
         if self.currentLayer:
 
             features = self.currentLayer.getFeatures()
@@ -187,12 +191,14 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                 except KeyError:
                     names.append(str(row))
 
-            if field == 'All':
+            if field == 'All' or field == '':
                 fields = self.fieldGetterInst.get_all_fields(self.currentLayer)
                 self.tableWidget.setHorizontalHeaderLabels(fields)
             else:
+                print('field : ' + field)
                 self.tableWidget.setHorizontalHeaderLabels([field])
-                if self.fields.at(fieldIndex).isNumeric:
+                if self.fields.at(fieldIndex).isNumeric():
+                    print(self.fields.at(fieldIndex).isNumeric())
                     self.createStatistics(columnValues)
                     self.numericalStatistics.print()
             self.tableWidget.setVerticalHeaderLabels(names)
@@ -216,7 +222,8 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         """
         intArray = []
         for string in inputArray:
-            intArray.append(int(string))
+            if not string == None:
+                intArray.append(int(string))
         self.numericalStatistics = FS3NumericalStatistics()
         self.numericalStatistics.initialize(intArray)
         
