@@ -37,7 +37,13 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         # Data Table
         self.dataTableLayout = QVBoxLayout()
         self.tableWidget = QTableWidget()
-
+        
+        #Refresh for the connecters
+        self.refresh()
+        
+        """
+        pyqtSlot connectors
+        """
         ### Buttons
         # Percentile
         self.percentile25.clicked.connect(self.percentile25Update)
@@ -51,14 +57,10 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         ### Layer and Field Combo Boxes
         self.selectLayerComboBox.currentIndexChanged \
                         .connect(self.refreshFields)
-<<<<<<< HEAD
-=======
         # TODO if this is a QListWidget or QListView we will be able to select multiple fields
         self.selectFieldComboBox.currentIndexChanged \
                         .connect(self.refreshTable)
->>>>>>> display_table
-
-        self.refresh()
+                        
 
     def refresh(self):
         """
@@ -95,6 +97,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
     @pyqtSlot()
     def setNextField(self):
         index = self.selectFieldComboBox.currentIndex()
+        #TODO: This next line causes a mod by zero error
         index = (index + 1) % self.selectFieldComboBox.count()
         self.selectFieldComboBox.setCurrentIndex(index)
 
@@ -128,6 +131,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
             self.selectFieldComboBox.insertItems \
                 (1, self.fieldGetterInst.get_all_fields(layer))
 
+    @pyqtSlot()
     def refreshTable(self):
         """
         docstring
@@ -136,7 +140,6 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
 
         # Get selected field
         field = self.selectFieldComboBox.currentText()
-
         if self.currentLayer:
 
             features = self.currentLayer.getFeatures()
@@ -153,7 +156,6 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
 
             # for each row
             for feature in features:
-
                 if field == 'All':
                     attributes = feature.attributes()
                     self.tableWidget.setColumnCount(len(attributes))
@@ -163,6 +165,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                     for attribute in attributes:
                         self.tableWidget.setItem(row, col, QTableWidgetItem(str(attribute)))
                         col += 1
+                            
                 else:
                     self.tableWidget.setColumnCount(1) # TODO not 1 if we are selecting multiple...
                     idx = feature.fieldNameIndex(field)
@@ -177,6 +180,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                 except KeyError:
                     names.append(str(row))
 
+            print("Loop done")
             if field == 'All':
                 fields = self.fieldGetterInst.get_all_fields(self.currentLayer)
                 self.tableWidget.setHorizontalHeaderLabels(fields)
@@ -193,6 +197,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.dataTableLayout.addWidget(self.tableWidget)
 
         self.dataTab.setLayout(self.dataTableLayout)
+        print("Refresh Done")
         
     def createStatistics(self, inputArray):
         """

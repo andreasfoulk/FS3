@@ -56,5 +56,4 @@ class FS3Plugin:
         Runs when a window is opened
         Creates and runs an instance of the window
         """
-        self.mainWindow.refresh()
         self.mainWindow.show()
