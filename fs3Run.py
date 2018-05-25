@@ -37,10 +37,10 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         # Data Table
         self.dataTableLayout = QVBoxLayout()
         self.tableWidget = QTableWidget()
-        
+
         #Refresh for the connecters
         self.refresh()
-        
+
         """
         pyqtSlot connectors
         """
@@ -60,7 +60,10 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         # TODO if this is a QListWidget or QListView we will be able to select multiple fields
         self.selectFieldComboBox.currentIndexChanged \
                         .connect(self.refreshTable)
-                        
+
+        ### Table Widget
+        self.tableWidget.horizontalHeader()
+
 
     def refresh(self):
         """
@@ -97,14 +100,20 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
     @pyqtSlot()
     def setNextField(self):
         index = self.selectFieldComboBox.currentIndex()
-        #TODO: This next line causes a mod by zero error
-        index = (index + 1) % self.selectFieldComboBox.count()
+        try:
+            index = (index + 1) % self.selectFieldComboBox.count()
+        except ZeroDivisionError:
+            # TODO im sure there is a better way to handle this error
+            index = 0
         self.selectFieldComboBox.setCurrentIndex(index)
 
     @pyqtSlot()
     def setPrevField(self):
         index = self.selectFieldComboBox.currentIndex()
-        index = (index - 1) % self.selectFieldComboBox.count()
+        try:
+            index = (index - 1) % self.selectFieldComboBox.count()
+        except ZeroDivisionError:
+            index = 0
         self.selectFieldComboBox.setCurrentIndex(index)
 
     def refreshLayers(self):
@@ -163,16 +172,17 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
 
                     # for each column value
                     for attribute in attributes:
-                        self.tableWidget.setItem(row, col, QTableWidgetItem(str(attribute)))
+                        self.tableWidget.setItem(row, col, MyTableWidgetItem(str(attribute)))
                         col += 1
-                            
+
                 else:
                     self.tableWidget.setColumnCount(1) # TODO not 1 if we are selecting multiple...
                     idx = feature.fieldNameIndex(field)
-                    self.tableWidget.setItem(row, 0, QTableWidgetItem(str(feature.attributes()[idx])))
+                    self.tableWidget.setItem(row, 0, MyTableWidgetItem(str(feature.attributes()[idx])))
 
                 row += 1
 
+                # TODO make some kind of dict that sorts this so that the name can be pulled and put into the verticalheader after sorting
                 try:
                     # Not all data has a "name"
                     # TODO look through other datasets and find what else this might be called
@@ -180,7 +190,6 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                 except KeyError:
                     names.append(str(row))
 
-            print("Loop done")
             if field == 'All':
                 fields = self.fieldGetterInst.get_all_fields(self.currentLayer)
                 self.tableWidget.setHorizontalHeaderLabels(fields)
@@ -192,13 +201,12 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
             # TODO display this in the gui or a pop up
             print("Please select a layer to look at it's data")
 
-        self.tableWidget.move(0,0)
-
         self.dataTableLayout.addWidget(self.tableWidget)
 
         self.dataTab.setLayout(self.dataTableLayout)
-        print("Refresh Done")
-        
+
+        self.tableWidget.setSortingEnabled(True)
+
     def createStatistics(self, inputArray):
         """
         createStatistics
@@ -206,4 +214,18 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         """
         self.numericalStatistics = FS3NumericalStatistics()
         self.numericalStatistics.initialize(inputArray)
-        
+
+
+class MyTableWidgetItem(QTableWidgetItem):
+    """
+    Use to overload < operator so that the table will
+    sort both numerically and then alphanumerically where appropriate
+    """
+    def __init__(self, parent=None):
+        super(MyTableWidgetItem, self).__init__(parent)
+
+    def __lt__(self, other):
+        try:
+            return float(self.text()) < float(other.text())
+        except ValueError:
+            return self.text() < other.text()
