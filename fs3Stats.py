@@ -29,6 +29,15 @@ class FS3NumericalStatistics:
         self.sumValue = sumValue(inputArray)
         self.stdDevValue = stdDevValue(inputArray)
         self.coeffVarValue = coeffVarValue(inputArray)
+        self.STATISTIC_COUNT = 8
+        self.STATISTIC_NAME = ["Item Count",
+                "Max Value",
+                "Min Value",
+                "Mean Value",
+                "Median Value",
+                "Sum Value",
+                "Standard Deviation",
+                "Coefficient of Variation"]
         
     def print(self):
         """

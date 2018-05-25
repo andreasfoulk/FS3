@@ -37,6 +37,8 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         # Data Table
         self.dataTableLayout = QVBoxLayout()
         self.tableWidget = QTableWidget()
+        self.statisticLayout = QVBoxLayout()
+        self.statisticTable = QTableWidget()
         
         #Refresh for the connecters
         self.refresh()
@@ -200,7 +202,10 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                 if self.fields.at(fieldIndex).isNumeric():
                     print(self.fields.at(fieldIndex).isNumeric())
                     self.createStatistics(columnValues)
-                    self.numericalStatistics.print()
+                    self.refreshStatistics(field)
+                else:
+                    #TODO: remove when char statistic method is DONE
+                    self.statisticTable.clear()
             self.tableWidget.setVerticalHeaderLabels(names)
             
 
@@ -208,13 +213,42 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
             # TODO display this in the gui or a pop up
             print("Please select a layer to look at it's data")
 
-        self.tableWidget.move(0,0)
-
+        #self.tableWidget.move(0,0)
         self.dataTableLayout.addWidget(self.tableWidget)
-
         self.dataTab.setLayout(self.dataTableLayout)
-        print("Refresh Done")
-        
+    
+    def refreshStatistics(self, field):
+        """
+        refreshStatistics
+        Method that updates the statistic table
+        """ 
+        self.statisticTable.clear()
+        self.statisticTable.setRowCount(self.numericalStatistics.STATISTIC_COUNT)
+        self.statisticTable.setColumnCount(1) # TODO not 1 if we are selecting multiple...
+        self.statisticTable.setVerticalHeaderLabels(self.numericalStatistics.STATISTIC_NAME)
+        self.statisticTable.setHorizontalHeaderLabels([field])
+
+        self.statisticTable.setItem(0, 0,
+                QTableWidgetItem(str(self.numericalStatistics.itemCount)))
+        self.statisticTable.setItem(1, 0,
+                QTableWidgetItem(str(self.numericalStatistics.maxValue))) 
+        self.statisticTable.setItem(2, 0,
+                QTableWidgetItem(str(self.numericalStatistics.minValue)))
+        self.statisticTable.setItem(3, 0,
+                QTableWidgetItem(str(self.numericalStatistics.meanValue)))
+        self.statisticTable.setItem(4, 0,
+                QTableWidgetItem(str(self.numericalStatistics.medianValue)))
+        self.statisticTable.setItem(5, 0,
+                QTableWidgetItem(str(self.numericalStatistics.sumValue)))
+        self.statisticTable.setItem(6, 0,
+                QTableWidgetItem(str(self.numericalStatistics.stdDevValue)))
+        self.statisticTable.setItem(7, 0,
+                QTableWidgetItem(str(self.numericalStatistics.coeffVarValue)))
+
+        #self.statisticTable.move(0,0)
+        self.statisticLayout.addWidget(self.statisticTable)
+        self.statisticsTab.setLayout(self.statisticLayout)
+
     def createStatistics(self, inputArray):
         """
         createStatistics
