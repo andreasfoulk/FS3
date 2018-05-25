@@ -29,7 +29,6 @@ class FS3NumericalStatistics:
         self.sumValue = sumValue(inputArray)
         self.stdDevValue = stdDevValue(inputArray)
         self.coeffVarValue = coeffVarValue(inputArray)
-        self.maxLength = maxLength(inputArray)
         
     def print(self):
         """
@@ -45,7 +44,6 @@ class FS3NumericalStatistics:
         print('Sum Value: ' + str(self.sumValue))
         print('Standard Deviation: ' + str(self.stdDevValue))
         print('Coefficient of Variation: ' + str(self.coeffVarValue))
-        print('Max Length: ' + str(self.maxLength))
 
 def itemCount(inputArray):
     """

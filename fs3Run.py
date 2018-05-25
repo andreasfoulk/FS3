@@ -11,6 +11,7 @@ from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QTableWidget, QTableWidgetItem
 
 from .layerFieldGetter import LayerFieldGetter
+from .fs3Stats import FS3NumericalStatistics
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
 
@@ -36,23 +37,30 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         # Data Table
         self.dataTableLayout = QVBoxLayout()
         self.tableWidget = QTableWidget()
-
+        
+        #Refresh for the connecters
+        self.refresh()
+        
+        """
+        pyqtSlot connectors
+        """
         ### Buttons
         # Percentile
         self.percentile25.clicked.connect(self.percentile25Update)
         self.percentile10.clicked.connect(self.percentile10Update)
         self.percentile5.clicked.connect(self.percentile5Update)
         self.percentileHighEnd.clicked.connect(self.percentileHighEndUpdate)
-
         # Next/Prev
         self.nextButton.clicked.connect(self.setNextField)
         self.previousButton.clicked.connect(self.setPrevField)
 
-        ### Layer Combo Box
+        ### Layer and Field Combo Boxes
         self.selectLayerComboBox.currentIndexChanged \
                         .connect(self.refreshFields)
-
-        self.refresh()
+        # TODO if this is a QListWidget or QListView we will be able to select multiple fields
+        self.selectFieldComboBox.currentIndexChanged \
+                        .connect(self.refreshTable)
+                        
 
     def refresh(self):
         """
@@ -89,6 +97,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
     @pyqtSlot()
     def setNextField(self):
         index = self.selectFieldComboBox.currentIndex()
+        #TODO: This next line causes a mod by zero error
         index = (index + 1) % self.selectFieldComboBox.count()
         self.selectFieldComboBox.setCurrentIndex(index)
 
@@ -118,19 +127,25 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                 (self.selectLayerComboBox.currentText())
         if layer != None:
             self.currentLayer = layer
+            self.fields = self.currentLayer.fields()
             self.selectFieldComboBox.insertItem(0, "All")
             self.selectFieldComboBox.insertItems \
                 (1, self.fieldGetterInst.get_all_fields(layer))
 
+    @pyqtSlot()
     def refreshTable(self):
         """
         docstring
         """
         self.tableWidget.clear()
 
+        # Get selected field
+        field = self.selectFieldComboBox.currentText()
+        # If the field is not set yet (Layer was swapped)
+        # Return until the refresh is ready
+        if field == '':
+            return
         if self.currentLayer:
-
-            # Should add a default to fieldsComboBox, all where all the layer data can be displayed... and ability to select multiple...
 
             features = self.currentLayer.getFeatures()
             # Determine length
@@ -143,17 +158,29 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
             row = 0
             names = []
             features = self.currentLayer.getFeatures()
+            
+            #Create an index and a list to track Column content
+            fieldIndex = 0
+            columnValues = []
+            
 
             # for each row
             for feature in features:
-                attributes = feature.attributes()
-                self.tableWidget.setColumnCount(len(attributes)) # Not loading in the data yet.... not sure where it will be loaded from or how we want to process it either
-                col = 0
+                if field == 'All':
+                    attributes = feature.attributes()
+                    self.tableWidget.setColumnCount(len(attributes))
+                    col = 0
 
-                # for each column value
-                for attribute in attributes:
-                    self.tableWidget.setItem(row, col, QTableWidgetItem(str(attribute)))
-                    col += 1
+                    # for each column value
+                    for attribute in attributes:
+                        self.tableWidget.setItem(row, col, QTableWidgetItem(str(attribute)))
+                        col += 1
+                            
+                else:
+                    self.tableWidget.setColumnCount(1) # TODO not 1 if we are selecting multiple...
+                    fieldIndex = feature.fieldNameIndex(field)
+                    columnValues.append(feature.attributes()[fieldIndex])
+                    self.tableWidget.setItem(row, 0, QTableWidgetItem(str(feature.attributes()[fieldIndex])))
 
                 row += 1
 
@@ -164,9 +191,18 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                 except KeyError:
                     names.append(str(row))
 
-            fields = self.fieldGetterInst.get_all_fields(self.currentLayer)
-            self.tableWidget.setHorizontalHeaderLabels(fields)
+            if field == 'All' or field == '':
+                fields = self.fieldGetterInst.get_all_fields(self.currentLayer)
+                self.tableWidget.setHorizontalHeaderLabels(fields)
+            else:
+                print('field : ' + field)
+                self.tableWidget.setHorizontalHeaderLabels([field])
+                if self.fields.at(fieldIndex).isNumeric():
+                    print(self.fields.at(fieldIndex).isNumeric())
+                    self.createStatistics(columnValues)
+                    self.numericalStatistics.print()
             self.tableWidget.setVerticalHeaderLabels(names)
+            
 
         else:
             # TODO display this in the gui or a pop up
@@ -177,6 +213,17 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.dataTableLayout.addWidget(self.tableWidget)
 
         self.dataTab.setLayout(self.dataTableLayout)
+        print("Refresh Done")
         
-    def createStatistics(self):
+    def createStatistics(self, inputArray):
+        """
+        createStatistics
+        Methods that instantiates both Statistics classes and initializes them
+        """
+        intArray = []
+        for string in inputArray:
+            if not string == None:
+                intArray.append(int(string))
+        self.numericalStatistics = FS3NumericalStatistics()
+        self.numericalStatistics.initialize(intArray)
         
