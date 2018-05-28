@@ -18,7 +18,7 @@ class RoundFuncTests(unittest.TestCase):
     Tests for our rounding function
     """
 
-    def testRound_0(self):
+    def testRound0(self):
         """
         Test adding zeros after integer when not enough
         and there currently aren't any decimals
@@ -29,7 +29,7 @@ class RoundFuncTests(unittest.TestCase):
         actual = decimalRound(inputNum, numDecimals)
         self.assertEqual(actual, expected)
 
-    def testRound_1(self):
+    def testRound1(self):
         """
         Test adding zeros after integer when not enough
         """
@@ -39,7 +39,7 @@ class RoundFuncTests(unittest.TestCase):
         actual = decimalRound(inputNum, numDecimals)
         self.assertEqual(actual, expected)
 
-    def testRound_2(self):
+    def testRound2(self):
         """
         Test rounding number (up) to given decimal point
         """
@@ -49,7 +49,7 @@ class RoundFuncTests(unittest.TestCase):
         actual = decimalRound(inputNum, numDecimals)
         self.assertEqual(actual, expected)
 
-    def testRound_3(self):
+    def testRound3(self):
         """
         Test rounding number (down) to given decimal point
         """
@@ -59,7 +59,7 @@ class RoundFuncTests(unittest.TestCase):
         actual = decimalRound(inputNum, numDecimals)
         self.assertEqual(actual, expected)
 
-    def testRound_4(self):
+    def testRound4(self):
         """
         Test rounding (down) number to no decimal values
         """
@@ -69,7 +69,7 @@ class RoundFuncTests(unittest.TestCase):
         actual = decimalRound(inputNum, numDecimals)
         self.assertEqual(actual, expected)
 
-    def testRound_5(self):
+    def testRound5(self):
         """
         Test rounding (up) number to no decimal values
         """

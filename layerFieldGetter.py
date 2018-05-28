@@ -1,11 +1,16 @@
-import locale
+"""
+Created on Tue May 15 2018
+
+@author: Tanner Lee, Orden Aitchedji, McKenna Duzac, Andreas Foulk
+
+"""
 from PyQt5.QtCore import QVariant
 from qgis.core import QgsProject, QgsMapLayer
 from qgis.gui import *
 
 #https://qgis.org/api/classQgsProject.html
 
-class LayerFieldGetter:
+class LayerFieldGetter(object):
     """
     TODO This classes docstring
     """
@@ -15,7 +20,7 @@ class LayerFieldGetter:
         """
 
     @staticmethod
-    def get_vector_layers():
+    def getVectorLayers():
         """
         The current map layer is loaded into qgis
         """
@@ -28,7 +33,7 @@ class LayerFieldGetter:
         return sorted(layerList)
 
     @staticmethod
-    def get_single_layer(layerName):
+    def getSingleLayer(layerName):
         """
         Returns a single vector layer
         """
@@ -39,11 +44,11 @@ class LayerFieldGetter:
             layer.name() == layerName:
                 if layer.isValid():
                     return layer
-                else:
-                    return None
+                return None
+        return None
 
     @staticmethod
-    def get_all_fields(layer):
+    def getAllFields(layer):
         """
         Returns the name of the fields
         """
@@ -56,39 +61,37 @@ class LayerFieldGetter:
         return fieldLists
 
     @staticmethod
-    def get_next_field(layer, fieldName):
+    def getNextField(layer, fieldName):
         """
         Get the next field to work with
         """
-        fields = LayerFieldGetter.get_field_names(layer)
+        fields = LayerFieldGetter.getAllFields(layer)
         current = 0
         for field in fields:
             if field == fieldName:
                 if current < len(fields) - 1:
                     return fields[current + 1]
-                else:
-                    return field[0]
+                return field[0]
             current += 1
         return None
 
     @staticmethod
-    def get_previous_field(layer, fieldName):
+    def getPreviousField(layer, fieldName):
         """
         Get the next field to work with
         """
-        fields = LayerFieldGetter.get_field_names(layer)
+        fields = LayerFieldGetter.getAllFields(layer)
         current = 0
         for field in fields:
             if field == fieldName:
                 if current > 0:
                     return fields[current - 1]
-                else:
-                    return field[len(fields) - 1]
+                return field[len(fields) - 1]
             current += 1
         return None
 
     @staticmethod
-    def get_field_type(layer, fieldName):
+    def getFieldType(layer, fieldName):
         """
         Returns the selected field type
         """
@@ -99,7 +102,7 @@ class LayerFieldGetter:
         return None
 
     @staticmethod
-    def get_field_length(layer, fieldName):
+    def getFieldLength(layer, fieldName):
         """
         Returns the selected field length
         """
@@ -110,7 +113,7 @@ class LayerFieldGetter:
         return None
 
     @staticmethod
-    def get_field_precision(layer, fieldName):
+    def getFieldPrecision(layer, fieldName):
         """
         Return the precision for the field selected
         """

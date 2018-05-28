@@ -1,4 +1,5 @@
  [MASTER]
+init-hook="from pylint.config import find_pylintrc; import os, sys; sys.path.append(os.path.dirname(find_pylintrc()))"
 
 # A comma-separated list of package or module names from where C extensions may
 # be loaded. Extensions are loading into the active Python interpreter and may
@@ -301,7 +302,7 @@ indent-after-paren=4
 indent-string='    '
 
 # Maximum number of characters on a single line.
-max-line-length=80
+max-line-length=120
 
 # Maximum number of lines in a module
 max-module-lines=1000
@@ -311,7 +312,7 @@ max-module-lines=1000
 # `trailing-comma` allows a space between comma and closing bracket: (a, ).
 # `empty-line` allows space-only lines.
 no-space-check=trailing-comma,
-               dict-separator
+               dict-separator, empty-line
 
 # Allow the body of a class to be on the same line as the declaration if body
 # contains single statement.
@@ -507,13 +508,13 @@ valid-metaclass-classmethod-first-arg=mcs
 max-args=5
 
 # Maximum number of attributes for a class (see R0902).
-max-attributes=7
+max-attributes=10
 
 # Maximum number of boolean expressions in a if statement
 max-bool-expr=5
 
 # Maximum number of branch for function / method body
-max-branches=12
+max-branches=15
 
 # Maximum number of locals for function / method body
 max-locals=15

@@ -8,13 +8,27 @@ https://github.com/tleecsm
 
 import statistics
 
-class FS3NumericalStatistics:
+class FS3NumericalStatistics(object):
     """
     FS3NumericStatistics
     Class that contains all of the statistics calculated for numeric fields
     Contains an initialize function to run all calculations
     Overloads print function for debugging purposes
-    """    
+    """
+
+    def __init__(self):
+        """ Variable definitions """
+        self.itemCount = None
+        self.maxValue = None
+        self.minValue = None
+        self.meanValue = None
+        self.medianValue = None
+        self.sumValue = None
+        self.stdDevValue = None
+        self.coeffVarValue = None
+        self.statCount = 0
+        self.statName = ""
+
     def initialize(self, inputArray):
         """
         initialize
@@ -29,31 +43,9 @@ class FS3NumericalStatistics:
         self.sumValue = sumValue(inputArray)
         self.stdDevValue = stdDevValue(inputArray)
         self.coeffVarValue = coeffVarValue(inputArray)
-        self.STATISTIC_COUNT = 8
-        self.STATISTIC_NAME = ["Item Count",
-                "Max Value",
-                "Min Value",
-                "Mean Value",
-                "Median Value",
-                "Sum Value",
-                "Standard Deviation",
-                "Coefficient of Variation"]
+        self.statCount = 8
+        self.statName = ["Item Count", "Max Value", "Min Value", "Mean Value", "Median Value", "Sum Value", "Standard Deviation", "Coefficient of Variation"]
         
-    def print(self):
-        """
-        print
-        Overloads the print function to display statistics
-        Used for debugging purposes
-        """
-        print('Item Count: ' + str(self.itemCount))
-        print('Max Value: ' + str(self.maxValue))
-        print('Min Value: ' + str(self.minValue))
-        print('Mean Value: ' + str(self.meanValue))
-        print('Median Value: ' + str(self.medianValue))
-        print('Sum Value: ' + str(self.sumValue))
-        print('Standard Deviation: ' + str(self.stdDevValue))
-        print('Coefficient of Variation: ' + str(self.coeffVarValue))
-
 def itemCount(inputArray):
     """
     itemCount

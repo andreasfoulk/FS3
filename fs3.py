@@ -1,18 +1,19 @@
 # -*- coding: utf-8 -*-
+# pylint: disable=wildcard-import, method-hidden
 """
 Created on Tue May 15 11:12:02 2018
 
-@author: Tanner Lee
-https://github.com/tleecsm
+@author: Tanner Lee, Orden Aitchedji, McKenna Duzac, Andreas Foulk
+
 """
 
 from PyQt5.QtWidgets import QAction
 from PyQt5.QtGui import QIcon
 from .fs3Run import FS3MainWindow
 
-from .resources import *
+from .resources import * # pylint: disable=unused-import
 
-class FS3Plugin:
+class FS3Plugin(object):
     """
     FS3Plugin handles the linking to QGIS.
     The icon is declared here
