@@ -8,6 +8,7 @@ https://github.com/tleecsm
 
 import statistics
 
+# pylint: disable=too-few-public-methods
 class FS3NumericalStatistics(object):
     """
     FS3NumericStatistics
@@ -44,8 +45,26 @@ class FS3NumericalStatistics(object):
         self.stdDevValue = stdDevValue(inputArray)
         self.coeffVarValue = coeffVarValue(inputArray)
         self.statCount = 8
-        self.statName = ["Item Count", "Max Value", "Min Value", "Mean Value", "Median Value", "Sum Value", "Standard Deviation", "Coefficient of Variation"]
-        
+
+        self.statName = ["Item Count",
+                         "Max Value",
+                         "Min Value",
+                         "Mean Value",
+                         "Median Value",
+                         "Sum Value",
+                         "Standard Deviation",
+                         "Coefficient of Variation"]
+
+    def __print__(self):
+        print('Item Count :: ' + str(self.itemCount))
+        print('Max Value :: ' + str(self.maxValue))
+        print('Min Value :: ' + str(self.minValue))
+        print('Mean Value :: ' + str(self.meanValue))
+        print('Median Value :: ' + str(self.medianValue))
+        print('Sum Value :: ' + str(self.sumValue))
+        print('Standard Deviation :: ' + str(self.stdDevValue))
+        print('Coefficient of Variation :: ' + str(self.coeffVarValue))
+
 def itemCount(inputArray):
     """
     itemCount

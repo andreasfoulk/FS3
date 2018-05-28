@@ -14,6 +14,8 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QTableWidget
 from .layerFieldGetter import LayerFieldGetter
 from .fs3Stats import FS3NumericalStatistics
 
+# pylint: disable=fixme
+
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(

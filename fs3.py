@@ -11,7 +11,8 @@ from PyQt5.QtWidgets import QAction
 from PyQt5.QtGui import QIcon
 from .fs3Run import FS3MainWindow
 
-from .resources import * # pylint: disable=unused-import
+# pylint: disable=unused-wildcard-import
+from .resources import *
 
 class FS3Plugin(object):
     """

@@ -6,7 +6,6 @@ Created on Tue May 15 2018
 """
 from PyQt5.QtCore import QVariant
 from qgis.core import QgsProject, QgsMapLayer
-from qgis.gui import *
 
 #https://qgis.org/api/classQgsProject.html
 
@@ -57,7 +56,7 @@ class LayerFieldGetter(object):
         fieldLists = []
         for field in fields:
             if field.type() in fieldTypes and not field.name() in fieldLists:
-                fieldLists.append(unicode(field.name()))
+                fieldLists.append(field.name())
         return fieldLists
 
     @staticmethod
