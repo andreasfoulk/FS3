@@ -54,6 +54,8 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.percentile10.clicked.connect(self.percentile10Update)
         self.percentile5.clicked.connect(self.percentile5Update)
         self.percentileHighEnd.clicked.connect(self.percentileHighEndUpdate)
+        # Limit to Selected
+        self.limitToSelected.stateChanged.connect(self.handleLimitSelected)
         # Next/Prev
         self.nextButton.clicked.connect(self.setNextField)
         self.previousButton.clicked.connect(self.setPrevField)
@@ -93,6 +95,15 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
     @pyqtSlot()
     def percentileHighEndUpdate(self):
         self.percentilesLineEdit.setText("50, 80, 95")
+
+
+    ### Limit to Selected Checkbox
+    @pyqtSlot()
+    def handleLimitSelected(self):
+        #If there are selected layers in QGIS
+        if not self.currentLayer.getSelectedFeatures().isClosed():
+            #Update the table
+            self.refreshTable()
 
 
     ### Next/Previous
@@ -161,8 +172,10 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         if field == '':
             return
         if self.currentLayer:
-
-            features = self.currentLayer.getFeatures()
+            if self.limitToSelected.isChecked():
+                features = self.currentLayer.getSelectedFeatures()
+            else:
+                features = self.currentLayer.getFeatures()
             # Determine length
             total = 0
             for feature in features:
@@ -171,7 +184,10 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
             self.tableWidget.setRowCount(total)
 
             row = 0
-            features = self.currentLayer.getFeatures()
+            if self.limitToSelected.isChecked():
+                features = self.currentLayer.getSelectedFeatures()
+            else:
+                features = self.currentLayer.getFeatures()
             names = []
 
             #Create an index and a list to track Column content
