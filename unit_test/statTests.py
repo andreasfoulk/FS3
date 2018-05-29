@@ -21,6 +21,7 @@ import unittest
 from fs3Stats import itemCount, maxValue, minValue
 from fs3Stats import meanValue, medianValue, sumValue
 from fs3Stats import stdDevValue, coeffVarValue, maxLength
+from fs3Stats import percentileValues
 
 class NumericStatTests(unittest.TestCase):
     """
@@ -108,13 +109,26 @@ class NumericStatTests(unittest.TestCase):
         actual = coeffVarValue(inputArray)
         self.assertEqual(actual, expected)
 
+    def testPercentiles(self):
+        """
+        testCountFunction
+        Used to test coefficient of variation value
+        """
+        inputArray = [1, 4, 8, 3, 6]
+        percArray = [25, 50, 75]
+        expected = {}
+        expected[25] = 3.0
+        expected[50] = 4.0
+        expected[75] = 6.0
+        actual = percentileValues(inputArray, percArray)
+        self.assertEqual(actual, expected)
+
 
 class CharacterStatTests(unittest.TestCase):
     """
     CharacterStatTests
     Contains several test cases for our statistics calculations
     """
-
 
     def testMaxFieldLength(self):
         """
