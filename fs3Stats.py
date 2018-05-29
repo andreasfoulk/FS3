@@ -173,7 +173,7 @@ def percentileValues(inputArray, percentileArray):
     percDict = {}
     for p in percentileArray:
         val = numpy.percentile(inputArray, p)
-        percDict[p] = val
+        percDict[str(p) + '%'] = val
     return percDict
 
 def maxLength(inputArray):
