@@ -12,7 +12,8 @@ from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QTableWidget, QTableWidgetItem
 
 from .layerFieldGetter import LayerFieldGetter
-from .fs3Stats import FS3NumericalStatistics, removeEmptyCells
+from .fs3Stats import FS3NumericalStatistics, FS3CharacterStatistics
+from .fs3Stats import removeEmptyCells
 
 # pylint: disable=fixme
 
@@ -227,15 +228,14 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                 fields = self.fieldGetterInst.getAllFields(self.currentLayer)
                 self.tableWidget.setHorizontalHeaderLabels(fields)
             else:
-                print('field : ' + field)
                 self.tableWidget.setHorizontalHeaderLabels([field])
                 if self.fields.at(fieldIndex).isNumeric():
-                    print(self.fields.at(fieldIndex).isNumeric())
-                    self.createStatistics(columnValues)
-                    self.refreshStatistics(field)
+                    #Generate numeric statistics
+                    self.createNumericalStatistics(columnValues)
                 else:
-                    #TODO: remove when char statistic method is DONE
-                    self.statisticTable.clear()
+                    #Generate character statistics
+                    self.createCharacterStatistics(columnValues)
+                self.refreshStatistics(fieldIndex)
             self.tableWidget.setVerticalHeaderLabels(names)
 
         else:
@@ -247,27 +247,60 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.tableWidget.setSortingEnabled(True)
 
 
-    def refreshStatistics(self, field):
+    def refreshStatistics(self, fieldIndex):
         """
         refreshStatistics
         Method that updates the statistic table
         """
         self.statisticTable.clear()
-        self.statisticTable.setRowCount(self.numericalStatistics.statCount)
-        self.statisticTable.setColumnCount(1) # TODO not 1 if we are selecting multiple...
-        self.statisticTable.setVerticalHeaderLabels(self.numericalStatistics.statName)
-        self.statisticTable.setHorizontalHeaderLabels([field])
+        #Find the field we need
+        field = self.fields.at(fieldIndex)
+        #See if the field is numeric
+        if field.isNumeric():
+            self.statisticTable.setRowCount(self.numericalStatistics.statCount)
+            self.statisticTable.setColumnCount(1)
+            self.statisticTable.setVerticalHeaderLabels(self.numericalStatistics.statName)
+            self.statisticTable.setHorizontalHeaderLabels([field.name()])
 
-        self.statisticTable.setItem(0, 0, QTableWidgetItem(str(self.numericalStatistics.itemCount)))
-        self.statisticTable.setItem(1, 0, QTableWidgetItem(str(self.numericalStatistics.maxValue)))
-        self.statisticTable.setItem(2, 0, QTableWidgetItem(str(self.numericalStatistics.minValue)))
-        self.statisticTable.setItem(3, 0, QTableWidgetItem(str(self.numericalStatistics.meanValue)))
-        self.statisticTable.setItem(4, 0, QTableWidgetItem(str(self.numericalStatistics.medianValue)))
-        self.statisticTable.setItem(5, 0, QTableWidgetItem(str(self.numericalStatistics.sumValue)))
-        self.statisticTable.setItem(6, 0, QTableWidgetItem(str(self.numericalStatistics.stdDevValue)))
-        self.statisticTable.setItem(7, 0, QTableWidgetItem(str(self.numericalStatistics.coeffVarValue)))
+            self.statisticTable.setItem(0, 0, 
+                                        QTableWidgetItem(str(self.numericalStatistics.itemCount)))
+            self.statisticTable.setItem(1, 0, 
+                                        QTableWidgetItem(str(self.numericalStatistics.maxValue)))
+            self.statisticTable.setItem(2, 0, 
+                                        QTableWidgetItem(str(self.numericalStatistics.minValue)))
+            self.statisticTable.setItem(3, 0, 
+                                        QTableWidgetItem(str(self.numericalStatistics.meanValue)))
+            self.statisticTable.setItem(4, 0, 
+                                        QTableWidgetItem(str(self.numericalStatistics.medianValue)))
+            self.statisticTable.setItem(5, 0, 
+                                        QTableWidgetItem(str(self.numericalStatistics.sumValue)))
+            self.statisticTable.setItem(6, 0, 
+                                        QTableWidgetItem(str(self.numericalStatistics.stdDevValue)))
+            self.statisticTable.setItem(7, 0, 
+                                        QTableWidgetItem(str(self.numericalStatistics.coeffVarValue)))
+        else:
+            self.statisticTable.setRowCount(self.characterStatistics.statCount)
+            self.statisticTable.setColumnCount(1)
+            self.statisticTable.setVerticalHeaderLabels(self.characterStatistics.statName)
+            self.statisticTable.setHorizontalHeaderLabels([field.name()])
 
-        #self.statisticTable.move(0,0)
+            self.statisticTable.setItem(0, 0, 
+                                        QTableWidgetItem(str(self.characterStatistics.itemCount)))
+            self.statisticTable.setItem(1, 0, 
+                                        QTableWidgetItem(str(self.characterStatistics.maxLength)))
+            self.statisticTable.setItem(2, 0, 
+                                        QTableWidgetItem(str(self.characterStatistics.minLength)))
+            self.statisticTable.setItem(3, 0, 
+                                        QTableWidgetItem(str(self.characterStatistics.meanLength)))
+            self.statisticTable.setItem(4, 0, 
+                                        QTableWidgetItem(str(self.characterStatistics.medianLength)))
+            self.statisticTable.setItem(5, 0, 
+                                        QTableWidgetItem(str(self.characterStatistics.sumLength)))
+            self.statisticTable.setItem(6, 0, 
+                                        QTableWidgetItem(str(self.characterStatistics.stdDevLength)))
+            self.statisticTable.setItem(7, 0, 
+                                        QTableWidgetItem(str(self.characterStatistics.coeffVarLength)))            
+
         self.statisticLayout.addWidget(self.statisticTable)
         self.statisticsTab.setLayout(self.statisticLayout)
         self.tableWidget.setSortingEnabled(True)
@@ -286,15 +319,23 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
             # append to names
         # self.tableWidget.setVerticalHeaderLabels(names)
 
-    def createStatistics(self, inputArray):
+    def createNumericalStatistics(self, inputArray):
         """
-        createStatistics
-        Methods that instantiates both Statistics classes and initializes them
+        createNumericalStatistics
+        Methods that instantiates Numerical Statistics and initializes them
         """
         emptyCellsRemoved = removeEmptyCells(inputArray)
         self.numericalStatistics = FS3NumericalStatistics()
         self.numericalStatistics.initialize(emptyCellsRemoved)
 
+    def createCharacterStatistics(self, inputArray):
+        """
+        createNumericalStatistics
+        Methods that instantiates Numerical Statistics and initializes them
+        """
+        emptyCellsRemoved = removeEmptyCells(inputArray)
+        self.characterStatistics = FS3CharacterStatistics()
+        self.characterStatistics.initialize(emptyCellsRemoved)
 
 class MyTableWidgetItem(QTableWidgetItem):
     """

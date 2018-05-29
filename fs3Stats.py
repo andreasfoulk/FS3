@@ -67,6 +67,70 @@ class FS3NumericalStatistics(object):
         printString += '\nCoefficient of Variation :: '
         printString += str(self.coeffVarValue)
         return printString
+    
+class FS3CharacterStatistics(object):
+    """
+    FS3CharacterStatistics
+    Class that contains all of the statistics calculated for numeric fields
+    Contains an initialize function to run all calculations
+    Overloads print function for debugging purposes
+    """
+
+    def __init__(self):
+        """ Variable definitions """
+        self.itemCount = None
+        self.maxLength = None
+        self.minLength = None
+        self.meanLength = None
+        self.medianLength = None
+        self.sumLength = None
+        self.stdDevLength = None
+        self.coeffVarLength = None
+        self.statCount = 0
+        self.statName = ""
+
+    def initialize(self, inputArray):
+        """
+        initialize
+        Runs all numerical analysis
+        Stores the output in class self.variables
+        """
+        #Start by converting the inputArray to a length array of the strings
+        tempArray = []
+        for string in inputArray:
+            tempArray.append(len(string))
+        inputArray = tempArray
+        self.itemCount = itemCount(inputArray)
+        self.maxLength = maxValue(inputArray)
+        self.minLength = minValue(inputArray)
+        self.meanLength = meanValue(inputArray)
+        self.medianLength = medianValue(inputArray)
+        self.sumLength = sumValue(inputArray)
+        self.stdDevLength = stdDevValue(inputArray)
+        self.coeffVarLength = coeffVarValue(inputArray)
+        self.statCount = 8
+
+        self.statName = ["Item Count",
+                         "Max Length",
+                         "Min Length",
+                         "Mean Length",
+                         "Median Length",
+                         "Sum Length",
+                         "Standard Deviation (Length)",
+                         "Coefficient of Variation (Length)"]
+
+    def __repr__(self):
+        printString = 'Item Count :: ' + str(self.itemCount)
+        printString += '\nMax Length :: ' + str(self.maxLength)
+        printString += '\nMin Length :: ' + str(self.minLength)
+        printString += '\nMean Length :: ' + str(self.meanLength)
+        printString += '\nMedian Length :: ' + str(self.medianLength)
+        printString += '\nSum Length :: ' + str(self.sumLength)
+        printString += '\nStandard Deviation (Length) :: ' 
+        printString += str(self.stdDevLength)
+        printString += '\nCoefficient of Variation (Length) :: '
+        printString += str(self.coeffVarLength)
+        return printString
 
 def removeEmptyCells(inputArray):
     """
@@ -175,16 +239,3 @@ def percentileValues(inputArray, percentileArray):
         val = numpy.percentile(inputArray, p)
         percDict[p] = val
     return percDict
-
-def maxLength(inputArray):
-    """
-    maxLength
-    Function used to calculate the maximum element length in an array
-    @param inputArray Array passed for calculation
-    @return maxLengthReturn The integer value returned by the calculation
-    """
-    maxLengthReturn = 0
-    for i in inputArray:
-        if len(i) > maxLengthReturn:
-            maxLengthReturn = len(i)
-    return maxLengthReturn
