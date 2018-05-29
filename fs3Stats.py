@@ -55,15 +55,17 @@ class FS3NumericalStatistics(object):
                          "Standard Deviation",
                          "Coefficient of Variation"]
 
-    def __print__(self):
-        print('Item Count :: ' + str(self.itemCount))
-        print('Max Value :: ' + str(self.maxValue))
-        print('Min Value :: ' + str(self.minValue))
-        print('Mean Value :: ' + str(self.meanValue))
-        print('Median Value :: ' + str(self.medianValue))
-        print('Sum Value :: ' + str(self.sumValue))
-        print('Standard Deviation :: ' + str(self.stdDevValue))
-        print('Coefficient of Variation :: ' + str(self.coeffVarValue))
+    def __repr__(self):
+        printString = 'Item Count :: ' + str(self.itemCount)
+        printString += '\nMax Value :: ' + str(self.maxValue)
+        printString += '\nMin Value :: ' + str(self.minValue)
+        printString += '\nMean Value :: ' + str(self.meanValue)
+        printString += '\nMedian Value :: ' + str(self.medianValue)
+        printString += '\nSum Value :: ' + str(self.sumValue)
+        printString += '\nStandard Deviation :: ' + str(self.stdDevValue)
+        printString += '\nCoefficient of Variation :: '
+        printString += str(self.coeffVarValue)
+        return printString
 
 def removeEmptyCells(inputArray):
     """
@@ -86,7 +88,6 @@ def itemCount(inputArray):
     @param inputArray Array passed for calculation
     @return itemCountReturn The integer value returned by the calculation
     """
-
     itemCountReturn = len(inputArray)
     return itemCountReturn
 
