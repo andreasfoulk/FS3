@@ -7,6 +7,7 @@ https://github.com/tleecsm
 """
 
 import statistics
+import numpy
 
 # pylint: disable=too-few-public-methods
 class FS3NumericalStatistics(object):
@@ -160,6 +161,20 @@ def coeffVarValue(inputArray):
     """
     coeffVarReturn = statistics.variance(inputArray)
     return coeffVarReturn
+
+def percentileValues(inputArray, percentileArray):
+    """
+    percentileValues
+    Function used to calculate the percentiles of a given array
+    @param inputArray Array passed for calculation
+    @param percentileArray Array containing user selected percentiles
+    @return percDict Dictionary of percentiles to values
+    """
+    percDict = {}
+    for p in percentileArray:
+        val = numpy.percentile(inputArray, p)
+        percDict[p] = val
+    return percDict
 
 def maxLength(inputArray):
     """

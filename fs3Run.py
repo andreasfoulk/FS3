@@ -244,6 +244,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
 
         self.dataTableLayout.addWidget(self.tableWidget)
         self.dataTab.setLayout(self.dataTableLayout)
+        self.tableWidget.setSortingEnabled(True)
 
 
     def refreshStatistics(self, field):
