@@ -51,12 +51,10 @@ class LayerFieldGetter(object):
         """
         Returns the name of the fields
         """
-        fieldTypes = [QVariant.String, QVariant.Int, QVariant.Double]
         fields = layer.fields()
         fieldLists = []
         for field in fields:
-            if field.type() in fieldTypes and not field.name() in fieldLists:
-                fieldLists.append(field.name())
+            fieldLists.append(field.name())
         return fieldLists
 
     @staticmethod
