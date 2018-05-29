@@ -12,7 +12,7 @@ from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QTableWidget, QTableWidgetItem
 
 from .layerFieldGetter import LayerFieldGetter
-from .fs3Stats import FS3NumericalStatistics
+from .fs3Stats import FS3NumericalStatistics, removeEmptyCells
 
 # pylint: disable=fixme
 
@@ -252,9 +252,6 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         createStatistics
         Methods that instantiates both Statistics classes and initializes them
         """
-        intArray = []
-        for string in inputArray:
-            if not string is None:
-                intArray.append(int(string))
+        emptyCellsRemoved = removeEmptyCells(inputArray)
         self.numericalStatistics = FS3NumericalStatistics()
-        self.numericalStatistics.initialize(intArray)
+        self.numericalStatistics.initialize(emptyCellsRemoved)

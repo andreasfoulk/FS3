@@ -65,6 +65,20 @@ class FS3NumericalStatistics(object):
         print('Standard Deviation :: ' + str(self.stdDevValue))
         print('Coefficient of Variation :: ' + str(self.coeffVarValue))
 
+def removeEmptyCells(inputArray):
+    """
+    removeEmptyCells
+    Function used to remove empty cells from a list
+    This allows our calculations to remain accurate with incomplete data
+    @param inputArray Array passed for calculation
+    @return outputArray Array with the empty cells removed
+    """
+    outputArray = []
+    for string in inputArray:
+        if not string is None:
+            outputArray.append(string)
+    return outputArray
+
 def itemCount(inputArray):
     """
     itemCount
