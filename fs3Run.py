@@ -61,8 +61,8 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.selectFieldComboBox.currentIndexChanged \
                         .connect(self.refreshTable)
 
-        ### Table Widget
-        self.tableWidget.horizontalHeader()
+        self.tableWidget.horizontalHeader().sortIndicatorChanged \
+                        .connect(self.sortVerticalHeaders)
 
 
     def refresh(self):
@@ -103,7 +103,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         try:
             index = (index + 1) % self.selectFieldComboBox.count()
         except ZeroDivisionError:
-            # TODO im sure there is a better way to handle this error
+            # TODO not sure what it should do here...
             index = 0
         self.selectFieldComboBox.setCurrentIndex(index)
 
@@ -146,6 +146,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         docstring
         """
         self.tableWidget.clear()
+        self.tableWidget.setSortingEnabled(False)
 
         # Get selected field
         field = self.selectFieldComboBox.currentText()
@@ -160,8 +161,8 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
             self.tableWidget.setRowCount(total)
 
             row = 0
-            names = []
             features = self.currentLayer.getFeatures()
+            names = []
 
             # for each row
             for feature in features:
@@ -182,7 +183,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
 
                 row += 1
 
-                # TODO make some kind of dict that sorts this so that the name can be pulled and put into the verticalheader after sorting
+                # Add
                 try:
                     # Not all data has a "name"
                     # TODO look through other datasets and find what else this might be called
@@ -206,6 +207,20 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.dataTab.setLayout(self.dataTableLayout)
 
         self.tableWidget.setSortingEnabled(True)
+
+    def sortVerticalHeaders(self):
+        """
+        Will reorder the vertical headers to match
+        their sorted data
+        """
+        pass
+        # TODO how do i do this without caching all the data
+
+        # for item in sorted column
+            # find it's feature
+            # find the feature's name
+            # append to names
+        # self.tableWidget.setVerticalHeaderLabels(names)
 
     def createStatistics(self, inputArray):
         """
