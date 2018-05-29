@@ -38,6 +38,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.currentLayer = None
         self.fields = None
         self.numericalStatistics = None
+        self.percentile25Update()
         ### Tabs
         # Data Table
         self.dataTableLayout = QVBoxLayout()
@@ -257,49 +258,75 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         field = self.fields.at(fieldIndex)
         #See if the field is numeric
         if field.isNumeric():
+            row = 0
             self.statisticTable.setRowCount(self.numericalStatistics.statCount)
             self.statisticTable.setColumnCount(1)
             self.statisticTable.setVerticalHeaderLabels(self.numericalStatistics.statName)
             self.statisticTable.setHorizontalHeaderLabels([field.name()])
 
-            self.statisticTable.setItem(0, 0, 
+            self.statisticTable.setItem(row, 0, 
                                         QTableWidgetItem(str(self.numericalStatistics.itemCount)))
-            self.statisticTable.setItem(1, 0, 
+            row += 1
+            self.statisticTable.setItem(row, 0, 
                                         QTableWidgetItem(str(self.numericalStatistics.maxValue)))
-            self.statisticTable.setItem(2, 0, 
+            row += 1
+            self.statisticTable.setItem(row, 0, 
                                         QTableWidgetItem(str(self.numericalStatistics.minValue)))
-            self.statisticTable.setItem(3, 0, 
+            row += 1
+            self.statisticTable.setItem(row, 0, 
                                         QTableWidgetItem(str(self.numericalStatistics.meanValue)))
-            self.statisticTable.setItem(4, 0, 
+            row += 1
+            self.statisticTable.setItem(row, 0, 
                                         QTableWidgetItem(str(self.numericalStatistics.medianValue)))
-            self.statisticTable.setItem(5, 0, 
+            row += 1
+            self.statisticTable.setItem(row, 0, 
                                         QTableWidgetItem(str(self.numericalStatistics.sumValue)))
-            self.statisticTable.setItem(6, 0, 
+            row += 1
+            self.statisticTable.setItem(row, 0, 
                                         QTableWidgetItem(str(self.numericalStatistics.stdDevValue)))
-            self.statisticTable.setItem(7, 0, 
+            row += 1
+            self.statisticTable.setItem(row, 0, 
                                         QTableWidgetItem(str(self.numericalStatistics.coeffVarValue)))
+            row += 1
+            for percentile in self.numericalStatistics.percentiles:
+                self.statisticTable.setItem(row, 0, 
+                                            QTableWidgetItem(str(percentile)))
+                row += 1
         else:
+            row = 0
             self.statisticTable.setRowCount(self.characterStatistics.statCount)
             self.statisticTable.setColumnCount(1)
             self.statisticTable.setVerticalHeaderLabels(self.characterStatistics.statName)
             self.statisticTable.setHorizontalHeaderLabels([field.name()])
 
-            self.statisticTable.setItem(0, 0, 
+            self.statisticTable.setItem(row, 0, 
                                         QTableWidgetItem(str(self.characterStatistics.itemCount)))
-            self.statisticTable.setItem(1, 0, 
+            row += 1
+            self.statisticTable.setItem(row, 0, 
                                         QTableWidgetItem(str(self.characterStatistics.maxLength)))
-            self.statisticTable.setItem(2, 0, 
+            row += 1
+            self.statisticTable.setItem(row, 0, 
                                         QTableWidgetItem(str(self.characterStatistics.minLength)))
-            self.statisticTable.setItem(3, 0, 
+            row += 1
+            self.statisticTable.setItem(row, 0, 
                                         QTableWidgetItem(str(self.characterStatistics.meanLength)))
-            self.statisticTable.setItem(4, 0, 
+            row += 1
+            self.statisticTable.setItem(row, 0, 
                                         QTableWidgetItem(str(self.characterStatistics.medianLength)))
-            self.statisticTable.setItem(5, 0, 
+            row += 1
+            self.statisticTable.setItem(row, 0, 
                                         QTableWidgetItem(str(self.characterStatistics.sumLength)))
-            self.statisticTable.setItem(6, 0, 
+            row += 1
+            self.statisticTable.setItem(row, 0, 
                                         QTableWidgetItem(str(self.characterStatistics.stdDevLength)))
-            self.statisticTable.setItem(7, 0, 
-                                        QTableWidgetItem(str(self.characterStatistics.coeffVarLength)))            
+            row += 1
+            self.statisticTable.setItem(row, 0, 
+                                        QTableWidgetItem(str(self.characterStatistics.coeffVarLength)))  
+            row += 1
+            for percentile in self.characterStatistics.percentiles:
+                self.statisticTable.setItem(row, 0, 
+                                            QTableWidgetItem(str(percentile)))
+                row += 1
 
         self.statisticLayout.addWidget(self.statisticTable)
         self.statisticsTab.setLayout(self.statisticLayout)
@@ -324,18 +351,20 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         createNumericalStatistics
         Methods that instantiates Numerical Statistics and initializes them
         """
+        percentileArray = self.percentilesLineEdit.text().split(', ')
         emptyCellsRemoved = removeEmptyCells(inputArray)
         self.numericalStatistics = FS3NumericalStatistics()
-        self.numericalStatistics.initialize(emptyCellsRemoved)
+        self.numericalStatistics.initialize(emptyCellsRemoved, percentileArray)
 
     def createCharacterStatistics(self, inputArray):
         """
         createNumericalStatistics
         Methods that instantiates Numerical Statistics and initializes them
         """
+        percentileArray = self.percentilesLineEdit.text().split(', ')
         emptyCellsRemoved = removeEmptyCells(inputArray)
         self.characterStatistics = FS3CharacterStatistics()
-        self.characterStatistics.initialize(emptyCellsRemoved)
+        self.characterStatistics.initialize(emptyCellsRemoved, percentileArray)
 
 class MyTableWidgetItem(QTableWidgetItem):
     """

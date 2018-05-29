@@ -31,7 +31,7 @@ class FS3NumericalStatistics(object):
         self.statCount = 0
         self.statName = ""
 
-    def initialize(self, inputArray):
+    def initialize(self, inputArray, percentileArray):
         """
         initialize
         Runs all numerical analysis
@@ -45,7 +45,8 @@ class FS3NumericalStatistics(object):
         self.sumValue = sumValue(inputArray)
         self.stdDevValue = stdDevValue(inputArray)
         self.coeffVarValue = coeffVarValue(inputArray)
-        self.statCount = 8
+        self.percentiles = percentileValues(inputArray, percentileArray)
+        self.statCount = 8 + len(self.percentiles)
 
         self.statName = ["Item Count",
                          "Max Value",
@@ -55,6 +56,8 @@ class FS3NumericalStatistics(object):
                          "Sum Value",
                          "Standard Deviation",
                          "Coefficient of Variation"]
+        for percentileNumber in percentileArray:
+            self.statName.append('Percentile: ' + str(percentileNumber) + '%')
 
     def __repr__(self):
         printString = 'Item Count :: ' + str(self.itemCount)
@@ -89,7 +92,7 @@ class FS3CharacterStatistics(object):
         self.statCount = 0
         self.statName = ""
 
-    def initialize(self, inputArray):
+    def initialize(self, inputArray, percentileArray):
         """
         initialize
         Runs all numerical analysis
@@ -108,7 +111,8 @@ class FS3CharacterStatistics(object):
         self.sumLength = sumValue(inputArray)
         self.stdDevLength = stdDevValue(inputArray)
         self.coeffVarLength = coeffVarValue(inputArray)
-        self.statCount = 8
+        self.percentiles = percentileValues(inputArray, percentileArray)
+        self.statCount = 8 + len(self.percentiles)
 
         self.statName = ["Item Count",
                          "Max Length",
@@ -118,6 +122,9 @@ class FS3CharacterStatistics(object):
                          "Sum Length",
                          "Standard Deviation (Length)",
                          "Coefficient of Variation (Length)"]
+        for percentileNumber in percentileArray:
+            self.statName.append('Percentile: ' + str(percentileNumber) + 
+                                 '% (Length)')
 
     def __repr__(self):
         printString = 'Item Count :: ' + str(self.itemCount)
@@ -234,8 +241,8 @@ def percentileValues(inputArray, percentileArray):
     @param percentileArray Array containing user selected percentiles
     @return percDict Dictionary of percentiles to values
     """
-    percDict = {}
+    percentiles = []
     for p in percentileArray:
         val = numpy.percentile(inputArray, p)
-        percDict[p] = val
-    return percDict
+        percentiles.append(val)
+    return percentiles
