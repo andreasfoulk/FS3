@@ -44,9 +44,9 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.statisticLayout = QVBoxLayout()
         self.statisticTable = QTableWidget()
 
+
         #Refresh for the connecters
         self.refresh()
-
 
         ### pyqtSlot connectors (BUTTONS)
         # Percentile
@@ -102,8 +102,11 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         Method implements next field when Next button is clicked
         """
         index = self.selectFieldComboBox.currentIndex()
-        #TODO: This next line causes a mod by zero error
-        index = (index + 1) % self.selectFieldComboBox.count()
+        try:
+            index = (index + 1) % self.selectFieldComboBox.count()
+        except ZeroDivisionError:
+            # TODO not sure what it should do here...
+            index = 0
         self.selectFieldComboBox.setCurrentIndex(index)
 
     @pyqtSlot()
@@ -112,7 +115,10 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         Method implements pevious field when Previous button is clicked
         """
         index = self.selectFieldComboBox.currentIndex()
-        index = (index - 1) % self.selectFieldComboBox.count()
+        try:
+            index = (index - 1) % self.selectFieldComboBox.count()
+        except ZeroDivisionError:
+            index = 0
         self.selectFieldComboBox.setCurrentIndex(index)
 
     def refreshLayers(self):
@@ -146,6 +152,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         Refresh the table content with coresponding Layer & field selection
         """
         self.tableWidget.clear()
+        self.tableWidget.setSortingEnabled(False)
 
         # Get selected field
         field = self.selectFieldComboBox.currentText()
@@ -164,8 +171,8 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
             self.tableWidget.setRowCount(total)
 
             row = 0
-            names = []
             features = self.currentLayer.getFeatures()
+            names = []
 
             #Create an index and a list to track Column content
             fieldIndex = 2
@@ -181,17 +188,18 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
 
                     # for each column value
                     for attribute in attributes:
-                        self.tableWidget.setItem(row, col, QTableWidgetItem(str(attribute)))
+                        self.tableWidget.setItem(row, col, MyTableWidgetItem(str(attribute)))
                         col += 1
 
                 else:
                     self.tableWidget.setColumnCount(1) # TODO not 1 if we are selecting multiple...
                     fieldIndex = feature.fieldNameIndex(field)
                     columnValues.append(feature.attributes()[fieldIndex])
-                    self.tableWidget.setItem(row, 0, QTableWidgetItem(str(feature.attributes()[fieldIndex])))
+                    self.tableWidget.setItem(row, 0, MyTableWidgetItem(str(feature.attributes()[fieldIndex])))
 
                 row += 1
 
+                # Add
                 try:
                     # Not all data has a "name"
                     # TODO look through other datasets and find what else this might be called
@@ -214,14 +222,13 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                     self.statisticTable.clear()
             self.tableWidget.setVerticalHeaderLabels(names)
 
-
         else:
             # TODO display this in the gui or a pop up
             print("Please select a layer to look at it's data")
 
-        #self.tableWidget.move(0,0)
         self.dataTableLayout.addWidget(self.tableWidget)
         self.dataTab.setLayout(self.dataTableLayout)
+
 
     def refreshStatistics(self, field):
         """
@@ -246,6 +253,21 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         #self.statisticTable.move(0,0)
         self.statisticLayout.addWidget(self.statisticTable)
         self.statisticsTab.setLayout(self.statisticLayout)
+        self.tableWidget.setSortingEnabled(True)
+
+    def sortVerticalHeaders(self):
+        """
+        Will reorder the vertical headers to match
+        their sorted data
+        """
+        pass
+        # TODO how do i do this without caching all the data
+
+        # for item in sorted column
+            # find it's feature
+            # find the feature's name
+            # append to names
+        # self.tableWidget.setVerticalHeaderLabels(names)
 
     def createStatistics(self, inputArray):
         """
@@ -255,3 +277,18 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         emptyCellsRemoved = removeEmptyCells(inputArray)
         self.numericalStatistics = FS3NumericalStatistics()
         self.numericalStatistics.initialize(emptyCellsRemoved)
+
+
+class MyTableWidgetItem(QTableWidgetItem):
+    """
+    Use to overload < operator so that the table will
+    sort both numerically and then alphanumerically where appropriate
+    """
+    def __init__(self, parent=None):
+        super(MyTableWidgetItem, self).__init__(parent)
+
+    def __lt__(self, other):
+        try:
+            return float(self.text()) < float(other.text())
+        except ValueError:
+            return self.text() < other.text()
