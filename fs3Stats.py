@@ -9,6 +9,7 @@ https://github.com/tleecsm
 import statistics
 import numpy
 from .roundFunc import decimalRound
+from qgis.core import NULL
 
 # pylint: disable=too-few-public-methods
 class FS3NumericalStatistics(object):
@@ -178,8 +179,9 @@ def removeEmptyCells(inputArray):
     """
     outputArray = []
     for string in inputArray:
-        if not string is None:
+        if not string == NULL:
             outputArray.append(string)
+    print(outputArray)
     return outputArray
 
 def itemCount(inputArray):
