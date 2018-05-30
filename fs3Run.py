@@ -14,6 +14,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QTableWidget
 from .layerFieldGetter import LayerFieldGetter
 from .fs3Stats import FS3NumericalStatistics, FS3CharacterStatistics
 from .fs3Stats import removeEmptyCells
+from .roundFunc import decimalRound
 
 # pylint: disable=fixme
 
@@ -39,6 +40,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.fields = None
         self.numericalStatistics = None
         self.percentile25Update()
+        self.currentDecimalPrecision = 0
         ### Tabs
         # Data Table
         self.dataTableLayout = QVBoxLayout()
@@ -58,6 +60,8 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.percentileHighEnd.clicked.connect(self.percentileHighEndUpdate)
         # Limit to Selected
         self.limitToSelected.stateChanged.connect(self.handleLimitSelected)
+        # Decimal Selector
+        self.numberOfDecimalsBox.valueChanged.connect(self.handleDecimalChanged)
         # Next/Prev
         self.nextButton.clicked.connect(self.setNextField)
         self.previousButton.clicked.connect(self.setPrevField)
@@ -106,6 +110,12 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         if not self.currentLayer.getSelectedFeatures().isClosed():
             #Update the table
             self.refreshTable()
+            
+    ### Decimal Selection Box
+    @pyqtSlot()
+    def handleDecimalChanged(self):
+        self.currentDecimalPrecision = self.numberOfDecimalsBox.value()
+        self.refreshTable()
 
 
     ### Next/Previous
@@ -193,7 +203,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
             names = []
 
             #Create an index and a list to track Column content
-            fieldIndex = 2
+            fieldIndex = 0
             columnValues = []
 
 
@@ -206,14 +216,22 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
 
                     # for each column value
                     for attribute in attributes:
+                        #Set the precision of numeric fields
+                        if isinstance(attribute, float):
+                            attribute = decimalRound(attribute, 
+                                                     self.currentDecimalPrecision)
                         self.tableWidget.setItem(row, col, MyTableWidgetItem(str(attribute)))
                         col += 1
 
                 else:
                     self.tableWidget.setColumnCount(1) # TODO not 1 if we are selecting multiple...
                     fieldIndex = feature.fieldNameIndex(field)
-                    columnValues.append(feature.attributes()[fieldIndex])
-                    self.tableWidget.setItem(row, 0, MyTableWidgetItem(str(feature.attributes()[fieldIndex])))
+                    attribute = feature.attributes()[fieldIndex]
+                    if isinstance(attribute, float):
+                        attribute = decimalRound(attribute, 
+                                                     self.currentDecimalPrecision)
+                    columnValues.append(attribute)
+                    self.tableWidget.setItem(row, 0, MyTableWidgetItem(str(attribute)))
 
                 row += 1
 
@@ -355,6 +373,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         emptyCellsRemoved = removeEmptyCells(inputArray)
         self.numericalStatistics = FS3NumericalStatistics()
         self.numericalStatistics.initialize(emptyCellsRemoved, percentileArray)
+        self.numericalStatistics.roundNumericStatistics(self.currentDecimalPrecision)        
 
     def createCharacterStatistics(self, inputArray):
         """
@@ -365,6 +384,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         emptyCellsRemoved = removeEmptyCells(inputArray)
         self.characterStatistics = FS3CharacterStatistics()
         self.characterStatistics.initialize(emptyCellsRemoved, percentileArray)
+        self.characterStatistics.roundCharacterStatistics(self.currentDecimalPrecision)
 
 class MyTableWidgetItem(QTableWidgetItem):
     """

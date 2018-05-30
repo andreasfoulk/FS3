@@ -8,6 +8,7 @@ https://github.com/tleecsm
 
 import statistics
 import numpy
+from .roundFunc import decimalRound
 
 # pylint: disable=too-few-public-methods
 class FS3NumericalStatistics(object):
@@ -59,6 +60,20 @@ class FS3NumericalStatistics(object):
         for percentileNumber in percentileArray:
             self.statName.append('Percentile: ' + str(percentileNumber) + '%')
 
+    def roundNumericStatistics(self, precision):
+        self.itemCount = decimalRound(self.itemCount, precision)
+        self.maxValue = decimalRound(self.maxValue, precision)
+        self.minValue = decimalRound(self.minValue, precision)
+        self.meanValue = decimalRound(self.meanValue, precision)
+        self.medianValue = decimalRound(self.medianValue, precision)
+        self.sumValue = decimalRound(self.sumValue, precision)
+        self.stdDevValue = decimalRound(self.stdDevValue, precision)
+        self.coeffVarValue = decimalRound(self.coeffVarValue, precision)
+        tempPercentiles = []
+        for percentile in self.percentiles:
+            tempPercentiles.append(decimalRound(percentile, precision))
+        self.percentiles = tempPercentiles
+    
     def __repr__(self):
         printString = 'Item Count :: ' + str(self.itemCount)
         printString += '\nMax Value :: ' + str(self.maxValue)
@@ -125,6 +140,20 @@ class FS3CharacterStatistics(object):
         for percentileNumber in percentileArray:
             self.statName.append('Percentile: ' + str(percentileNumber) + 
                                  '% (Length)')
+            
+    def roundCharacterStatistics(self, precision):
+        self.itemCount = decimalRound(self.itemCount, precision)
+        self.maxLength = decimalRound(self.maxLength, precision)
+        self.minLength = decimalRound(self.minLength, precision)
+        self.meanLength = decimalRound(self.meanLength, precision)
+        self.medianLength = decimalRound(self.medianLength, precision)
+        self.sumLength = decimalRound(self.sumLength, precision)
+        self.stdDevLength = decimalRound(self.stdDevLength, precision)
+        self.coeffVarLength = decimalRound(self.coeffVarLength, precision)
+        tempPercentiles = []
+        for percentile in self.percentiles:
+            tempPercentiles.append(decimalRound(percentile, precision))
+        self.percentiles = tempPercentiles
 
     def __repr__(self):
         printString = 'Item Count :: ' + str(self.itemCount)
