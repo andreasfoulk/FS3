@@ -8,6 +8,7 @@ https://github.com/tleecsm
 
 import statistics
 import numpy
+from .roundFunc import decimalRound
 
 # pylint: disable=too-few-public-methods
 class FS3NumericalStatistics(object):
@@ -59,6 +60,20 @@ class FS3NumericalStatistics(object):
         for percentileNumber in percentileArray:
             self.statName.append('Percentile: ' + str(percentileNumber) + '%')
 
+    def roundNumericStatistics(self, precision):
+        self.itemCount = decimalRound(self.itemCount, precision)
+        self.maxValue = decimalRound(self.maxValue, precision)
+        self.minValue = decimalRound(self.minValue, precision)
+        self.meanValue = decimalRound(self.meanValue, precision)
+        self.medianValue = decimalRound(self.medianValue, precision)
+        self.sumValue = decimalRound(self.sumValue, precision)
+        self.stdDevValue = decimalRound(self.stdDevValue, precision)
+        self.coeffVarValue = decimalRound(self.coeffVarValue, precision)
+        tempPercentiles = []
+        for percentile in self.percentiles:
+            tempPercentiles.append(decimalRound(percentile, precision))
+        self.percentiles = tempPercentiles
+    
     def __repr__(self):
         printString = 'Item Count :: ' + str(self.itemCount)
         printString += '\nMax Value :: ' + str(self.maxValue)
@@ -70,7 +85,7 @@ class FS3NumericalStatistics(object):
         printString += '\nCoefficient of Variation :: '
         printString += str(self.coeffVarValue)
         return printString
-    
+
 class FS3CharacterStatistics(object):
     """
     FS3CharacterStatistics
@@ -123,8 +138,22 @@ class FS3CharacterStatistics(object):
                          "Standard Deviation (Length)",
                          "Coefficient of Variation (Length)"]
         for percentileNumber in percentileArray:
-            self.statName.append('Percentile: ' + str(percentileNumber) + 
+            self.statName.append('Percentile: ' + str(percentileNumber) +
                                  '% (Length)')
+            
+    def roundCharacterStatistics(self, precision):
+        self.itemCount = decimalRound(self.itemCount, precision)
+        self.maxLength = decimalRound(self.maxLength, precision)
+        self.minLength = decimalRound(self.minLength, precision)
+        self.meanLength = decimalRound(self.meanLength, precision)
+        self.medianLength = decimalRound(self.medianLength, precision)
+        self.sumLength = decimalRound(self.sumLength, precision)
+        self.stdDevLength = decimalRound(self.stdDevLength, precision)
+        self.coeffVarLength = decimalRound(self.coeffVarLength, precision)
+        tempPercentiles = []
+        for percentile in self.percentiles:
+            tempPercentiles.append(decimalRound(percentile, precision))
+        self.percentiles = tempPercentiles
 
     def __repr__(self):
         printString = 'Item Count :: ' + str(self.itemCount)
@@ -133,7 +162,7 @@ class FS3CharacterStatistics(object):
         printString += '\nMean Length :: ' + str(self.meanLength)
         printString += '\nMedian Length :: ' + str(self.medianLength)
         printString += '\nSum Length :: ' + str(self.sumLength)
-        printString += '\nStandard Deviation (Length) :: ' 
+        printString += '\nStandard Deviation (Length) :: '
         printString += str(self.stdDevLength)
         printString += '\nCoefficient of Variation (Length) :: '
         printString += str(self.coeffVarLength)

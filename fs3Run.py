@@ -14,6 +14,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QTableWidget
 from .layerFieldGetter import LayerFieldGetter
 from .fs3Stats import FS3NumericalStatistics, FS3CharacterStatistics
 from .fs3Stats import removeEmptyCells
+from .roundFunc import decimalRound
 
 # pylint: disable=fixme
 
@@ -38,6 +39,9 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.currentLayer = None
         self.allFields = None
 
+        self.percentile25Update()
+        self.currentDecimalPrecision = 0
+
         ### Tabs
         self.dataTableLayout = QVBoxLayout()
         self.tableWidget = QTableWidget()
@@ -53,8 +57,11 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.percentile10.clicked.connect(self.percentile10Update)
         self.percentile5.clicked.connect(self.percentile5Update)
         self.percentileHighEnd.clicked.connect(self.percentileHighEndUpdate)
+        self.percentilesLineEdit.textChanged.connect(self.percentileTextChanged)
         # Limit to Selected
         self.limitToSelected.stateChanged.connect(self.handleLimitSelected)
+        # Decimal Selector
+        self.numberOfDecimalsBox.valueChanged.connect(self.handleDecimalChanged)
         # Next/Prev
         self.nextButton.clicked.connect(self.setNextField)
         self.previousButton.clicked.connect(self.setPrevField)
@@ -94,6 +101,20 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
     def percentileHighEndUpdate(self):
         self.percentilesLineEdit.setText("50, 80, 95")
 
+    @pyqtSlot()
+    def percentileTextChanged(self):
+        try:
+            percentileList = self.percentilesLineEdit.text().split(', ')
+            for percentile in percentileList:
+                # Ensure the user has entered a valid percentile
+                if float(percentile) < 0 or float(percentile) > 100:
+                    return
+            self.refreshTable()
+        except ValueError:
+            # The user is either still entering text
+            # Or has entered an invalid input
+            return
+
 
     ### Limit to Selected Checkbox
     @pyqtSlot()
@@ -102,6 +123,12 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         if not self.currentLayer.getSelectedFeatures().isClosed():
             #Update the table
             self.refreshTable()
+
+    ### Decimal Selection Box
+    @pyqtSlot()
+    def handleDecimalChanged(self):
+        self.currentDecimalPrecision = self.numberOfDecimalsBox.value()
+        self.refreshTable()
 
 
     ### Next/Previous
@@ -210,7 +237,12 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                 self.tableWidget.setColumnCount(len(attributes))
 
                 col = 0
+                # for each column value
                 for attribute in attributes:
+                    #Set the precision of numeric fields
+                    if isinstance(attribute, float):
+                        attribute = decimalRound(attribute,
+                                                 self.currentDecimalPrecision)
                     self.tableWidget.setItem(row, col, MyTableWidgetItem(str(attribute)))
                     col += 1
 
@@ -220,8 +252,12 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                 col = 0
                 for field in fields:
                     fieldIndex = feature.fieldNameIndex(field)
-                    statValues[col].append(feature.attributes()[fieldIndex])
-                    self.tableWidget.setItem(row, col, MyTableWidgetItem(str(feature.attributes()[fieldIndex])))
+                    attribute = feature.attributes()[fieldIndex]
+                    if isinstance(attribute, float):
+                        attribute = decimalRound(attribute,
+                                                     self.currentDecimalPrecision)
+                    statValues[col].append(attribute)
+                    self.tableWidget.setItem(row, col, MyTableWidgetItem(str(attribute)))
                     col += 1
 
             row += 1
@@ -256,10 +292,20 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         createNumericalStatistics
         Methods that instantiates Numerical Statistics and initializes them
         """
-        percentileArray = self.percentilesLineEdit.text().split(', ')
+        percentileArray = []
+        try:
+            percentileArray = self.percentilesLineEdit.text().split(', ')
+            for percentile in percentileArray:
+                if float(percentile) < 0 or float(percentile) > 100:
+                    raise ValueError
+        except ValueError:
+            # TODO: Prompt this in a dialouge
+            print('Invalid Value for Percentile Detected!')
+            percentileArray = []
         emptyCellsRemoved = removeEmptyCells(inputArray)
         numericalStatistics = FS3NumericalStatistics()
         numericalStatistics.initialize(emptyCellsRemoved, percentileArray)
+        numericalStatistics.roundNumericStatistics(self.currentDecimalPrecision)
         return numericalStatistics
 
 
@@ -268,10 +314,20 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         createNumericalStatistics
         Methods that instantiates Numerical Statistics and initializes them
         """
-        percentileArray = self.percentilesLineEdit.text().split(', ')
+        percentileArray = []
+        try:
+            percentileArray = self.percentilesLineEdit.text().split(', ')
+            for percentile in percentileArray:
+                if float(percentile) < 0 or float(percentile) > 100:
+                    raise ValueError
+        except ValueError:
+            # TODO: Prompt this in a dialouge
+            print('Invalid Value for Percentile Detected!')
+            percentileArray = []
         emptyCellsRemoved = removeEmptyCells(inputArray)
         characterStatistics = FS3CharacterStatistics()
         characterStatistics.initialize(emptyCellsRemoved, percentileArray)
+        characterStatistics.roundCharacterStatistics(self.currentDecimalPrecision)
         return characterStatistics
 
 
