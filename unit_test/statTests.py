@@ -18,10 +18,8 @@ TODO:
 
 #These imports are required for unit tests
 import unittest
-from fs3Stats import itemCount, maxValue, minValue
-from fs3Stats import meanValue, medianValue, sumValue
-from fs3Stats import stdDevValue, coeffVarValue, maxLength
-from fs3Stats import percentileValues
+
+from fs3Stats import FS3CharacterStatistics, FS3NumericalStatistics
 
 class NumericStatTests(unittest.TestCase):
     """
@@ -29,98 +27,91 @@ class NumericStatTests(unittest.TestCase):
     Contains several test cases for our statistics calculations
     """
 
-    def testCountFunction(self):
+    @classmethod
+    def setUpClass(self):
+        #A simple set of data with no empties
+        self.goodValues = FS3NumericalStatistics()
+        self.goodValues.initialize([1, 4, 8, 3, 6], [25, 50, 75])
+
+    def testCountGoodValues(self):
         """
         testCountFunction
         Used to test item count functionality
         """
-        inputArray = ['a', 'b', 'c', 'd']
-        expected = 4
-        actual = itemCount(inputArray)
+        expected = 5
+        actual = self.goodValues.itemCount
         self.assertEqual(actual, expected)
 
-    def testMaxFunction(self):
+    def testMaxGoodValues(self):
         """
         testMaxFunction
         Used to test max value functionality
         """
-        inputArray = [1, 4, 8, 3, 6]
         expected = 8
-        actual = maxValue(inputArray)
+        actual = self.goodValues.maxValue
         self.assertEqual(actual, expected)
 
-    def testMinFunction(self):
+    def testMinGoodValues(self):
         """
         testCountFunction
         Used to test min value functionality
         """
-        inputArray = [1, 4, 8, 3, 6]
         expected = 1
-        actual = minValue(inputArray)
+        actual = self.goodValues.minValue
         self.assertEqual(actual, expected)
 
-    def testMeanFunction(self):
+    def testMeanGoodValues(self):
         """
         testCountFunction
         Used to test mean value functionality
         """
-        inputArray = [1, 4, 8, 3, 6]
         expected = 4.4
-        actual = meanValue(inputArray)
+        actual = self.goodValues.meanValue
         self.assertEqual(actual, expected)
 
-    def testMedianFunction(self):
+    def testMedianGoodValues(self):
         """
         testCountFunction
         Used to test median value functionality
         """
-        inputArray = [1, 4, 8, 3, 6]
         expected = 4
-        actual = medianValue(inputArray)
+        actual = self.goodValues.medianValue
         self.assertEqual(actual, expected)
 
-    def testSumFunction(self):
+    def testSumGoodValues(self):
         """
         testCountFunction
         Used to test sum value functionality
         """
-        inputArray = [1, 4, 8, 3, 6]
         expected = 22
-        actual = sumValue(inputArray)
+        actual = self.goodValues.sumValue
         self.assertEqual(actual, expected)
 
-    def testStandardDeviation(self):
+    def testStandardDeviationGoodValues(self):
         """
         testCountFunction
         Used to test standard deviation value
         """
-        inputArray = [1, 4, 8, 3, 6]
         expected = 2.701851217221259
-        actual = stdDevValue(inputArray)
+        actual = self.goodValues.stdDevValue
         self.assertEqual(actual, expected)
 
-    def testCoefficientOfVariation(self):
+    def testCoefficientOfVariationGoodValues(self):
         """
         testCountFunction
         Used to test coefficient of variation value
         """
-        inputArray = [1, 4, 8, 3, 6]
         expected = 7.3
-        actual = coeffVarValue(inputArray)
+        actual = self.goodValues.coeffVarValue
         self.assertEqual(actual, expected)
 
-    def testPercentiles(self):
+    def testPercentilesGoodValues(self):
         """
         testCountFunction
         Used to test coefficient of variation value
         """
-        inputArray = [1, 4, 8, 3, 6]
-        percArray = [25, 50, 75]
-        expected = {}
-        expected[25] = 3.0
-        expected[50] = 4.0
-        expected[75] = 6.0
-        actual = percentileValues(inputArray, percArray)
+        expected = [3.0, 4.0, 6.0]
+        actual = self.goodValues.percentiles
         self.assertEqual(actual, expected)
 
 
@@ -130,14 +121,90 @@ class CharacterStatTests(unittest.TestCase):
     Contains several test cases for our statistics calculations
     """
 
-    def testMaxFieldLength(self):
+    @classmethod
+    def setUpClass(self):
+        self.goodValues = FS3CharacterStatistics()
+        self.goodValues.initialize(['a', 'cat', 'went', 'home', 'yesterday'], [25, 50, 75])
+
+    def testCountGoodValues(self):
         """
         testCountFunction
-        Used to test max field length value
+        Used to test item count functionality
         """
-        inputArray = ['a', 'cat', 'went', 'home', 'yesterday']
+        expected = 5
+        actual = self.goodValues.itemCount
+        self.assertEqual(actual, expected)
+
+    def testMaxGoodValues(self):
+        """
+        testMaxFunction
+        Used to test max value functionality
+        """
         expected = 9
-        actual = maxLength(inputArray)
+        actual = self.goodValues.maxLength
+        self.assertEqual(actual, expected)
+
+    def testMinGoodValues(self):
+        """
+        testCountFunction
+        Used to test min value functionality
+        """
+        expected = 1
+        actual = self.goodValues.minLength
+        self.assertEqual(actual, expected)
+
+    def testMeanGoodValues(self):
+        """
+        testCountFunction
+        Used to test mean value functionality
+        """
+        expected = 4.2
+        actual = self.goodValues.meanLength
+        self.assertEqual(actual, expected)
+
+    def testMedianGoodValues(self):
+        """
+        testCountFunction
+        Used to test median value functionality
+        """
+        expected = 4
+        actual = self.goodValues.medianLength
+        self.assertEqual(actual, expected)
+
+    def testSumGoodValues(self):
+        """
+        testCountFunction
+        Used to test sum value functionality
+        """
+        expected = 21
+        actual = self.goodValues.sumLength
+        self.assertEqual(actual, expected)
+
+    def testStandardDeviationGoodValues(self):
+        """
+        testCountFunction
+        Used to test standard deviation value
+        """
+        expected = 2.9495762407505253
+        actual = self.goodValues.stdDevLength
+        self.assertEqual(actual, expected)
+
+    def testCoefficientOfVariationGoodValues(self):
+        """
+        testCountFunction
+        Used to test coefficient of variation value
+        """
+        expected = 8.700000000000001
+        actual = self.goodValues.coeffVarLength
+        self.assertEqual(actual, expected)
+
+    def testPercentilesGoodValues(self):
+        """
+        testCountFunction
+        Used to test coefficient of variation value
+        """
+        expected = [3.0, 4.0, 4.0]
+        actual = self.goodValues.percentiles
         self.assertEqual(actual, expected)
 
 
