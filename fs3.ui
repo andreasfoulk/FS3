@@ -73,12 +73,12 @@
             <item>
              <widget class="QLabel" name="selectField">
               <property name="text">
-               <string>Select Field</string>
+               <string>Select Fields</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QComboBox" name="selectFieldComboBox"/>
+             <widget class="QListWidget" name="selectFieldListWidget"/>
             </item>
            </layout>
           </item>

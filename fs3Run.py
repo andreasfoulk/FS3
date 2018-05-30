@@ -32,20 +32,17 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         super(FS3MainWindow, self).__init__(parent)
         self.setupUi(self)
         self.mainWindowSplitter.setStretchFactor(1, 10)
-        self.setWindowTitle('FS3 -- FieldStats3')
+        self.setWindowTitle('FS3 -- FieldStats3 -- Field Statistics 3')
 
         self.fieldGetterInst = LayerFieldGetter()
         self.currentLayer = None
-        self.fields = None
-        self.numericalStatistics = None
-        self.percentile25Update()
+        self.allFields = None
+
         ### Tabs
-        # Data Table
         self.dataTableLayout = QVBoxLayout()
         self.tableWidget = QTableWidget()
         self.statisticLayout = QVBoxLayout()
         self.statisticTable = QTableWidget()
-
 
         #Refresh for the connecters
         self.refresh()
@@ -62,11 +59,10 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.nextButton.clicked.connect(self.setNextField)
         self.previousButton.clicked.connect(self.setPrevField)
 
-        ### Layer and Field Combo Boxes
+        ### Layer Combo Box and Field List Widget
         self.selectLayerComboBox.currentIndexChanged \
                         .connect(self.refreshFields)
-        # TODO if this is a QListWidget or QListView we will be able to select multiple fields
-        self.selectFieldComboBox.currentIndexChanged \
+        self.selectFieldListWidget.itemSelectionChanged \
                         .connect(self.refreshTable)
 
 
@@ -114,25 +110,27 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         """
         Method implements next field when Next button is clicked
         """
-        index = self.selectFieldComboBox.currentIndex()
-        try:
-            index = (index + 1) % self.selectFieldComboBox.count()
-        except ZeroDivisionError:
-            # TODO not sure what it should do here...
-            index = 0
-        self.selectFieldComboBox.setCurrentIndex(index)
+        pass
+        # index = self.selectFieldComboBox.currentIndex()
+        # try:
+        #     index = (index + 1) % self.selectFieldComboBox.count()
+        # except ZeroDivisionError:
+        #     # TODO not sure what it should do here...
+        #     index = 0
+        # self.selectFieldComboBox.setCurrentIndex(index)
 
     @pyqtSlot()
     def setPrevField(self):
         """
         Method implements pevious field when Previous button is clicked
         """
-        index = self.selectFieldComboBox.currentIndex()
-        try:
-            index = (index - 1) % self.selectFieldComboBox.count()
-        except ZeroDivisionError:
-            index = 0
-        self.selectFieldComboBox.setCurrentIndex(index)
+        pass
+        # index = self.selectFieldComboBox.currentIndex()
+        # try:
+        #     index = (index - 1) % self.selectFieldComboBox.count()
+        # except ZeroDivisionError:
+        #     index = 0
+        # self.selectFieldComboBox.setCurrentIndex(index)
 
     def refreshLayers(self):
         """
@@ -143,21 +141,26 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         layers = self.fieldGetterInst.getVectorLayers()
         self.selectLayerComboBox.insertItems(0, layers)
 
+
     @pyqtSlot()
     def refreshFields(self):
         """
         Reload the fields coboBox with the current content of the field lists
         """
-        self.selectFieldComboBox.clear()
+        self.selectFieldListWidget.clear()
 
         layer = self.fieldGetterInst.getSingleLayer \
                 (self.selectLayerComboBox.currentText())
         if layer != None:
             self.currentLayer = layer
-            self.fields = self.currentLayer.fields()
-            self.selectFieldComboBox.insertItem(0, "All")
-            self.selectFieldComboBox.insertItems \
+            self.allFields = self.currentLayer.fields()
+            self.selectFieldListWidget.insertItem(0, "All")
+            self.selectFieldListWidget.insertItems \
                 (1, self.fieldGetterInst.getAllFields(layer))
+
+            # 3 is Extended, 2 is Multi, check the documentation
+            self.selectFieldListWidget.setSelectionMode(3)
+
 
     @pyqtSlot()
     def refreshTable(self):
@@ -165,186 +168,88 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         Refresh the table content with coresponding Layer & field selection
         """
         self.tableWidget.clear()
-        self.tableWidget.setSortingEnabled(False)
+        #self.tableWidget.setSortingEnabled(False)
 
-        # Get selected field
-        field = self.selectFieldComboBox.currentText()
+        # Get selected fields
+        fields = []
+        selectedFields = self.selectFieldListWidget.selectedItems()
+        for field in selectedFields:
+            fields.append(field.text())
+
         # If the field is not set yet (Layer was swapped)
         # Return until the refresh is ready
-        if field == '':
+        if len(fields) is 0:
             return
-        if self.currentLayer:
-            if self.limitToSelected.isChecked():
-                features = self.currentLayer.getSelectedFeatures()
+
+        if self.limitToSelected.isChecked():
+            features = self.currentLayer.getSelectedFeatures()
+        else:
+            features = self.currentLayer.getFeatures()
+
+        # Determine length
+        total = 0
+        for feature in features:
+            total += 1
+        self.tableWidget.setRowCount(total)
+
+        if self.limitToSelected.isChecked():
+            features = self.currentLayer.getSelectedFeatures()
+        else:
+            features = self.currentLayer.getFeatures()
+
+        # Data to pass to statistical calculations
+        statValues = []
+        for i in range(len(fields)):
+            statValues.append([])
+
+        # for each row
+        row = 0
+        for feature in features:
+            if 'All' in fields:
+                attributes = feature.attributes()
+                self.tableWidget.setColumnCount(len(attributes))
+
+                col = 0
+                for attribute in attributes:
+                    self.tableWidget.setItem(row, col, MyTableWidgetItem(str(attribute)))
+                    col += 1
+
             else:
-                features = self.currentLayer.getFeatures()
-            # Determine length
-            total = 0
-            for feature in features:
-                total += 1
+                self.tableWidget.setColumnCount(len(fields))
 
-            self.tableWidget.setRowCount(total)
-
-            row = 0
-            if self.limitToSelected.isChecked():
-                features = self.currentLayer.getSelectedFeatures()
-            else:
-                features = self.currentLayer.getFeatures()
-            names = []
-
-            #Create an index and a list to track Column content
-            fieldIndex = 2
-            columnValues = []
-
-
-            # for each row
-            for feature in features:
-                if field == 'All':
-                    attributes = feature.attributes()
-                    self.tableWidget.setColumnCount(len(attributes))
-                    col = 0
-
-                    # for each column value
-                    for attribute in attributes:
-                        self.tableWidget.setItem(row, col, MyTableWidgetItem(str(attribute)))
-                        col += 1
-
-                else:
-                    self.tableWidget.setColumnCount(1) # TODO not 1 if we are selecting multiple...
+                col = 0
+                for field in fields:
                     fieldIndex = feature.fieldNameIndex(field)
-                    columnValues.append(feature.attributes()[fieldIndex])
-                    self.tableWidget.setItem(row, 0, MyTableWidgetItem(str(feature.attributes()[fieldIndex])))
+                    statValues[col].append(feature.attributes()[fieldIndex])
+                    self.tableWidget.setItem(row, col, MyTableWidgetItem(str(feature.attributes()[fieldIndex])))
+                    col += 1
 
-                row += 1
+            row += 1
+            featureInst = feature
 
-                # Add
-                try:
-                    # Not all data has a "name"
-                    # TODO look through other datasets and find what else this might be called
-                    names.append(feature["name"])
-                except KeyError:
-                    names.append(str(row))
 
-            if field == 'All' or field == '':
-                fields = self.fieldGetterInst.getAllFields(self.currentLayer)
-                self.tableWidget.setHorizontalHeaderLabels(fields)
-            else:
-                self.tableWidget.setHorizontalHeaderLabels([field])
-                if self.fields.at(fieldIndex).isNumeric():
+        if 'All' in fields:
+            fields = self.fieldGetterInst.getAllFields(self.currentLayer)
+            self.tableWidget.setHorizontalHeaderLabels(fields)
+        else:
+            self.tableWidget.setHorizontalHeaderLabels(fields)
+
+            statistics = []
+            for i in range(len(fields)):
+                fieldIndex = featureInst.fieldNameIndex(fields[i])
+                if self.allFields.at(fieldIndex).isNumeric():
                     #Generate numeric statistics
-                    self.createNumericalStatistics(columnValues)
+                    statistics.append(self.createNumericalStatistics(statValues[i]))
                 else:
                     #Generate character statistics
-                    self.createCharacterStatistics(columnValues)
-                self.refreshStatistics(fieldIndex)
-            self.tableWidget.setVerticalHeaderLabels(names)
+                    statistics.append(self.createCharacterStatistics(statValues[i]))
 
-        else:
-            # TODO display this in the gui or a pop up
-            print("Please select a layer to look at it's data")
+            self.refreshStatistics(fields, statistics)
 
         self.dataTableLayout.addWidget(self.tableWidget)
         self.dataTab.setLayout(self.dataTableLayout)
         self.tableWidget.setSortingEnabled(True)
 
-
-    def refreshStatistics(self, fieldIndex):
-        """
-        refreshStatistics
-        Method that updates the statistic table
-        """
-        self.statisticTable.clear()
-        #Find the field we need
-        field = self.fields.at(fieldIndex)
-        #See if the field is numeric
-        if field.isNumeric():
-            row = 0
-            self.statisticTable.setRowCount(self.numericalStatistics.statCount)
-            self.statisticTable.setColumnCount(1)
-            self.statisticTable.setVerticalHeaderLabels(self.numericalStatistics.statName)
-            self.statisticTable.setHorizontalHeaderLabels([field.name()])
-
-            self.statisticTable.setItem(row, 0, 
-                                        QTableWidgetItem(str(self.numericalStatistics.itemCount)))
-            row += 1
-            self.statisticTable.setItem(row, 0, 
-                                        QTableWidgetItem(str(self.numericalStatistics.maxValue)))
-            row += 1
-            self.statisticTable.setItem(row, 0, 
-                                        QTableWidgetItem(str(self.numericalStatistics.minValue)))
-            row += 1
-            self.statisticTable.setItem(row, 0, 
-                                        QTableWidgetItem(str(self.numericalStatistics.meanValue)))
-            row += 1
-            self.statisticTable.setItem(row, 0, 
-                                        QTableWidgetItem(str(self.numericalStatistics.medianValue)))
-            row += 1
-            self.statisticTable.setItem(row, 0, 
-                                        QTableWidgetItem(str(self.numericalStatistics.sumValue)))
-            row += 1
-            self.statisticTable.setItem(row, 0, 
-                                        QTableWidgetItem(str(self.numericalStatistics.stdDevValue)))
-            row += 1
-            self.statisticTable.setItem(row, 0, 
-                                        QTableWidgetItem(str(self.numericalStatistics.coeffVarValue)))
-            row += 1
-            for percentile in self.numericalStatistics.percentiles:
-                self.statisticTable.setItem(row, 0, 
-                                            QTableWidgetItem(str(percentile)))
-                row += 1
-        else:
-            row = 0
-            self.statisticTable.setRowCount(self.characterStatistics.statCount)
-            self.statisticTable.setColumnCount(1)
-            self.statisticTable.setVerticalHeaderLabels(self.characterStatistics.statName)
-            self.statisticTable.setHorizontalHeaderLabels([field.name()])
-
-            self.statisticTable.setItem(row, 0, 
-                                        QTableWidgetItem(str(self.characterStatistics.itemCount)))
-            row += 1
-            self.statisticTable.setItem(row, 0, 
-                                        QTableWidgetItem(str(self.characterStatistics.maxLength)))
-            row += 1
-            self.statisticTable.setItem(row, 0, 
-                                        QTableWidgetItem(str(self.characterStatistics.minLength)))
-            row += 1
-            self.statisticTable.setItem(row, 0, 
-                                        QTableWidgetItem(str(self.characterStatistics.meanLength)))
-            row += 1
-            self.statisticTable.setItem(row, 0, 
-                                        QTableWidgetItem(str(self.characterStatistics.medianLength)))
-            row += 1
-            self.statisticTable.setItem(row, 0, 
-                                        QTableWidgetItem(str(self.characterStatistics.sumLength)))
-            row += 1
-            self.statisticTable.setItem(row, 0, 
-                                        QTableWidgetItem(str(self.characterStatistics.stdDevLength)))
-            row += 1
-            self.statisticTable.setItem(row, 0, 
-                                        QTableWidgetItem(str(self.characterStatistics.coeffVarLength)))  
-            row += 1
-            for percentile in self.characterStatistics.percentiles:
-                self.statisticTable.setItem(row, 0, 
-                                            QTableWidgetItem(str(percentile)))
-                row += 1
-
-        self.statisticLayout.addWidget(self.statisticTable)
-        self.statisticsTab.setLayout(self.statisticLayout)
-        self.tableWidget.setSortingEnabled(True)
-
-    def sortVerticalHeaders(self):
-        """
-        Will reorder the vertical headers to match
-        their sorted data
-        """
-        pass
-        # TODO how do i do this without caching all the data
-
-        # for item in sorted column
-            # find it's feature
-            # find the feature's name
-            # append to names
-        # self.tableWidget.setVerticalHeaderLabels(names)
 
     def createNumericalStatistics(self, inputArray):
         """
@@ -353,8 +258,10 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         """
         percentileArray = self.percentilesLineEdit.text().split(', ')
         emptyCellsRemoved = removeEmptyCells(inputArray)
-        self.numericalStatistics = FS3NumericalStatistics()
-        self.numericalStatistics.initialize(emptyCellsRemoved, percentileArray)
+        numericalStatistics = FS3NumericalStatistics()
+        numericalStatistics.initialize(emptyCellsRemoved, percentileArray)
+        return numericalStatistics
+
 
     def createCharacterStatistics(self, inputArray):
         """
@@ -363,8 +270,103 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         """
         percentileArray = self.percentilesLineEdit.text().split(', ')
         emptyCellsRemoved = removeEmptyCells(inputArray)
-        self.characterStatistics = FS3CharacterStatistics()
-        self.characterStatistics.initialize(emptyCellsRemoved, percentileArray)
+        characterStatistics = FS3CharacterStatistics()
+        characterStatistics.initialize(emptyCellsRemoved, percentileArray)
+        return characterStatistics
+
+
+    def refreshStatistics(self, fields, stats):
+        """
+        refreshStatistics
+        Method that updates the statistic table
+        """
+        numAndCharStats = False
+        verticalHeaders = stats[0].statName
+        for i in range(len(stats)):
+            for j in range(len(stats)):
+                if isinstance(stats[i], FS3NumericalStatistics):
+                    if isinstance(stats[j], FS3CharacterStatistics):
+                        numAndCharStats = True
+                        verticalHeaders = stats[i].statName + stats[j].statName
+
+        self.statisticTable.clear()
+        self.statisticTable.setRowCount(stats[0].statCount + stats[0].statCount * numAndCharStats)
+        self.statisticTable.setColumnCount(len(fields))
+        self.statisticTable.setVerticalHeaderLabels(verticalHeaders)
+        self.statisticTable.setHorizontalHeaderLabels(fields)
+
+        col = 0
+        for stat in stats:
+            #See if the field is numeric
+            if isinstance(stat, FS3NumericalStatistics):
+                row = 0
+                self.statisticTable.setItem(row, col,
+                                            QTableWidgetItem(str(stat.itemCount)))
+                row += 1
+                self.statisticTable.setItem(row, col,
+                                            QTableWidgetItem(str(stat.maxValue)))
+                row += 1
+                self.statisticTable.setItem(row, col,
+                                            QTableWidgetItem(str(stat.minValue)))
+                row += 1
+                self.statisticTable.setItem(row, col,
+                                            QTableWidgetItem(str(stat.meanValue)))
+                row += 1
+                self.statisticTable.setItem(row, col,
+                                            QTableWidgetItem(str(stat.medianValue)))
+                row += 1
+                self.statisticTable.setItem(row, col,
+                                            QTableWidgetItem(str(stat.sumValue)))
+                row += 1
+                self.statisticTable.setItem(row, col,
+                                            QTableWidgetItem(str(stat.stdDevValue)))
+                row += 1
+                self.statisticTable.setItem(row, col,
+                                            QTableWidgetItem(str(stat.coeffVarValue)))
+                row += 1
+                for percentile in stat.percentiles:
+                    self.statisticTable.setItem(row, col,
+                                                QTableWidgetItem(str(percentile)))
+                    row += 1
+            else:
+                # is character statistics
+                row = 0
+                if numAndCharStats:
+                    row = 12
+
+                self.statisticTable.setItem(row, col,
+                                            QTableWidgetItem(str(stat.itemCount)))
+                row += 1
+                self.statisticTable.setItem(row, col,
+                                            QTableWidgetItem(str(stat.maxLength)))
+                row += 1
+                self.statisticTable.setItem(row, col,
+                                            QTableWidgetItem(str(stat.minLength)))
+                row += 1
+                self.statisticTable.setItem(row, col,
+                                            QTableWidgetItem(str(stat.meanLength)))
+                row += 1
+                self.statisticTable.setItem(row, col,
+                                            QTableWidgetItem(str(stat.medianLength)))
+                row += 1
+                self.statisticTable.setItem(row, col,
+                                            QTableWidgetItem(str(stat.sumLength)))
+                row += 1
+                self.statisticTable.setItem(row, col,
+                                            QTableWidgetItem(str(stat.stdDevLength)))
+                row += 1
+                self.statisticTable.setItem(row, col,
+                                            QTableWidgetItem(str(stat.coeffVarLength)))
+                row += 1
+                for percentile in stat.percentiles:
+                    self.statisticTable.setItem(row, col,
+                                                QTableWidgetItem(str(percentile)))
+                    row += 1
+            col += 1
+
+        self.statisticLayout.addWidget(self.statisticTable)
+        self.statisticsTab.setLayout(self.statisticLayout)
+
 
 class MyTableWidgetItem(QTableWidgetItem):
     """
