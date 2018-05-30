@@ -7,6 +7,7 @@ Created on Tue May 15 11:12:02 2018
 from __future__ import print_function
 
 import os
+from qgis.core import QgsProject
 from PyQt5 import uic
 from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QTableWidget, QTableWidgetItem
@@ -36,6 +37,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.setWindowTitle('FS3 -- FieldStats3 -- Field Statistics 3')
 
         self.fieldGetterInst = LayerFieldGetter()
+        self.currentProject = QgsProject.instance()
         self.currentLayer = None
         self.allFields = None
 
@@ -50,6 +52,10 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
 
         #Refresh for the connecters
         self.refresh()
+        
+        ###pyqtSlot connectors (PROJECT)
+        self.currentProject.layersAdded.connect(self.refresh)
+        self.currentProject.layersRemoved.connect(self.refresh)
 
         ### pyqtSlot connectors (BUTTONS)
         # Percentile
