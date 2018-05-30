@@ -86,7 +86,7 @@ class FS3NumericalStatistics(object):
         printString += '\nCoefficient of Variation :: '
         printString += str(self.coeffVarValue)
         return printString
-    
+
 class FS3CharacterStatistics(object):
     """
     FS3CharacterStatistics
@@ -139,7 +139,7 @@ class FS3CharacterStatistics(object):
                          "Standard Deviation (Length)",
                          "Coefficient of Variation (Length)"]
         for percentileNumber in percentileArray:
-            self.statName.append('Percentile: ' + str(percentileNumber) + 
+            self.statName.append('Percentile: ' + str(percentileNumber) +
                                  '% (Length)')
             
     def roundCharacterStatistics(self, precision):
@@ -163,7 +163,7 @@ class FS3CharacterStatistics(object):
         printString += '\nMean Length :: ' + str(self.meanLength)
         printString += '\nMedian Length :: ' + str(self.medianLength)
         printString += '\nSum Length :: ' + str(self.sumLength)
-        printString += '\nStandard Deviation (Length) :: ' 
+        printString += '\nStandard Deviation (Length) :: '
         printString += str(self.stdDevLength)
         printString += '\nCoefficient of Variation (Length) :: '
         printString += str(self.coeffVarLength)
