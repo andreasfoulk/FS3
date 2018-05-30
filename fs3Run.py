@@ -58,6 +58,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.percentile10.clicked.connect(self.percentile10Update)
         self.percentile5.clicked.connect(self.percentile5Update)
         self.percentileHighEnd.clicked.connect(self.percentileHighEndUpdate)
+        self.percentilesLineEdit.textChanged.connect(self.percentileTextChanged)
         # Limit to Selected
         self.limitToSelected.stateChanged.connect(self.handleLimitSelected)
         # Decimal Selector
@@ -101,6 +102,20 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
     @pyqtSlot()
     def percentileHighEndUpdate(self):
         self.percentilesLineEdit.setText("50, 80, 95")
+        
+    @pyqtSlot()
+    def percentileTextChanged(self):
+        try:
+            percentileList = self.percentilesLineEdit.text().split(', ')
+            for percentile in percentileList:
+                # Ensure the user has entered a valid percentile
+                if float(percentile) < 0 or float(percentile) > 100:
+                    return
+            self.refreshTable()
+        except ValueError:
+            # The user is either still entering text 
+            # Or has entered an invalid input
+            return
 
 
     ### Limit to Selected Checkbox
@@ -369,7 +384,16 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         createNumericalStatistics
         Methods that instantiates Numerical Statistics and initializes them
         """
-        percentileArray = self.percentilesLineEdit.text().split(', ')
+        percentileArray = []
+        try:
+            percentileArray = self.percentilesLineEdit.text().split(', ')
+            for percentile in percentileArray:
+                if float(percentile) < 0 or float(percentile) > 100:
+                    raise ValueError
+        except ValueError:
+            # TODO: Prompt this in a dialouge
+            print('Invalid Value for Percentile Detected!')
+            percentileArray = []
         emptyCellsRemoved = removeEmptyCells(inputArray)
         self.numericalStatistics = FS3NumericalStatistics()
         self.numericalStatistics.initialize(emptyCellsRemoved, percentileArray)
@@ -380,7 +404,16 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         createNumericalStatistics
         Methods that instantiates Numerical Statistics and initializes them
         """
-        percentileArray = self.percentilesLineEdit.text().split(', ')
+        percentileArray = []
+        try:
+            percentileArray = self.percentilesLineEdit.text().split(', ')
+            for percentile in percentileArray:
+                if float(percentile) < 0 or float(percentile) > 100:
+                    raise ValueError
+        except ValueError:
+            # TODO: Prompt this in a dialouge
+            print('Invalid Value for Percentile Detected!')
+            percentileArray = []
         emptyCellsRemoved = removeEmptyCells(inputArray)
         self.characterStatistics = FS3CharacterStatistics()
         self.characterStatistics.initialize(emptyCellsRemoved, percentileArray)
