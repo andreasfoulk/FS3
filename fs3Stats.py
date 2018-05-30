@@ -74,7 +74,7 @@ class FS3NumericalStatistics(object):
         for percentile in self.percentiles:
             tempPercentiles.append(decimalRound(percentile, precision))
         self.percentiles = tempPercentiles
-    
+
     def __repr__(self):
         printString = 'Item Count :: ' + str(self.itemCount)
         printString += '\nMax Value :: ' + str(self.maxValue)
@@ -141,7 +141,7 @@ class FS3CharacterStatistics(object):
         for percentileNumber in percentileArray:
             self.statName.append('Percentile: ' + str(percentileNumber) +
                                  '% (Length)')
-            
+
     def roundCharacterStatistics(self, precision):
         self.itemCount = decimalRound(self.itemCount, precision)
         self.maxLength = decimalRound(self.maxLength, precision)
@@ -181,7 +181,6 @@ def removeEmptyCells(inputArray):
     for string in inputArray:
         if not string == NULL:
             outputArray.append(string)
-    print(outputArray)
     return outputArray
 
 def itemCount(inputArray):
