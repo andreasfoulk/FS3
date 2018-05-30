@@ -129,6 +129,15 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         if not self.currentLayer.getSelectedFeatures().isClosed():
             #Update the table
             self.refreshTable()
+            
+    ### Update on new selection
+      # TODO: CHECK TO SEE IF THIS CAN BE REPLACED WITH refreshTable()        
+    @pyqtSlot()
+    def handleSelectionChanged(self):
+        #If there are selected layers in QGIS
+        if not self.currentLayer.getSelectedFeatures().isClosed():
+            print('Layers Selected')
+        self.refreshTable()
 
     ### Decimal Selection Box
     @pyqtSlot()
@@ -193,6 +202,9 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
 
             # 3 is Extended, 2 is Multi, check the documentation
             self.selectFieldListWidget.setSelectionMode(3)
+            
+            # Connect the current layer to a pyqtSlot
+            self.currentLayer.selectionChanged.connect(self.handleSelectionChanged)
 
 
     @pyqtSlot()
@@ -215,7 +227,12 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
             return
 
         if self.limitToSelected.isChecked():
-            features = self.currentLayer.getSelectedFeatures()
+            if not self.currentLayer.getSelectedFeatures().isClosed():
+                # If there are features selected, get them
+                features = self.currentLayer.getSelectedFeatures()
+            else:
+                # Else get all features
+                features = self.currentLayer.getFeatures()
         else:
             features = self.currentLayer.getFeatures()
 
@@ -226,7 +243,12 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.tableWidget.setRowCount(total)
 
         if self.limitToSelected.isChecked():
-            features = self.currentLayer.getSelectedFeatures()
+            if not self.currentLayer.getSelectedFeatures().isClosed():
+                # If there are features selected, get them
+                features = self.currentLayer.getSelectedFeatures()
+            else:
+                # Else get all features
+                features = self.currentLayer.getFeatures()
         else:
             features = self.currentLayer.getFeatures()
 
