@@ -194,8 +194,8 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         """
         Refresh the table content with coresponding Layer & field selection
         """
+        self.tableWidget.setSortingEnabled(False)
         self.tableWidget.clear()
-        #self.tableWidget.setSortingEnabled(False)
 
         # Get selected fields
         fields = []
