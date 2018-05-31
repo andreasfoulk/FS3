@@ -22,14 +22,14 @@ class FS3NumericalStatistics(object):
 
     def __init__(self):
         """ Variable definitions """
-        self.itemCount = None
-        self.maxValue = None
-        self.minValue = None
-        self.meanValue = None
-        self.medianValue = None
-        self.sumValue = None
-        self.stdDevValue = None
-        self.coeffVarValue = None
+        self.itemCount = 0
+        self.maxValue = 0
+        self.minValue = 0
+        self.meanValue = 0
+        self.medianValue = 0
+        self.sumValue = 0
+        self.stdDevValue = 0
+        self.coeffVarValue = 0
         self.statCount = 8
         self.statName = ""
 
@@ -100,14 +100,14 @@ class FS3CharacterStatistics(object):
 
     def __init__(self):
         """ Variable definitions """
-        self.itemCount = None
-        self.maxLength = None
-        self.minLength = None
-        self.meanLength = None
-        self.medianLength = None
-        self.sumLength = None
-        self.stdDevLength = None
-        self.coeffVarLength = None
+        self.itemCount = 0
+        self.maxLength = 0
+        self.minLength = 0
+        self.meanLength = 0
+        self.medianLength = 0
+        self.sumLength = 0
+        self.stdDevLength = 0
+        self.coeffVarLength = 0
         self.statCount = 8
         self.statName = ""
 
