@@ -13,9 +13,14 @@ class FS3Uniqueness(object):
 
     def __init__(self):
         """ Variable definitions """
-        self.uniqueValues = None
-        self.uniqueNumOccur = None
-        self.uniquePercent = None
+        self.uniqueValues = 0
+        self.uniqueNumOccur = 0
+        self.uniquePercent = 0
+        self.totalValues = 0
+        self.statName = ['Value',
+                         'Occurances',
+                         'Percentage']
+        self.statCount = 3
 
     def initialize(self, inputArray):
         """
@@ -25,6 +30,7 @@ class FS3Uniqueness(object):
         self.uniqueValues = uniqueValues(inputArray)
         self.uniqueNumOccur = uniqueNumberOccurances(self.uniqueValues, inputArray)
         self.uniquePercent = uniquePercent(self.uniqueNumOccur, self.numItems)
+        self.totalValues = len(self.uniqueValues)
 
 
 def uniqueValues(inputArray):

@@ -15,6 +15,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QTableWidget
 from .layerFieldGetter import LayerFieldGetter
 from .fs3Stats import FS3NumericalStatistics, FS3CharacterStatistics
 from .fs3Stats import removeEmptyCells
+from .fs3Unique import FS3Uniqueness
 from .roundFunc import decimalRound
 
 # pylint: disable=fixme
@@ -49,6 +50,8 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.tableWidget = QTableWidget()
         self.statisticLayout = QVBoxLayout()
         self.statisticTable = QTableWidget()
+        self.uniqueLayout = QVBoxLayout()
+        self.uniqueTable = QTableWidget()
 
         #Refresh for the connecters
         self.refresh()
@@ -299,8 +302,10 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
             self.tableWidget.setHorizontalHeaderLabels(fields)
 
             statistics = []
+            uniquenesses = []
             for i in range(len(fields)):
                 fieldIndex = featureInst.fieldNameIndex(fields[i])
+                uniquenesses.append(self.createUniqueness(statValues[i]))
                 if self.allFields.at(fieldIndex).isNumeric():
                     #Generate numeric statistics
                     statistics.append(self.createNumericalStatistics(statValues[i]))
@@ -309,6 +314,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                     statistics.append(self.createCharacterStatistics(statValues[i]))
 
             self.refreshStatistics(fields, statistics)
+            self.refreshUnique(fields, uniquenesses)
 
         self.dataTableLayout.addWidget(self.tableWidget)
         self.dataTab.setLayout(self.dataTableLayout)
@@ -357,6 +363,15 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         characterStatistics.initialize(emptyCellsRemoved, percentileArray)
         characterStatistics.roundCharacterStatistics(self.currentDecimalPrecision)
         return characterStatistics
+    
+    def createUniqueness(self, inputArray):
+        """
+        createUniqueness
+        Method that instantiates Uniqueness class and initializes it
+        """
+        uniqueness = FS3Uniqueness()
+        uniqueness.initialize(inputArray)
+        return uniqueness
 
 
     def refreshStatistics(self, fields, stats):
@@ -372,6 +387,8 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                     if isinstance(stats[j], FS3CharacterStatistics):
                         numAndCharStats = True
                         verticalHeaders = stats[i].statName + stats[j].statName
+                        print(verticalHeaders)
+                        break
 
         self.statisticTable.clear()
         self.statisticTable.setRowCount(stats[0].statCount + stats[0].statCount * numAndCharStats)
@@ -450,6 +467,41 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
 
         self.statisticLayout.addWidget(self.statisticTable)
         self.statisticsTab.setLayout(self.statisticLayout)
+        
+    def refreshUnique(self, fields, uniquenesses):
+        #Start by clearing the layout
+        while self.uniqueLayout.count():
+            removeItem = self.uniqueLayout.takeAt(0)
+            removeWidget = removeItem.widget()
+            if removeWidget is not None:
+                removeWidget.deleteLater()
+        for unique in uniquenesses:
+            table = QTableWidget()
+            row = 0
+            col = 0
+            table.clear()
+            table.setRowCount(unique.totalValues)
+            table.setColumnCount(unique.statCount)
+            table.setHorizontalHeaderLabels(unique.statName)
+            for value in unique.uniqueValues:
+                table.setItem(row, col,
+                                     QTableWidgetItem(str(value)))
+                row += 1
+            row = 0
+            col += 1
+            for occurance in unique.uniqueNumOccur:
+                table.setItem(row, col,
+                                     QTableWidgetItem(str(occurance)))
+                row += 1
+            row = 0
+            col += 1
+            for percent in unique.uniquePercent:
+                table.setItem(row, col,
+                                     QTableWidgetItem(str(percent) + '%'))
+                row += 1
+            self.uniqueLayout.addWidget(table)
+        
+        self.uniqueTab.setLayout(self.uniqueLayout)
 
 
 class MyTableWidgetItem(QTableWidgetItem):
