@@ -9,12 +9,15 @@ from __future__ import print_function
 import os
 from qgis.core import QgsProject
 from PyQt5 import uic
-from PyQt5.QtCore import Qt, pyqtSlot
+from PyQt5.QtCore import Qt, pyqtSlot, QUrl
 from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QTableWidget, QTableWidgetItem
+from PyQt5.QtWebKit import *
+from PyQt5.QtWebKitWidgets import *
 
 from .layerFieldGetter import LayerFieldGetter
 from .fs3Stats import FS3NumericalStatistics, FS3CharacterStatistics
 from .fs3Stats import removeEmptyCells
+from .fs3Graphs import test
 from .roundFunc import decimalRound
 
 # pylint: disable=fixme
@@ -49,6 +52,8 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.tableWidget = QTableWidget()
         self.statisticLayout = QVBoxLayout()
         self.statisticTable = QTableWidget()
+        self.graphLayout = QVBoxLayout()
+        self.graphView = QWebView()
 
         #Refresh for the connecters
         self.refresh()
@@ -86,6 +91,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.refreshLayers()
         self.refreshFields()
         self.refreshTable()
+        self.refreshGraph()
 
 
     ### Fill LineEdit with percentile numbers when the buttons are pressed
@@ -372,6 +378,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                     if isinstance(stats[j], FS3CharacterStatistics):
                         numAndCharStats = True
                         verticalHeaders = stats[i].statName + stats[j].statName
+                        break
 
         self.statisticTable.clear()
         self.statisticTable.setRowCount(stats[0].statCount + stats[0].statCount * numAndCharStats)
@@ -451,6 +458,12 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.statisticLayout.addWidget(self.statisticTable)
         self.statisticsTab.setLayout(self.statisticLayout)
 
+    def refreshGraph(self):
+        plot_path = test() # Get graph from fs3Graphs
+        self.graphView.load(QUrl.fromLocalFile(plot_path))
+        self.graphView.show()
+        self.graphLayout.addWidget(self.graphView)
+        self.graphTab.setLayout(self.graphLayout)
 
 class MyTableWidgetItem(QTableWidgetItem):
     """
