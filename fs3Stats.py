@@ -30,7 +30,8 @@ class FS3NumericalStatistics(object):
         self.sumValue = 0
         self.stdDevValue = 0
         self.coeffVarValue = 0
-        self.statCount = 8
+        self.percentiles = [0]
+        self.statCount = 9
         self.statName = ""
 
     def initialize(self, inputArray, percentileArray):
@@ -108,7 +109,8 @@ class FS3CharacterStatistics(object):
         self.sumLength = 0
         self.stdDevLength = 0
         self.coeffVarLength = 0
-        self.statCount = 8
+        self.percentiles = [0]
+        self.statCount = 9
         self.statName = ""
 
     def initialize(self, inputArray, percentileArray):
