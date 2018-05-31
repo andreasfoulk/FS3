@@ -31,13 +31,21 @@ def uniqueValues(inputArray):
     valueList = []
     for x in inputArray:
         if x not in valueList:
-            valueList.append(x)
+            if x is None and '[Empty]' not in valueList:
+                valueList.append('[Empty]')
+            elif x is None and '[Empty]' in valueList:
+                continue
+            else:
+                valueList.append(x)
     return valueList
 
 def uniqueNumberOccurances(inputArray, originalArray):
     valueList = []
     for x in inputArray:
-        valueList.append(originalArray.count(x))
+        if x == '[Empty]':
+            valueList.append(originalArray.count(None))
+        else:
+            valueList.append(originalArray.count(x))
     return valueList
 
 def uniquePercent(inputArray, numItems):
