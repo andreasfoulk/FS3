@@ -30,7 +30,7 @@ class FS3NumericalStatistics(object):
         self.sumValue = None
         self.stdDevValue = None
         self.coeffVarValue = None
-        self.statCount = 0
+        self.statCount = 8
         self.statName = ""
 
     def initialize(self, inputArray, percentileArray):
@@ -39,6 +39,9 @@ class FS3NumericalStatistics(object):
         Runs all numerical analysis
         Stores the output in class self.variables
         """
+        # Check to ensure we are not passing an empty list
+        if len(inputArray) < 1:
+            return
         self.itemCount = itemCount(inputArray)
         self.maxValue = maxValue(inputArray)
         self.minValue = minValue(inputArray)
@@ -105,7 +108,7 @@ class FS3CharacterStatistics(object):
         self.sumLength = None
         self.stdDevLength = None
         self.coeffVarLength = None
-        self.statCount = 0
+        self.statCount = 8
         self.statName = ""
 
     def initialize(self, inputArray, percentileArray):
@@ -114,7 +117,10 @@ class FS3CharacterStatistics(object):
         Runs all numerical analysis
         Stores the output in class self.variables
         """
-        #Start by converting the inputArray to a length array of the strings
+        # Check to ensure we are not passing an empty list
+        if len(inputArray) < 1:
+            return
+        # Start by converting the inputArray to a length array of the strings
         tempArray = []
         for string in inputArray:
             tempArray.append(len(string))
@@ -250,6 +256,9 @@ def stdDevValue(inputArray):
     @param inputArray Array passed for calculation
     @return stdDevValueReturn The integer value returned by the calculation
     """
+    # Standard Deviation Requires a size of 2+
+    if len(inputArray) < 2:
+        return 0
     stdDevValueReturn = statistics.stdev(inputArray)
     return stdDevValueReturn
 
@@ -260,6 +269,9 @@ def coeffVarValue(inputArray):
     @param inputArray Array passed for calculation
     @return coeffVarReturn The integer value returned by the calculation
     """
+    # Variance Requires a size of 2+
+    if len(inputArray) < 2:
+        return 0
     coeffVarReturn = statistics.variance(inputArray)
     return coeffVarReturn
 
