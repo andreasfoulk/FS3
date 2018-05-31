@@ -7,6 +7,7 @@ These functions are tested with uniqueTests.py
 """
 
 from qgis.core import NULL
+from .roundFunc import decimalRound
 
 class FS3Uniqueness(object):
     """
@@ -21,18 +22,43 @@ class FS3Uniqueness(object):
         self.totalValues = 0
         self.statName = ['Value',
                          'Occurances',
-                         'Percentage']
+                         'Percentage (%)']
         self.statCount = 3
 
     def initialize(self, inputArray):
         """
         initialize
         """
+        if len(inputArray) > 1:
+            inputArray = self.multiListHandler(inputArray)
+        else:
+            inputArray = inputArray[0]
+
         self.numItems = len(inputArray)
         self.uniqueValues = uniqueValues(inputArray)
         self.uniqueNumOccur = uniqueNumberOccurances(self.uniqueValues, inputArray)
         self.uniquePercent = uniquePercent(self.uniqueNumOccur, self.numItems)
         self.totalValues = len(self.uniqueValues)
+        
+    def multiListHandler(self, inputArray):
+        """
+        multiListHandler
+        Handles the instance where inputArray has more than one list
+        """
+        returnArray = []
+        for j in range(len(inputArray[0])):
+            returnArray.append("")
+            for i in range(len(inputArray)):
+                returnArray[j] += str(inputArray[i][j]) + ', '
+            returnArray[j] = returnArray[j][:-2]
+        return returnArray
+    
+    def roundUniqueness(self, precision):
+        tempArray = []
+        for percent in self.uniquePercent:
+            tempArray.append(decimalRound(percent, precision))
+        self.uniquePercent = tempArray
+                
 
 
 def uniqueValues(inputArray):

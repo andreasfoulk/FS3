@@ -10,7 +10,7 @@ import os
 from qgis.core import QgsProject
 from PyQt5 import uic
 from PyQt5.QtCore import Qt, pyqtSlot
-from PyQt5.QtWidgets import QApplication, QMainWindow, QScrollArea, QFrame
+from PyQt5.QtWidgets import QApplication, QMainWindow
 from PyQt5.QtWidgets import QVBoxLayout, QTableWidget, QTableWidgetItem
 
 from .layerFieldGetter import LayerFieldGetter
@@ -52,7 +52,6 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.statisticLayout = QVBoxLayout()
         self.statisticTable = QTableWidget()
         self.uniqueLayout = QVBoxLayout()
-        self.uniqueScrollArea = QScrollArea()
         self.uniqueTable = QTableWidget()
 
         #Refresh for the connecters
@@ -307,7 +306,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
             uniquenesses = []
             for i in range(len(fields)):
                 fieldIndex = featureInst.fieldNameIndex(fields[i])
-                uniquenesses.append(self.createUniqueness(statValues[i]))
+                uniquenesses.append(statValues[i])
                 if self.allFields.at(fieldIndex).isNumeric():
                     #Generate numeric statistics
                     statistics.append(self.createNumericalStatistics(statValues[i]))
@@ -315,8 +314,9 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                     #Generate character statistics
                     statistics.append(self.createCharacterStatistics(statValues[i]))
 
+            uniqueCalculation = self.createUniqueness(uniquenesses)
             self.refreshStatistics(fields, statistics)
-            self.refreshUnique(fields, uniquenesses)
+            self.refreshUnique(fields, uniqueCalculation)
 
         self.dataTableLayout.addWidget(self.tableWidget)
         self.dataTab.setLayout(self.dataTableLayout)
@@ -373,6 +373,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         """
         uniqueness = FS3Uniqueness()
         uniqueness.initialize(inputArray)
+        uniqueness.roundUniqueness(self.currentDecimalPrecision)
         return uniqueness
 
 
@@ -389,7 +390,6 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                     if isinstance(stats[j], FS3CharacterStatistics):
                         numAndCharStats = True
                         verticalHeaders = stats[i].statName + stats[j].statName
-                        print(verticalHeaders)
                         break
 
         self.statisticTable.clear()
@@ -470,40 +470,40 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.statisticLayout.addWidget(self.statisticTable)
         self.statisticsTab.setLayout(self.statisticLayout)
         
-    def refreshUnique(self, fields, uniquenesses):
+    def refreshUnique(self, fields, unique):
         #Start by clearing the layout
-        while self.uniqueLayout.count():
-            removeItem = self.uniqueLayout.takeAt(0)
-            removeWidget = removeItem.widget()
-            if removeWidget is not None:
-                removeWidget.deleteLater()
-        for unique in uniquenesses:
-            table = QTableWidget()
-            table.setSortingEnabled(False)
-            row = 0
-            col = 0
-            table.clear()
-            table.setRowCount(unique.totalValues)
-            table.setColumnCount(unique.statCount)
-            table.setHorizontalHeaderLabels(unique.statName)
-            for value in unique.uniqueValues:
-                table.setItem(row, col,
-                                     MyTableWidgetItem(str(value)))
-                row += 1
-            row = 0
-            col += 1
-            for occurance in unique.uniqueNumOccur:
-                table.setItem(row, col,
-                                     MyTableWidgetItem(str(occurance)))
-                row += 1
-            row = 0
-            col += 1
-            for percent in unique.uniquePercent:
-                table.setItem(row, col,
-                                     MyTableWidgetItem(str(percent) + '%'))
-                row += 1
-            table.setSortingEnabled(True)
-            self.uniqueLayout.addWidget(table)
+        self.uniqueTable.setSortingEnabled(False)
+        row = 0
+        col = 0
+        self.uniqueTable.clear()
+        self.uniqueTable.setRowCount(unique.totalValues)
+        self.uniqueTable.setColumnCount(unique.statCount)
+        horizontalHeaders = unique.statName
+        #Append the names of the fields to the value field
+        horizontalHeaders[0] += ' ('
+        for field in fields:
+            horizontalHeaders[0] += field + ', '
+        horizontalHeaders[0] = horizontalHeaders[0][:-2]
+        horizontalHeaders[0] += ')'
+        self.uniqueTable.setHorizontalHeaderLabels(horizontalHeaders)
+        for value in unique.uniqueValues:
+            self.uniqueTable.setItem(row, col,
+                                 MyTableWidgetItem(str(value)))
+            row += 1
+        row = 0
+        col += 1
+        for occurance in unique.uniqueNumOccur:
+            self.uniqueTable.setItem(row, col,
+                                 MyTableWidgetItem(str(occurance)))
+            row += 1
+        row = 0
+        col += 1
+        for percent in unique.uniquePercent:
+            self.uniqueTable.setItem(row, col,
+                                 MyTableWidgetItem(str(percent)))
+            row += 1
+        self.uniqueTable.setSortingEnabled(True)
+        self.uniqueLayout.addWidget(self.uniqueTable)
         self.uniqueTab.setLayout(self.uniqueLayout)
 
 
