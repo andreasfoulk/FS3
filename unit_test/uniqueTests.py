@@ -28,6 +28,15 @@ class UniqueValueTests(unittest.TestCase):
         self.emptyValues = FS3Uniqueness()
         self.emptyValues.initialize([1,2,1,None,2,None,1,2])
 
+        #A set of data with length 1
+        self.oneValues = FS3Uniqueness()
+        self.oneValues.initialize([1])
+
+        #A set of character data
+        self.charValues = FS3Uniqueness()
+        self.charValues.initialize(['cat', 'dog', None, 'cat', 'bird'])
+
+    #--------------------------------------Good Value Tests--------------------------------------
     def testUniqueGoodValues(self):
         expected = [1,2,3]
         actual = self.goodValues.uniqueValues
@@ -43,6 +52,7 @@ class UniqueValueTests(unittest.TestCase):
         actual = self.goodValues.uniquePercent
         self.assertEqual(actual, expected)
 
+    #--------------------------------------Empty Value Tests--------------------------------------
     def testUniqueEmptyValues(self):
         expected = [1,2,'[Empty]']
         actual = self.emptyValues.uniqueValues
@@ -56,6 +66,38 @@ class UniqueValueTests(unittest.TestCase):
     def testUniqueEmptyValuesPercent(self):
         expected = [37.5, 37.5, 25.0]
         actual = self.emptyValues.uniquePercent
+        self.assertEqual(actual, expected)
+
+    #--------------------------------------One Value Tests--------------------------------------
+    def testUniqueOneValues(self):
+        expected = [1]
+        actual = self.oneValues.uniqueValues
+        self.assertEqual(actual, expected)
+
+    def testUniqueOneValuesCounts(self):
+        expected = [1]
+        actual = self.oneValues.uniqueNumOccur
+        self.assertEqual(actual, expected)
+
+    def testUniqueOneValuesPercent(self):
+        expected = [100]
+        actual = self.oneValues.uniquePercent
+        self.assertEqual(actual, expected)
+
+    #--------------------------------------Char Value Tests--------------------------------------
+    def testUniqueOneValues(self):
+        expected = ['cat', 'dog', '[Empty]', 'bird']
+        actual = self.charValues.uniqueValues
+        self.assertEqual(actual, expected)
+
+    def testUniqueOneValuesCounts(self):
+        expected = [2,1,1,1]
+        actual = self.charValues.uniqueNumOccur
+        self.assertEqual(actual, expected)
+
+    def testUniqueOneValuesPercent(self):
+        expected = [40.0, 20.0, 20.0, 20.0]
+        actual = self.charValues.uniquePercent
         self.assertEqual(actual, expected)
 
 
