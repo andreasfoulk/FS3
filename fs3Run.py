@@ -52,7 +52,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
 
         #Refresh for the connecters
         self.refresh()
-        
+
         ###pyqtSlot connectors (PROJECT)
         self.currentProject.layersAdded.connect(self.refresh)
         self.currentProject.layersRemoved.connect(self.refresh)
@@ -129,9 +129,9 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         if not self.currentLayer.getSelectedFeatures().isClosed():
             #Update the table
             self.refreshTable()
-            
+
     ### Update on new selection
-      # TODO: CHECK TO SEE IF THIS CAN BE REPLACED WITH refreshTable()        
+      # TODO: CHECK TO SEE IF THIS CAN BE REPLACED WITH refreshTable()
     @pyqtSlot()
     def handleSelectionChanged(self):
         #If there are selected layers in QGIS
@@ -202,7 +202,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
 
             # 3 is Extended, 2 is Multi, check the documentation
             self.selectFieldListWidget.setSelectionMode(3)
-            
+
             # Connect the current layer to a pyqtSlot
             self.currentLayer.selectionChanged.connect(self.handleSelectionChanged)
 
@@ -416,7 +416,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                 # is character statistics
                 row = 0
                 if numAndCharStats:
-                    row = 12
+                    row = stat.statCount
 
                 self.statisticTable.setItem(row, col,
                                             QTableWidgetItem(str(stat.itemCount)))
@@ -457,9 +457,6 @@ class MyTableWidgetItem(QTableWidgetItem):
     Use to overload < operator so that the table will
     sort both numerically and then alphanumerically where appropriate
     """
-    def __init__(self, parent=None):
-        super(MyTableWidgetItem, self).__init__(parent)
-
     def __lt__(self, other):
         try:
             return float(self.text()) < float(other.text())
