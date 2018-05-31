@@ -1,23 +1,47 @@
 """
 Created by: McKenna Duzac
-Last Edited: 25 May 2018
+Last Edited: 31 May 2018
 
 These functions are tested with uniqueTests.py
 
 """
 
-def decimalRound(toRound, numDec):
+class FS3Uniqueness(object):
     """
-    decimalRound
-    Function used to round numbers to given decimal value with the following rules:
-        -should add zeroes if numDec > current number of decimal places
-        -should round up/down properly
-        -numDec = 0 should return an int
-
-    @param toRound << number to round
-    @param numDec  << number of decimal places wanted
-    @return correctDec << correctly rounded number
+    FS3Uniqueness
     """
 
-    correctDec = round(toRound, numDec)
-    return correctDec
+    def __init__(self):
+        """ Variable definitions """
+        self.uniqueValues = None
+        self.uniqueNumOccur = None
+        self.uniquePercent = None
+
+    def initialize(self, inputArray):
+        """
+        initialize
+        """
+        self.numItems = len(inputArray)
+        self.uniqueValues = uniqueValues(inputArray)
+        self.uniqueNumOccur = uniqueNumberOccurances(self.uniqueValues, inputArray)
+        self.uniquePercent = uniquePercent(self.uniqueNumOccur, self.numItems)
+
+
+def uniqueValues(inputArray):
+    valueList = []
+    for x in inputArray:
+        if x not in valueList:
+            valueList.append(x)
+    return valueList
+
+def uniqueNumberOccurances(inputArray, originalArray):
+    valueList = []
+    for x in inputArray:
+        valueList.append(originalArray.count(x))
+    return valueList
+
+def uniquePercent(inputArray, numItems):
+    valueList = []
+    for x in inputArray:
+        valueList.append((x/numItems)*100)
+    return valueList
