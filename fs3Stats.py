@@ -32,7 +32,14 @@ class FS3NumericalStatistics(object):
         self.coeffVarValue = 0
         self.percentiles = [0]
         self.statCount = 9
-        self.statName = ""
+        self.statName = ["Item Count",
+                         "Max Value",
+                         "Min Value",
+                         "Mean Value",
+                         "Median Value",
+                         "Sum Value",
+                         "Standard Deviation",
+                         "Coefficient of Variation"]
 
     def initialize(self, inputArray, percentileArray):
         """
@@ -42,6 +49,7 @@ class FS3NumericalStatistics(object):
         """
         # Check to ensure we are not passing an empty list
         if len(inputArray) < 1:
+            self.statName.append('Percentile')
             return
         self.itemCount = itemCount(inputArray)
         self.maxValue = maxValue(inputArray)
@@ -54,14 +62,6 @@ class FS3NumericalStatistics(object):
         self.percentiles = percentileValues(inputArray, percentileArray)
         self.statCount = 8 + len(self.percentiles)
 
-        self.statName = ["Item Count",
-                         "Max Value",
-                         "Min Value",
-                         "Mean Value",
-                         "Median Value",
-                         "Sum Value",
-                         "Standard Deviation",
-                         "Coefficient of Variation"]
         for percentileNumber in percentileArray:
             self.statName.append('Percentile: ' + str(percentileNumber) + '%')
 
@@ -111,7 +111,14 @@ class FS3CharacterStatistics(object):
         self.coeffVarLength = 0
         self.percentiles = [0]
         self.statCount = 9
-        self.statName = ""
+        self.statName = ["Item Count",
+                         "Max Length",
+                         "Min Length",
+                         "Mean Length",
+                         "Median Length",
+                         "Sum Length",
+                         "Standard Deviation (Length)",
+                         "Coefficient of Variation (Length)"]
 
     def initialize(self, inputArray, percentileArray):
         """
@@ -121,6 +128,7 @@ class FS3CharacterStatistics(object):
         """
         # Check to ensure we are not passing an empty list
         if len(inputArray) < 1:
+            self.statName.append('Percentile')
             return
         # Start by converting the inputArray to a length array of the strings
         tempArray = []
@@ -138,14 +146,6 @@ class FS3CharacterStatistics(object):
         self.percentiles = percentileValues(inputArray, percentileArray)
         self.statCount = 8 + len(self.percentiles)
 
-        self.statName = ["Item Count",
-                         "Max Length",
-                         "Min Length",
-                         "Mean Length",
-                         "Median Length",
-                         "Sum Length",
-                         "Standard Deviation (Length)",
-                         "Coefficient of Variation (Length)"]
         for percentileNumber in percentileArray:
             self.statName.append('Percentile: ' + str(percentileNumber) +
                                  '% (Length)')
