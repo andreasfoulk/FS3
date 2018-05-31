@@ -10,7 +10,8 @@ import os
 from qgis.core import QgsProject
 from PyQt5 import uic
 from PyQt5.QtCore import Qt, pyqtSlot
-from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QTableWidget, QTableWidgetItem
+from PyQt5.QtWidgets import QApplication, QMainWindow, QScrollArea, QFrame
+from PyQt5.QtWidgets import QVBoxLayout, QTableWidget, QTableWidgetItem
 
 from .layerFieldGetter import LayerFieldGetter
 from .fs3Stats import FS3NumericalStatistics, FS3CharacterStatistics
@@ -51,6 +52,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.statisticLayout = QVBoxLayout()
         self.statisticTable = QTableWidget()
         self.uniqueLayout = QVBoxLayout()
+        self.uniqueScrollArea = QScrollArea()
         self.uniqueTable = QTableWidget()
 
         #Refresh for the connecters
@@ -477,6 +479,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                 removeWidget.deleteLater()
         for unique in uniquenesses:
             table = QTableWidget()
+            table.setSortingEnabled(False)
             row = 0
             col = 0
             table.clear()
@@ -485,22 +488,22 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
             table.setHorizontalHeaderLabels(unique.statName)
             for value in unique.uniqueValues:
                 table.setItem(row, col,
-                                     QTableWidgetItem(str(value)))
+                                     MyTableWidgetItem(str(value)))
                 row += 1
             row = 0
             col += 1
             for occurance in unique.uniqueNumOccur:
                 table.setItem(row, col,
-                                     QTableWidgetItem(str(occurance)))
+                                     MyTableWidgetItem(str(occurance)))
                 row += 1
             row = 0
             col += 1
             for percent in unique.uniquePercent:
                 table.setItem(row, col,
-                                     QTableWidgetItem(str(percent) + '%'))
+                                     MyTableWidgetItem(str(percent) + '%'))
                 row += 1
+            table.setSortingEnabled(True)
             self.uniqueLayout.addWidget(table)
-        
         self.uniqueTab.setLayout(self.uniqueLayout)
 
 

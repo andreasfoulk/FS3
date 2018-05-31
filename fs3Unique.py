@@ -6,6 +6,8 @@ These functions are tested with uniqueTests.py
 
 """
 
+from qgis.core import NULL
+
 class FS3Uniqueness(object):
     """
     FS3Uniqueness
@@ -37,9 +39,9 @@ def uniqueValues(inputArray):
     valueList = []
     for x in inputArray:
         if x not in valueList:
-            if x is None and '[Empty]' not in valueList:
-                valueList.append('[Empty]')
-            elif x is None and '[Empty]' in valueList:
+            if x == NULL and 'NULL (Empty)' not in valueList:
+                valueList.append('NULL (Empty)')
+            elif x == NULL and 'NULL (Empty)' in valueList:
                 continue
             else:
                 valueList.append(x)
@@ -48,7 +50,7 @@ def uniqueValues(inputArray):
 def uniqueNumberOccurances(inputArray, originalArray):
     valueList = []
     for x in inputArray:
-        if x == '[Empty]':
+        if x == 'NULL (Empty)':
             valueList.append(originalArray.count(None))
         else:
             valueList.append(originalArray.count(x))
