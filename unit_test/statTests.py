@@ -474,8 +474,8 @@ class CharacterStatTests(unittest.TestCase):
         self.assertEqual(actual, expected)
 
 
-def main():
+def sMain():
     unittest.main()
 
 if __name__ == '__main__':
-    main()
+    sMain()

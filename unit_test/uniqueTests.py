@@ -22,11 +22,11 @@ class UniqueValueTests(unittest.TestCase):
     def setUpClass(self):
         #A simple set of data with no empties
         self.goodValues = FS3Uniqueness()
-        self.goodValues.initialize([1,2,1,2,1,2,3])
+        self.goodValues.initialize([1, 2, 1, 2, 1, 2, 3])
 
         #A set of data with empty values
         self.emptyValues = FS3Uniqueness()
-        self.emptyValues.initialize([1,2,1,None,2,None,1,2])
+        self.emptyValues.initialize([1, 2, 1, None, 2, None, 1, 2])
 
         #A set of data with length 1
         self.oneValues = FS3Uniqueness()
@@ -38,12 +38,12 @@ class UniqueValueTests(unittest.TestCase):
 
     #--------------------------------------Good Value Tests--------------------------------------
     def testUniqueGoodValues(self):
-        expected = [1,2,3]
+        expected = [1, 2, 3]
         actual = self.goodValues.uniqueValues
         self.assertEqual(actual, expected)
 
     def testUniqueGoodValuesCounts(self):
-        expected = [3,3,1]
+        expected = [3, 3, 1]
         actual = self.goodValues.uniqueNumOccur
         self.assertEqual(actual, expected)
 
@@ -54,12 +54,12 @@ class UniqueValueTests(unittest.TestCase):
 
     #--------------------------------------Empty Value Tests--------------------------------------
     def testUniqueEmptyValues(self):
-        expected = [1,2,'[Empty]']
+        expected = [1, 2, '[Empty]']
         actual = self.emptyValues.uniqueValues
         self.assertEqual(actual, expected)
 
     def testUniqueEmptyValuesCounts(self):
-        expected = [3,3,2]
+        expected = [3, 3, 2]
         actual = self.emptyValues.uniqueNumOccur
         self.assertEqual(actual, expected)
 
@@ -85,24 +85,24 @@ class UniqueValueTests(unittest.TestCase):
         self.assertEqual(actual, expected)
 
     #--------------------------------------Char Value Tests--------------------------------------
-    def testUniqueOneValues(self):
+    def testUniqueCharValues(self):
         expected = ['cat', 'dog', '[Empty]', 'bird']
         actual = self.charValues.uniqueValues
         self.assertEqual(actual, expected)
 
-    def testUniqueOneValuesCounts(self):
-        expected = [2,1,1,1]
+    def testUniqueCharValuesCounts(self):
+        expected = [2, 1, 1, 1]
         actual = self.charValues.uniqueNumOccur
         self.assertEqual(actual, expected)
 
-    def testUniqueOneValuesPercent(self):
+    def testUniqueCharValuesPercent(self):
         expected = [40.0, 20.0, 20.0, 20.0]
         actual = self.charValues.uniquePercent
         self.assertEqual(actual, expected)
 
 
-def main():
+def Umain():
     unittest.main()
 
 if __name__ == '__main__':
-    main()
+    Umain()
