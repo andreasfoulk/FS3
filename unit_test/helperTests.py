@@ -1,8 +1,7 @@
 """
-Created by: McKenna Duzac
-Last Edited: 23 May 2018
 
-All of these tests written with the following assumptions:
+@author: Orden Aitchedji, Mckenna Duzac, Andreas Foulk, Tanner Lee
+@Repository: https://github.com/andreasfoulk/FS3
 
 TODO:
     Improper input cases not currently checked

@@ -1,6 +1,7 @@
 """
-Created by: McKenna Duzac
-Last Edited: 31 May 2018
+
+@author: Orden Aitchedji, Mckenna Duzac, Andreas Foulk, Tanner Lee
+@Repository: https://github.com/andreasfoulk/FS3
 
 These functions are tested with uniqueTests.py
 

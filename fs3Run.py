@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue May 15 11:12:02 2018
 
-@author: Tanner Lee
+@author: Orden Aitchedji, Mckenna Duzac, Andreas Foulk, Tanner Lee
+@Repository: https://github.com/andreasfoulk/FS3
+
 """
 from __future__ import print_function
 

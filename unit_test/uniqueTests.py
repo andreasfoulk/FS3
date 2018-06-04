@@ -1,11 +1,13 @@
 """
-Created by: McKenna Duzac
-Last Edited: 25 May 2018
+
+@author: Orden Aitchedji, Mckenna Duzac, Andreas Foulk, Tanner Lee
+@Repository: https://github.com/andreasfoulk/FS3
 
 All of these tests written with the following assumptions:
 
 TODO:
     Improper input cases not currently checked
+
 """
 
 #These imports are required for unit tests

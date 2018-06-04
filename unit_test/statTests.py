@@ -1,6 +1,7 @@
 """
-Created by: McKenna Duzac
-Last Edited: 30 May 2018
+
+@author: Orden Aitchedji, Mckenna Duzac, Andreas Foulk, Tanner Lee
+@Repository: https://github.com/andreasfoulk/FS3
 
 All of these tests written with the following assumptions:
     -functions take in a list of values
@@ -14,6 +15,7 @@ TODO:
     Fringe cases not currently checked
     Improper input cases not currently checked
     Most of the CharcterStats functions currently unknown
+
 """
 
 #These imports are required for unit tests

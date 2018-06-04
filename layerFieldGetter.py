@@ -1,7 +1,7 @@
 """
-Created on Tue May 15 2018
 
-@author: Tanner Lee, Orden Aitchedji, McKenna Duzac, Andreas Foulk
+@author: Orden Aitchedji, Mckenna Duzac, Andreas Foulk, Tanner Lee
+@Repository: https://github.com/andreasfoulk/FS3
 
 """
 from PyQt5.QtCore import QVariant
