@@ -17,12 +17,8 @@ from PyQt5.QtWebKitWidgets import *
 from .layerFieldGetter import LayerFieldGetter
 from .fs3Stats import FS3NumericalStatistics, FS3CharacterStatistics
 from .fs3Stats import removeEmptyCells
-<<<<<<< HEAD
 from .fs3Graphs import makeBarGraph
-=======
 from .fs3Unique import FS3Uniqueness
-from .fs3Graphs import test
->>>>>>> a9abfa97167f553bb1a16966097182979748941b
 from .roundFunc import decimalRound
 
 # pylint: disable=fixme
