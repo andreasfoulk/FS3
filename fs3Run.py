@@ -73,9 +73,6 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.limitToSelected.stateChanged.connect(self.handleLimitSelected)
         # Decimal Selector
         self.numberOfDecimalsBox.valueChanged.connect(self.handleDecimalChanged)
-        # Next/Prev
-        self.nextButton.clicked.connect(self.setNextField)
-        self.previousButton.clicked.connect(self.setPrevField)
 
         ### Layer Combo Box and Field List Widget
         self.selectLayerComboBox.currentIndexChanged \
@@ -149,35 +146,6 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
     def handleDecimalChanged(self):
         self.currentDecimalPrecision = self.numberOfDecimalsBox.value()
         self.refreshTable()
-
-
-    ### Next/Previous
-    @pyqtSlot()
-    def setNextField(self):
-        """
-        Method implements next field when Next button is clicked
-        """
-        pass
-        # index = self.selectFieldComboBox.currentIndex()
-        # try:
-        #     index = (index + 1) % self.selectFieldComboBox.count()
-        # except ZeroDivisionError:
-        #     # TODO not sure what it should do here...
-        #     index = 0
-        # self.selectFieldComboBox.setCurrentIndex(index)
-
-    @pyqtSlot()
-    def setPrevField(self):
-        """
-        Method implements pevious field when Previous button is clicked
-        """
-        pass
-        # index = self.selectFieldComboBox.currentIndex()
-        # try:
-        #     index = (index - 1) % self.selectFieldComboBox.count()
-        # except ZeroDivisionError:
-        #     index = 0
-        # self.selectFieldComboBox.setCurrentIndex(index)
 
     def refreshLayers(self):
         """
