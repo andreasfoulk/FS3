@@ -17,7 +17,7 @@ import os
 import platform
 import re
 
-def test():
+def makeBarGraph(fields, attributes):
 
     if platform.system() == 'Windows':
         polyfillpath = 'file:///'
@@ -28,23 +28,27 @@ def test():
         polyfillpath = os.path.join(os.path.dirname(__file__), 'jsscripts/polyfill.min.js')
         plotlypath = os.path.join(os.path.dirname(__file__), 'jsscripts/plotly-1.34.0.min.js')
 
-    trace1 = go.Bar(
-        x=['giraffes', 'orangutans', 'monkeys'],
-        y=[20, 14, 23],
-        name='SF Zoo'
-    )
-    trace2 = go.Bar(
-        x=['giraffes', 'orangutans', 'monkeys'],
-        y=[12, 18, 29],
-        name='LA Zoo'
-    )
+    if len(attributes) is 1:
+        attributes.append([i for i in range(len(attributes[0]))])
 
-    data = [trace1, trace2]
+        trace = go.Bar(
+            x = attributes[1],
+            y = attributes[0],
+            name='{}'.format(fields[0])
+        )
+    else:
+        trace = go.Bar(
+            x = attributes[0],
+            y = attributes[1],
+            name='{} x {}'.format(fields[0], fields[1])
+        )
+
+    data = [trace]
     layout = go.Layout(
-        barmode='group'
+        barmode = 'group'
     )
 
-    fig = go.Figure(data=data, layout=layout)
+    fig = go.Figure(data = data, layout = layout)
 
     # first lines of additional html with the link to the local javascript
     raw_plot = '<head><meta charset="utf-8" /><script src="{}"></script><script src="{}"></script></head>'.format(polyfillpath, plotlypath)

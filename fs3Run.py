@@ -17,7 +17,7 @@ from PyQt5.QtWebKitWidgets import *
 from .layerFieldGetter import LayerFieldGetter
 from .fs3Stats import FS3NumericalStatistics, FS3CharacterStatistics
 from .fs3Stats import removeEmptyCells
-from .fs3Graphs import test
+from .fs3Graphs import makeBarGraph
 from .roundFunc import decimalRound
 
 # pylint: disable=fixme
@@ -81,7 +81,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.selectLayerComboBox.currentIndexChanged \
                         .connect(self.refreshFields)
         self.selectFieldListWidget.itemSelectionChanged \
-                        .connect(self.refreshTable)
+                        .connect(self.refreshAttributes)
 
 
     def refresh(self):
@@ -90,8 +90,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         """
         self.refreshLayers()
         self.refreshFields()
-        self.refreshTable()
-        self.refreshGraph()
+        self.refreshAttributes()
 
 
     ### Fill LineEdit with percentile numbers when the buttons are pressed
@@ -121,7 +120,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                 # Ensure the user has entered a valid percentile
                 if float(percentile) < 0 or float(percentile) > 100:
                     return
-            self.refreshTable()
+            self.refreshAttributes()
         except ValueError:
             # The user is either still entering text
             # Or has entered an invalid input
@@ -134,22 +133,22 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         #If there are selected layers in QGIS
         if not self.currentLayer.getSelectedFeatures().isClosed():
             #Update the table
-            self.refreshTable()
+            self.refreshAttributes()
 
     ### Update on new selection
-      # TODO: CHECK TO SEE IF THIS CAN BE REPLACED WITH refreshTable()
+      # TODO: CHECK TO SEE IF THIS CAN BE REPLACED WITH refreshAttributes()
     @pyqtSlot()
     def handleSelectionChanged(self):
         #If there are selected layers in QGIS
         if not self.currentLayer.getSelectedFeatures().isClosed():
             print('Layers Selected')
-        self.refreshTable()
+        self.refreshAttributes()
 
     ### Decimal Selection Box
     @pyqtSlot()
     def handleDecimalChanged(self):
         self.currentDecimalPrecision = self.numberOfDecimalsBox.value()
-        self.refreshTable()
+        self.refreshAttributes()
 
 
     ### Next/Previous
@@ -214,7 +213,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
 
 
     @pyqtSlot()
-    def refreshTable(self):
+    def refreshAttributes(self):
         """
         Refresh the table content with coresponding Layer & field selection
         """
@@ -305,16 +304,21 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
             self.tableWidget.setHorizontalHeaderLabels(fields)
 
             statistics = []
+            data = []
             for i in range(len(fields)):
                 fieldIndex = featureInst.fieldNameIndex(fields[i])
                 if self.allFields.at(fieldIndex).isNumeric():
                     #Generate numeric statistics
                     statistics.append(self.createNumericalStatistics(statValues[i]))
+                    data.append(statValues[i])
                 else:
                     #Generate character statistics
                     statistics.append(self.createCharacterStatistics(statValues[i]))
+                    data.append(statValues[i])
 
             self.refreshStatistics(fields, statistics)
+            if data:
+                self.refreshGraph(fields, data)
 
         self.dataTableLayout.addWidget(self.tableWidget)
         self.dataTab.setLayout(self.dataTableLayout)
@@ -458,8 +462,8 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.statisticLayout.addWidget(self.statisticTable)
         self.statisticsTab.setLayout(self.statisticLayout)
 
-    def refreshGraph(self):
-        plot_path = test() # Get graph from fs3Graphs
+    def refreshGraph(self, fields, stats):
+        plot_path = makeBarGraph(fields, stats) # Get graph from fs3Graphs
         self.graphView.load(QUrl.fromLocalFile(plot_path))
         self.graphView.show()
         self.graphLayout.addWidget(self.graphView)
