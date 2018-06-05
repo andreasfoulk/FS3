@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue May 15 11:12:02 2018
 
-@author: Tanner Lee
+@author: Orden Aitchedji, Mckenna Duzac, Andreas Foulk, Tanner Lee
+@Repository: https://github.com/andreasfoulk/FS3
+
 """
 from __future__ import print_function
 
@@ -13,11 +14,15 @@ from PyQt5.QtCore import Qt, pyqtSlot, QUrl
 from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QTableWidget, QTableWidgetItem
 from PyQt5.QtWebKit import *
 from PyQt5.QtWebKitWidgets import *
-
 from .layerFieldGetter import LayerFieldGetter
 from .fs3Stats import FS3NumericalStatistics, FS3CharacterStatistics
 from .fs3Stats import removeEmptyCells
+<<<<<<< HEAD
 from .fs3Graphs import makeBarGraph
+=======
+from .fs3Unique import FS3Uniqueness
+from .fs3Graphs import test
+>>>>>>> a9abfa97167f553bb1a16966097182979748941b
 from .roundFunc import decimalRound
 
 # pylint: disable=fixme
@@ -52,6 +57,8 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.tableWidget = QTableWidget()
         self.statisticLayout = QVBoxLayout()
         self.statisticTable = QTableWidget()
+        self.uniqueLayout = QVBoxLayout()
+        self.uniqueTable = QTableWidget()
         self.graphLayout = QVBoxLayout()
         self.graphView = QWebView()
 
@@ -73,9 +80,6 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.limitToSelected.stateChanged.connect(self.handleLimitSelected)
         # Decimal Selector
         self.numberOfDecimalsBox.valueChanged.connect(self.handleDecimalChanged)
-        # Next/Prev
-        self.nextButton.clicked.connect(self.setNextField)
-        self.previousButton.clicked.connect(self.setPrevField)
 
         ### Layer Combo Box and Field List Widget
         self.selectLayerComboBox.currentIndexChanged \
@@ -149,35 +153,6 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
     def handleDecimalChanged(self):
         self.currentDecimalPrecision = self.numberOfDecimalsBox.value()
         self.refreshAttributes()
-
-
-    ### Next/Previous
-    @pyqtSlot()
-    def setNextField(self):
-        """
-        Method implements next field when Next button is clicked
-        """
-        pass
-        # index = self.selectFieldComboBox.currentIndex()
-        # try:
-        #     index = (index + 1) % self.selectFieldComboBox.count()
-        # except ZeroDivisionError:
-        #     # TODO not sure what it should do here...
-        #     index = 0
-        # self.selectFieldComboBox.setCurrentIndex(index)
-
-    @pyqtSlot()
-    def setPrevField(self):
-        """
-        Method implements pevious field when Previous button is clicked
-        """
-        pass
-        # index = self.selectFieldComboBox.currentIndex()
-        # try:
-        #     index = (index - 1) % self.selectFieldComboBox.count()
-        # except ZeroDivisionError:
-        #     index = 0
-        # self.selectFieldComboBox.setCurrentIndex(index)
 
     def refreshLayers(self):
         """
@@ -305,8 +280,10 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
 
             statistics = []
             data = []
+            uniquenesses = []
             for i in range(len(fields)):
                 fieldIndex = featureInst.fieldNameIndex(fields[i])
+                uniquenesses.append(statValues[i])
                 if self.allFields.at(fieldIndex).isNumeric():
                     #Generate numeric statistics
                     statistics.append(self.createNumericalStatistics(statValues[i]))
@@ -316,9 +293,13 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                     statistics.append(self.createCharacterStatistics(statValues[i]))
                     data.append(statValues[i])
 
+            uniqueCalculation = self.createUniqueness(uniquenesses)
             self.refreshStatistics(fields, statistics)
+
             if data:
                 self.refreshGraph(fields, data)
+
+            self.refreshUnique(fields, uniqueCalculation)
 
         self.dataTableLayout.addWidget(self.tableWidget)
         self.dataTab.setLayout(self.dataTableLayout)
@@ -367,6 +348,16 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         characterStatistics.initialize(emptyCellsRemoved, percentileArray)
         characterStatistics.roundCharacterStatistics(self.currentDecimalPrecision)
         return characterStatistics
+
+    def createUniqueness(self, inputArray):
+        """
+        createUniqueness
+        Method that instantiates Uniqueness class and initializes it
+        """
+        uniqueness = FS3Uniqueness()
+        uniqueness.initialize(inputArray)
+        uniqueness.roundUniqueness(self.currentDecimalPrecision)
+        return uniqueness
 
 
     def refreshStatistics(self, fields, stats):
@@ -462,12 +453,48 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.statisticLayout.addWidget(self.statisticTable)
         self.statisticsTab.setLayout(self.statisticLayout)
 
+    def refreshUnique(self, fields, unique):
+        #Start by clearing the layout
+        self.uniqueTable.setSortingEnabled(False)
+        row = 0
+        col = 0
+        self.uniqueTable.clear()
+        self.uniqueTable.setRowCount(unique.totalValues)
+        self.uniqueTable.setColumnCount(unique.statCount)
+        horizontalHeaders = unique.statName
+        #Append the names of the fields to the value field
+        horizontalHeaders[0] += ' ('
+        for field in fields:
+            horizontalHeaders[0] += field + ', '
+        horizontalHeaders[0] = horizontalHeaders[0][:-2]
+        horizontalHeaders[0] += ')'
+        self.uniqueTable.setHorizontalHeaderLabels(horizontalHeaders)
+        for value in unique.uniqueValues:
+            self.uniqueTable.setItem(row, col,
+                                 MyTableWidgetItem(str(value)))
+            row += 1
+        row = 0
+        col += 1
+        for occurance in unique.uniqueNumOccur:
+            self.uniqueTable.setItem(row, col,
+                                 MyTableWidgetItem(str(occurance)))
+            row += 1
+        row = 0
+        col += 1
+        for percent in unique.uniquePercent:
+            self.uniqueTable.setItem(row, col,
+                                 MyTableWidgetItem(str(percent)))
+            row += 1
+        self.uniqueTable.setSortingEnabled(True)
+        self.uniqueLayout.addWidget(self.uniqueTable)
+        self.uniqueTab.setLayout(self.uniqueLayout)
+
     def refreshGraph(self, fields, stats):
         plot_path = makeBarGraph(fields, stats) # Get graph from fs3Graphs
         self.graphView.load(QUrl.fromLocalFile(plot_path))
-        self.graphView.show()
         self.graphLayout.addWidget(self.graphView)
-        self.graphTab.setLayout(self.graphLayout)
+        self.graphFrame.setLayout(self.graphLayout)
+        self.graphView.show()
 
 class MyTableWidgetItem(QTableWidgetItem):
     """

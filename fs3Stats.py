@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri May 18 14:26:25 2018
 
-@author: Tanner Lee
-https://github.com/tleecsm
+@author: Orden Aitchedji, Mckenna Duzac, Andreas Foulk, Tanner Lee
+@Repository: https://github.com/andreasfoulk/FS3
+
 """
 
 import statistics

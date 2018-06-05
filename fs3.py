@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 # pylint: disable=wildcard-import, method-hidden
 """
-Created on Tue May 15 11:12:02 2018
 
-@author: Tanner Lee, Orden Aitchedji, McKenna Duzac, Andreas Foulk
+@author: Orden Aitchedji, Mckenna Duzac, Andreas Foulk, Tanner Lee
+@Repository: https://github.com/andreasfoulk/FS3
 
 """
 
@@ -11,8 +11,7 @@ from PyQt5.QtWidgets import QAction
 from PyQt5.QtGui import QIcon
 from .fs3Run import FS3MainWindow
 
-# pylint: disable=unused-wildcard-import
-from .resources import *
+from .resources import * # pylint: disable=unused-import
 
 class FS3Plugin(object):
     """

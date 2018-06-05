@@ -1,10 +1,14 @@
 """
-Created by: McKenna Duzac
-Last Edited: 31 May 2018
+
+@author: Orden Aitchedji, Mckenna Duzac, Andreas Foulk, Tanner Lee
+@Repository: https://github.com/andreasfoulk/FS3
 
 These functions are tested with uniqueTests.py
 
 """
+
+from qgis.core import NULL
+from .roundFunc import decimalRound
 
 class FS3Uniqueness(object):
     """
@@ -13,27 +17,58 @@ class FS3Uniqueness(object):
 
     def __init__(self):
         """ Variable definitions """
-        self.uniqueValues = None
-        self.uniqueNumOccur = None
-        self.uniquePercent = None
+        self.uniqueValues = 0
+        self.uniqueNumOccur = 0
+        self.uniquePercent = 0
+        self.totalValues = 0
+        self.statName = ['Value',
+                         'Occurances',
+                         'Percentage (%)']
+        self.statCount = 3
 
     def initialize(self, inputArray):
         """
         initialize
         """
+        if len(inputArray) > 1:
+            inputArray = self.multiListHandler(inputArray)
+        else:
+            inputArray = inputArray[0]
+
         self.numItems = len(inputArray)
         self.uniqueValues = uniqueValues(inputArray)
         self.uniqueNumOccur = uniqueNumberOccurances(self.uniqueValues, inputArray)
         self.uniquePercent = uniquePercent(self.uniqueNumOccur, self.numItems)
+        self.totalValues = len(self.uniqueValues)
+        
+    def multiListHandler(self, inputArray):
+        """
+        multiListHandler
+        Handles the instance where inputArray has more than one list
+        """
+        returnArray = []
+        for j in range(len(inputArray[0])):
+            returnArray.append("")
+            for i in range(len(inputArray)):
+                returnArray[j] += str(inputArray[i][j]) + ', '
+            returnArray[j] = returnArray[j][:-2]
+        return returnArray
+    
+    def roundUniqueness(self, precision):
+        tempArray = []
+        for percent in self.uniquePercent:
+            tempArray.append(decimalRound(percent, precision))
+        self.uniquePercent = tempArray
+                
 
 
 def uniqueValues(inputArray):
     valueList = []
     for x in inputArray:
         if x not in valueList:
-            if x is None and '[Empty]' not in valueList:
-                valueList.append('[Empty]')
-            elif x is None and '[Empty]' in valueList:
+            if x == NULL and 'NULL (Empty)' not in valueList:
+                valueList.append('NULL (Empty)')
+            elif x == NULL and 'NULL (Empty)' in valueList:
                 continue
             else:
                 valueList.append(x)
@@ -42,7 +77,7 @@ def uniqueValues(inputArray):
 def uniqueNumberOccurances(inputArray, originalArray):
     valueList = []
     for x in inputArray:
-        if x == '[Empty]':
+        if x == 'NULL (Empty)':
             valueList.append(originalArray.count(None))
         else:
             valueList.append(originalArray.count(x))

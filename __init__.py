@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-Created on Thu May 17 15:54:37 2018
 
-@author: Tanner Lee
-https://github.com/tleecsm
+@author: Orden Aitchedji, Mckenna Duzac, Andreas Foulk, Tanner Lee
+@Repository: https://github.com/andreasfoulk/FS3
+
 """
 
 #classFactory is a required function for QGIS Plugins
