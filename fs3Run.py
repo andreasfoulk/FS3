@@ -10,14 +10,15 @@ from __future__ import print_function
 import os
 from qgis.core import QgsProject
 from PyQt5 import uic
-from PyQt5.QtCore import Qt, pyqtSlot
-from PyQt5.QtWidgets import QApplication, QMainWindow
-from PyQt5.QtWidgets import QVBoxLayout, QTableWidget, QTableWidgetItem
-
+from PyQt5.QtCore import Qt, pyqtSlot, QUrl
+from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QTableWidget, QTableWidgetItem
+from PyQt5.QtWebKit import *
+from PyQt5.QtWebKitWidgets import *
 from .layerFieldGetter import LayerFieldGetter
 from .fs3Stats import FS3NumericalStatistics, FS3CharacterStatistics
 from .fs3Stats import removeEmptyCells
 from .fs3Unique import FS3Uniqueness
+from .fs3Graphs import test
 from .roundFunc import decimalRound
 
 # pylint: disable=fixme
@@ -54,6 +55,8 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.statisticTable = QTableWidget()
         self.uniqueLayout = QVBoxLayout()
         self.uniqueTable = QTableWidget()
+        self.graphLayout = QVBoxLayout()
+        self.graphView = QWebView()
 
         #Refresh for the connecters
         self.refresh()
@@ -88,6 +91,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.refreshLayers()
         self.refreshFields()
         self.refreshTable()
+        self.refreshGraph()
 
 
     ### Fill LineEdit with percentile numbers when the buttons are pressed
@@ -475,6 +479,12 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.uniqueLayout.addWidget(self.uniqueTable)
         self.uniqueTab.setLayout(self.uniqueLayout)
 
+    def refreshGraph(self):
+        plot_path = test() # Get graph from fs3Graphs
+        self.graphView.load(QUrl.fromLocalFile(plot_path))
+        self.graphLayout.addWidget(self.graphView)
+        self.graphFrame.setLayout(self.graphLayout)
+        self.graphView.show()
 
 class MyTableWidgetItem(QTableWidgetItem):
     """
