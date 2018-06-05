@@ -8,7 +8,7 @@
 from __future__ import print_function
 
 import os
-from qgis.core import QgsProject
+from qgis.core import QgsProject, NULL
 from PyQt5 import uic
 from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import QApplication, QMainWindow
@@ -244,7 +244,10 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                     if isinstance(attribute, float):
                         attribute = decimalRound(attribute,
                                                  self.currentDecimalPrecision)
-                    self.tableWidget.setItem(row, col, MyTableWidgetItem(str(attribute)))
+                    if attribute == NULL:
+                        self.tableWidget.setItem(row, col, MyTableWidgetItem(""))
+                    else:
+                        self.tableWidget.setItem(row, col, MyTableWidgetItem(str(attribute)))
                     col += 1
 
             else:
@@ -258,7 +261,10 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                         attribute = decimalRound(attribute,
                                                      self.currentDecimalPrecision)
                     statValues[col].append(attribute)
-                    self.tableWidget.setItem(row, col, MyTableWidgetItem(str(attribute)))
+                    if attribute == NULL:
+                        self.tableWidget.setItem(row, col, MyTableWidgetItem(""))
+                    else:
+                        self.tableWidget.setItem(row, col, MyTableWidgetItem(str(attribute)))
                     col += 1
 
             row += 1
