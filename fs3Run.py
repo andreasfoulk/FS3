@@ -131,6 +131,15 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         if not self.currentLayer.getSelectedFeatures().isClosed():
             #Update the table
             self.refreshTable()
+            
+    ### Editing Started and Stopped Signals
+    @pyqtSlot()         
+    def editingStartedQGIS(self):
+        print("Started")
+    @pyqtSlot()     
+    def editingStoppedQGIS(self):
+        print("Stopped")
+        
 
     ### Update on new selection
       # TODO: CHECK TO SEE IF THIS CAN BE REPLACED WITH refreshTable()
@@ -178,6 +187,11 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
 
             # Connect the current layer to a pyqtSlot
             self.currentLayer.selectionChanged.connect(self.handleSelectionChanged)
+            
+            #Listen for editing mode enabled and disabled
+            self.currentLayer.editingStarted.connect(self.editingStartedQGIS)
+            self.currentLayer.editingStopped.connect(self.editingStoppedQGIS)
+            
 
 
     @pyqtSlot()
