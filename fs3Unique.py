@@ -22,7 +22,7 @@ class FS3Uniqueness(object):
         self.uniquePercent = 0
         self.totalValues = 0
         self.statName = ['Value',
-                         'Occurances',
+                         'Occurrences',
                          'Percentage (%)']
         self.statCount = 3
 
@@ -40,7 +40,7 @@ class FS3Uniqueness(object):
         self.uniqueNumOccur = uniqueNumberOccurances(self.uniqueValues, inputArray)
         self.uniquePercent = uniquePercent(self.uniqueNumOccur, self.numItems)
         self.totalValues = len(self.uniqueValues)
-        
+
     def multiListHandler(self, inputArray):
         """
         multiListHandler
@@ -53,13 +53,13 @@ class FS3Uniqueness(object):
                 returnArray[j] += str(inputArray[i][j]) + ', '
             returnArray[j] = returnArray[j][:-2]
         return returnArray
-    
+
     def roundUniqueness(self, precision):
         tempArray = []
         for percent in self.uniquePercent:
             tempArray.append(decimalRound(percent, precision))
         self.uniquePercent = tempArray
-                
+
 
 
 def uniqueValues(inputArray):
