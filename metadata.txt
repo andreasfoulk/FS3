@@ -9,12 +9,12 @@
 [general]
 name=FS3
 qgisMinimumVersion=3.0
-description=Generate basic statistic for numeric and text field in a vector layer
+description=Generate, display, and compare basic statistics for numeric and text fields of vector layer(s)
 version=0.1
-author=Orden Aitchedji, Mckenna Duzac, Andreas Foulk, Tanner Lee
+author=Orden Aitchedji, McKenna Duzac, Andreas Foulk, Tanner Lee
 email=afoulk@mines.edu
 
-about=This plugin was created by Orden Aitchedji, Mckenna Duzac, Andreas foulk and Tanner Lee durring the 2018 summer field section at the Colorado School Of Mines. In Colaboration with Brian Krzys at Newmont Exploration.
+about=This plugin was created by Orden Aitchedji, McKenna Duzac, Andreas Foulk and Tanner Lee during the 2018 summer field section at the Colorado School Of Mines in collaboration with Brian Krzys at Newmont Exploration.
 
 tracker=https://github.com/andreasfoulk/FS3
 repository=https://github.com/andreasfoulk/FS3
