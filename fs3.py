@@ -7,6 +7,7 @@
 
 """
 
+from PyQt5.QtCore import QTranslator
 from PyQt5.QtWidgets import QAction
 from PyQt5.QtGui import QIcon
 from .fs3Run import FS3MainWindow
