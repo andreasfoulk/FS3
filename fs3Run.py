@@ -135,11 +135,17 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
     ### Editing Started and Stopped Signals
     @pyqtSlot()         
     def editingStartedQGIS(self):
-        print("Started")
+        if self.editModeCheck.isChecked():
+            # The checkbox is already checked, return
+            return
+        self.editModeCheck.setChecked(True)
+            
     @pyqtSlot()     
     def editingStoppedQGIS(self):
-        print("Stopped")
-        
+        if not self.editModeCheck.isChecked():
+            # The checkbox is already unchecked, return
+            return
+        self.editModeCheck.setChecked(False)
 
     ### Update on new selection
       # TODO: CHECK TO SEE IF THIS CAN BE REPLACED WITH refreshTable()
