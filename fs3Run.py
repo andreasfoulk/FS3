@@ -71,6 +71,8 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.percentilesLineEdit.textChanged.connect(self.percentileTextChanged)
         # Limit to Selected
         self.limitToSelected.stateChanged.connect(self.handleLimitSelected)
+        # Toggle Edit Mode
+        self.editModeCheck.stateChanged.connect(self.handleEditModeChecked)
         # Decimal Selector
         self.numberOfDecimalsBox.valueChanged.connect(self.handleDecimalChanged)
 
@@ -131,6 +133,27 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         if not self.currentLayer.getSelectedFeatures().isClosed():
             #Update the table
             self.refreshTable()
+            
+    ### Edit Mode Checkbox
+    @pyqtSlot()
+    def handleEditModeChecked(self):
+        # Edit box was checked
+        # Check state
+        if self.editModeCheck.isChecked():
+            # Check if the layer is already in edit mode
+            if self.currentLayer.isEditable():
+                # Our work here is already done
+                return
+            # Else set the layer to editable
+            self.currentLayer.startEditing()
+        else:
+            # Else the checkbox is unchecked 
+            # Check state of the layer
+            if not self.currentLayer.isEditable():
+                # Our work here is already done
+                return
+            # Else set the layer to noneditable
+            self.currentLayer.commitChanges()
             
     ### Editing Started and Stopped Signals
     @pyqtSlot()         
