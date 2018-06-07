@@ -11,7 +11,7 @@ import os
 from qgis.core import QgsProject, NULL
 from PyQt5 import uic
 from PyQt5.QtCore import Qt, pyqtSlot
-from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt5.QtWidgets import QApplication, QMainWindow, QErrorMessage
 from PyQt5.QtWidgets import QVBoxLayout, QTableWidget, QTableWidgetItem
 
 from .layerFieldGetter import LayerFieldGetter
@@ -19,8 +19,6 @@ from .fs3Stats import FS3NumericalStatistics, FS3CharacterStatistics
 from .fs3Stats import removeEmptyCells
 from .fs3Unique import FS3Uniqueness
 from .roundFunc import decimalRound
-
-# pylint: disable=fixme
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
 
@@ -47,6 +45,8 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
 
         self.percentile25Update()
         self.currentDecimalPrecision = 0
+        
+        self.error = QErrorMessage()
 
         ### Tabs
         self.dataTableLayout = QVBoxLayout()
@@ -174,7 +174,6 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.editModeCheck.setChecked(False)
         
     ### User has changed a value of a attribute cell
-    # TODO: A lot of print statements in this need to be changed to dialogues
     @pyqtSlot('int', 'int')
     def attributeCellChanged(self, row, column):
         newValue = self.tableWidget.item(row, column)
@@ -192,25 +191,24 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                         # Update was successful, commit changes
                         successCommit = self.currentLayer.commitChanges()
                         if not successCommit:
-                            print(len(self.currentLayer.commitErrors()))
-                            print(self.currentLayer.commitErrors()[0])
+                            commitError = str((len(self.currentLayer.commitErrors())))
+                            commitError += '\n' + str((self.currentLayer.commitErrors()[0]))
+                            self.error.showMessage(commitError)
                         else:
                             #Else the operation was a success
                             self.currentLayer.startEditing()
                     else:
                         # Update failed, report error
-                        print('Attribute update failed')
+                        updateError = 'Attribute update failed'
+                        self.error.showMessage(updateError)
                             
                 
             
 
     ### Update on new selection
-      # TODO: CHECK TO SEE IF THIS CAN BE REPLACED WITH refreshTable()
     @pyqtSlot()
     def handleSelectionChanged(self):
         #If there are selected layers in QGIS
-        if not self.currentLayer.getSelectedFeatures().isClosed():
-            print('Layers Selected')
         self.refreshTable()
 
     ### Decimal Selection Box
@@ -398,8 +396,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                 if float(percentile) < 0 or float(percentile) > 100:
                     raise ValueError
         except ValueError:
-            # TODO: Prompt this in a dialouge
-            print('Invalid Value for Percentile Detected!')
+            self.error.showMessage('Invalid Value for Percentile Detected!')
             percentileArray = []
         emptyCellsRemoved = removeEmptyCells(inputArray)
         numericalStatistics = FS3NumericalStatistics()
@@ -420,8 +417,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                 if float(percentile) < 0 or float(percentile) > 100:
                     raise ValueError
         except ValueError:
-            # TODO: Prompt this in a dialouge
-            print('Invalid Value for Percentile Detected!')
+            self.error.showMessage('Invalid Value for Percentile Detected!')
             percentileArray = []
         emptyCellsRemoved = removeEmptyCells(inputArray)
         characterStatistics = FS3CharacterStatistics()
