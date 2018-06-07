@@ -509,6 +509,9 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                                             QTableWidgetItem(str(stat.medianValue)))
                 row += 1
                 self.statisticTable.setItem(row, col,
+                                            QTableWidgetItem(str(stat.modeValue)))
+                row += 1
+                self.statisticTable.setItem(row, col,
                                             QTableWidgetItem(str(stat.sumValue)))
                 row += 1
                 self.statisticTable.setItem(row, col,

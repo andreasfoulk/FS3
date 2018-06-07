@@ -27,16 +27,18 @@ class FS3NumericalStatistics(object):
         self.minValue = 0
         self.meanValue = 0
         self.medianValue = 0
+        self.modeValue = 0
         self.sumValue = 0
         self.stdDevValue = 0
         self.coeffVarValue = 0
         self.percentiles = [0]
-        self.statCount = 9
+        self.statCount = 10
         self.statName = ["Item Count",
                          "Max Value",
                          "Min Value",
                          "Mean Value",
                          "Median Value",
+                         "Mode Value",
                          "Sum Value",
                          "Standard Deviation",
                          "Coefficient of Variation"]
@@ -56,6 +58,7 @@ class FS3NumericalStatistics(object):
         self.minValue = minValue(inputArray)
         self.meanValue = meanValue(inputArray)
         self.medianValue = medianValue(inputArray)
+        self.modeValue = modeValue(inputArray)
         self.sumValue = sumValue(inputArray)
         self.stdDevValue = stdDevValue(inputArray)
         self.coeffVarValue = coeffVarValue(inputArray)
@@ -71,6 +74,7 @@ class FS3NumericalStatistics(object):
         self.minValue = decimalRound(self.minValue, precision)
         self.meanValue = decimalRound(self.meanValue, precision)
         self.medianValue = decimalRound(self.medianValue, precision)
+        self.modeValue = decimalRound(self.modeValue, precision)
         self.sumValue = decimalRound(self.sumValue, precision)
         self.stdDevValue = decimalRound(self.stdDevValue, precision)
         self.coeffVarValue = decimalRound(self.coeffVarValue, precision)
@@ -106,16 +110,18 @@ class FS3CharacterStatistics(object):
         self.minLength = 0
         self.meanLength = 0
         self.medianLength = 0
+        self.modeLength = 0
         self.sumLength = 0
         self.stdDevLength = 0
         self.coeffVarLength = 0
         self.percentiles = [0]
-        self.statCount = 9
+        self.statCount = 10
         self.statName = ["Item Count",
                          "Max Length",
                          "Min Length",
                          "Mean Length",
                          "Median Length",
+                         "Mode Length",
                          "Sum Length",
                          "Standard Deviation (Length)",
                          "Coefficient of Variation (Length)"]
@@ -140,6 +146,7 @@ class FS3CharacterStatistics(object):
         self.minLength = minValue(inputArray)
         self.meanLength = meanValue(inputArray)
         self.medianLength = medianValue(inputArray)
+        self.modeLength = modeValue(inputArray)
         self.sumLength = sumValue(inputArray)
         self.stdDevLength = stdDevValue(inputArray)
         self.coeffVarLength = coeffVarValue(inputArray)
@@ -156,6 +163,7 @@ class FS3CharacterStatistics(object):
         self.minLength = decimalRound(self.minLength, precision)
         self.meanLength = decimalRound(self.meanLength, precision)
         self.medianLength = decimalRound(self.medianLength, precision)
+        self.modeLength = decimalRound(self.modeLength, precision)
         self.sumLength = decimalRound(self.sumLength, precision)
         self.stdDevLength = decimalRound(self.stdDevLength, precision)
         self.coeffVarLength = decimalRound(self.coeffVarLength, precision)
@@ -240,6 +248,17 @@ def medianValue(inputArray):
     """
     medianValueReturn = statistics.median(inputArray)
     return medianValueReturn
+
+def modeValue(inputArray):
+    """
+    modeValue
+    Function used to calculate the mode value of an array
+    @param inputArray Array passed for calculation
+    @return modeValueReturn The integer value returned by the calculation
+    """
+    modeValueReturn, count = numpy.unique(inputArray, return_counts=True)
+    maximum = count.argmax()
+    return modeValueReturn[maximum]
 
 def sumValue(inputArray):
     """
