@@ -8,10 +8,10 @@
 from __future__ import print_function
 
 import os
-from qgis.core import QgsProject
+from qgis.core import QgsProject, NULL
 from PyQt5 import uic
 from PyQt5.QtCore import Qt, pyqtSlot
-from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt5.QtWidgets import QApplication, QMainWindow, QErrorMessage
 from PyQt5.QtWidgets import QVBoxLayout, QTableWidget, QTableWidgetItem
 
 from .layerFieldGetter import LayerFieldGetter
@@ -19,8 +19,6 @@ from .fs3Stats import FS3NumericalStatistics, FS3CharacterStatistics
 from .fs3Stats import removeEmptyCells
 from .fs3Unique import FS3Uniqueness
 from .roundFunc import decimalRound
-
-# pylint: disable=fixme
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
 
@@ -43,13 +41,18 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.currentProject = QgsProject.instance()
         self.currentLayer = None
         self.allFields = None
+        self.emptyCellDict = {}    #{feature_id:cell}
 
         self.percentile25Update()
         self.currentDecimalPrecision = 0
+        
+        self.error = QErrorMessage()
 
         ### Tabs
         self.dataTableLayout = QVBoxLayout()
         self.tableWidget = QTableWidget()
+        ### Data Table Widget Connection
+        self.tableWidget.cellChanged.connect(self.attributeCellChanged)
         self.statisticLayout = QVBoxLayout()
         self.statisticTable = QTableWidget()
         self.uniqueLayout = QVBoxLayout()
@@ -71,6 +74,8 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.percentilesLineEdit.textChanged.connect(self.percentileTextChanged)
         # Limit to Selected
         self.limitToSelected.stateChanged.connect(self.handleLimitSelected)
+        # Toggle Edit Mode
+        self.editModeCheck.stateChanged.connect(self.handleEditModeChecked)
         # Decimal Selector
         self.numberOfDecimalsBox.valueChanged.connect(self.handleDecimalChanged)
 
@@ -131,14 +136,79 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         if not self.currentLayer.getSelectedFeatures().isClosed():
             #Update the table
             self.refreshTable()
+            
+    ### Edit Mode Checkbox
+    @pyqtSlot()
+    def handleEditModeChecked(self):
+        # Edit box was checked
+        # Check state
+        if self.editModeCheck.isChecked():
+            # Check if the layer is already in edit mode
+            if self.currentLayer.isEditable():
+                # Our work here is already done
+                return
+            # Else set the layer to editable
+            self.currentLayer.startEditing()
+        else:
+            # Else the checkbox is unchecked 
+            # Check state of the layer
+            if not self.currentLayer.isEditable():
+                # Our work here is already done
+                return
+            # Else set the layer to noneditable
+            self.currentLayer.commitChanges()
+            
+    ### Editing Started and Stopped Signals
+    @pyqtSlot()         
+    def editingStartedQGIS(self):
+        if self.editModeCheck.isChecked():
+            # The checkbox is already checked, return
+            return
+        self.editModeCheck.setChecked(True)
+            
+    @pyqtSlot()     
+    def editingStoppedQGIS(self):
+        if not self.editModeCheck.isChecked():
+            # The checkbox is already unchecked, return
+            return
+        self.editModeCheck.setChecked(False)
+        
+    ### User has changed a value of a attribute cell
+    @pyqtSlot('int', 'int')
+    def attributeCellChanged(self, row, column):
+        newValue = self.tableWidget.item(row, column)
+        if self.currentLayer.isEditable():
+            # Make the change then commit the change
+            fieldname = self.tableWidget.horizontalHeaderItem(column).text()
+            for fid, cell in self.emptyCellDict.items():
+                feature = self.currentLayer.getFeature(fid)
+                fieldIndex = feature.fieldNameIndex(fieldname)
+                if cell == newValue:
+                    success = self.currentLayer.changeAttributeValue(fid, 
+                                                            fieldIndex,
+                                                            newValue.text())
+                    if success:
+                        # Update was successful, commit changes
+                        successCommit = self.currentLayer.commitChanges()
+                        if not successCommit:
+                            commitError = str((len(self.currentLayer.commitErrors())))
+                            commitError += '\n' + str((self.currentLayer.commitErrors()[0]))
+                            self.error.showMessage(commitError)
+                        else:
+                            #Else the operation was a success
+                            self.currentLayer.startEditing()
+                    else:
+                        # Update failed, report error
+                        updateError = 'Attribute update failed'
+                        self.error.showMessage(updateError)
+                            
+                
+            
 
     ### Update on new selection
-      # TODO: CHECK TO SEE IF THIS CAN BE REPLACED WITH refreshTable()
     @pyqtSlot()
     def handleSelectionChanged(self):
         #If there are selected layers in QGIS
-        if not self.currentLayer.getSelectedFeatures().isClosed():
-            print('Layers Selected')
         self.refreshTable()
 
     ### Decimal Selection Box
@@ -178,6 +248,11 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
 
             # Connect the current layer to a pyqtSlot
             self.currentLayer.selectionChanged.connect(self.handleSelectionChanged)
+            
+            #Listen for editing mode enabled and disabled
+            self.currentLayer.editingStarted.connect(self.editingStartedQGIS)
+            self.currentLayer.editingStopped.connect(self.editingStoppedQGIS)
+            
 
 
     @pyqtSlot()
@@ -186,6 +261,8 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         Refresh the table content with coresponding Layer & field selection
         """
         self.tableWidget.setSortingEnabled(False)
+        self.emptyCellDict.clear()
+        self.tableWidget.blockSignals(True)
         self.tableWidget.clear()
 
         # Get selected fields
@@ -244,7 +321,14 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                     if isinstance(attribute, float):
                         attribute = decimalRound(attribute,
                                                  self.currentDecimalPrecision)
-                    self.tableWidget.setItem(row, col, MyTableWidgetItem(str(attribute)))
+                    if attribute == NULL:
+                        cell = MyTableWidgetItem("")
+                        self.tableWidget.setItem(row, col, cell)
+                        self.emptyCellDict[feature.id()] = cell
+                    else:
+                        cell = MyTableWidgetItem(str(attribute))
+                        self.tableWidget.setItem(row, col, cell)
+                        self.emptyCellDict[feature.id()] = cell
                     col += 1
 
             else:
@@ -258,7 +342,14 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                         attribute = decimalRound(attribute,
                                                      self.currentDecimalPrecision)
                     statValues[col].append(attribute)
-                    self.tableWidget.setItem(row, col, MyTableWidgetItem(str(attribute)))
+                    if attribute == NULL:
+                        cell = MyTableWidgetItem("")
+                        self.tableWidget.setItem(row, col, cell)
+                        self.emptyCellDict[feature.id()] = cell
+                    else:
+                        cell = MyTableWidgetItem(str(attribute))
+                        self.tableWidget.setItem(row, col, cell)
+                        self.emptyCellDict[feature.id()] = cell
                     col += 1
 
             row += 1
@@ -289,6 +380,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
 
         self.dataTableLayout.addWidget(self.tableWidget)
         self.dataTab.setLayout(self.dataTableLayout)
+        self.tableWidget.blockSignals(False)
         self.tableWidget.setSortingEnabled(True)
 
 
@@ -304,8 +396,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                 if float(percentile) < 0 or float(percentile) > 100:
                     raise ValueError
         except ValueError:
-            # TODO: Prompt this in a dialouge
-            print('Invalid Value for Percentile Detected!')
+            self.error.showMessage('Invalid Value for Percentile Detected!')
             percentileArray = []
         emptyCellsRemoved = removeEmptyCells(inputArray)
         numericalStatistics = FS3NumericalStatistics()
@@ -326,8 +417,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                 if float(percentile) < 0 or float(percentile) > 100:
                     raise ValueError
         except ValueError:
-            # TODO: Prompt this in a dialouge
-            print('Invalid Value for Percentile Detected!')
+            self.error.showMessage('Invalid Value for Percentile Detected!')
             percentileArray = []
         emptyCellsRemoved = removeEmptyCells(inputArray)
         characterStatistics = FS3CharacterStatistics()
