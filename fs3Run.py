@@ -13,6 +13,7 @@ from PyQt5 import uic
 from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import QApplication, QMainWindow, QErrorMessage
 from PyQt5.QtWidgets import QVBoxLayout, QTableWidget, QTableWidgetItem
+from PyQt5.QtGui import QColor
 
 from .layerFieldGetter import LayerFieldGetter
 from .fs3Stats import FS3NumericalStatistics, FS3CharacterStatistics
@@ -35,7 +36,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         super(FS3MainWindow, self).__init__(parent)
         self.setupUi(self)
         self.mainWindowSplitter.setStretchFactor(1, 10)
-        self.setWindowTitle('FS3 -- FieldStats3 -- Field Statistics 3')
+        self.setWindowTitle('FS3 -- FieldStats3 -- Field Statistics 3 -- F I E L D S T A T I S T I C S T H R E E')
 
         self.fieldGetterInst = LayerFieldGetter()
         self.currentProject = QgsProject.instance()
@@ -57,6 +58,9 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.statisticTable = QTableWidget()
         self.uniqueLayout = QVBoxLayout()
         self.uniqueTable = QTableWidget()
+        
+        ###Background Color Brush
+        self.backgroundBrush = QColor.fromRgb(230,230,250)
 
         #Refresh for the connecters
         self.refresh()
@@ -132,10 +136,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
     ### Limit to Selected Checkbox
     @pyqtSlot()
     def handleLimitSelected(self):
-        #If there are selected layers in QGIS
-        if not self.currentLayer.getSelectedFeatures().isClosed():
-            #Update the table
-            self.refreshTable()
+        self.refreshTable()
             
     ### Edit Mode Checkbox
     @pyqtSlot()
@@ -323,10 +324,16 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                                                  self.currentDecimalPrecision)
                     if attribute == NULL:
                         cell = MyTableWidgetItem("")
+                        if row%2 == 0:
+                            #This is an even row, apply a stripe
+                            cell.setBackground(self.backgroundBrush)
                         self.tableWidget.setItem(row, col, cell)
                         self.emptyCellDict[feature.id()] = cell
                     else:
                         cell = MyTableWidgetItem(str(attribute))
+                        if (row%2) == 0:
+                            #This is an even row, apply a stripe
+                            cell.setBackground(self.backgroundBrush)
                         self.tableWidget.setItem(row, col, cell)
                         self.emptyCellDict[feature.id()] = cell
                     col += 1
@@ -539,11 +546,11 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.uniqueTable.setColumnCount(unique.statCount)
         horizontalHeaders = unique.statName
         #Append the names of the fields to the value field
-        horizontalHeaders[0] += ' ('
+        horizontalHeaders[0] += ' (['
         for field in fields:
-            horizontalHeaders[0] += field + ', '
-        horizontalHeaders[0] = horizontalHeaders[0][:-2]
-        horizontalHeaders[0] += ')'
+            horizontalHeaders[0] += field + '] , ['
+        horizontalHeaders[0] = horizontalHeaders[0][:-5]
+        horizontalHeaders[0] += '])'
         self.uniqueTable.setHorizontalHeaderLabels(horizontalHeaders)
         for value in unique.uniqueValues:
             self.uniqueTable.setItem(row, col,
