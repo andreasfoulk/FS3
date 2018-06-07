@@ -35,7 +35,7 @@ class Grapher:
 
         self.fields = []
         self.attributes = []
-        graphTypes = ['Bar', 'Pie']
+        graphTypes = ['Bar', 'Pie', 'Line', 'Scatter']
         self.graphTypeBox.insertItems(0, graphTypes)
 
     def setData(self, fields, attributes):
@@ -43,7 +43,6 @@ class Grapher:
         self.attributes = attributes
 
     def makeGraph(self):
-        print('This might actually work')
         if self.graphTypeBox.currentText() == 'Bar':
             plot_path = self.makeBarGraph()
         elif self.graphTypeBox.currentText() == 'Pie':

@@ -15,8 +15,8 @@ from PyQt5.QtCore import Qt, pyqtSlot, QUrl
 from PyQt5.QtWidgets import QApplication, QMainWindow, QErrorMessage
 from PyQt5.QtWidgets import QVBoxLayout, QTableWidget, QTableWidgetItem
 # TODO what do we need from the QWebKit?
-from PyQt5.QtWebKit import *
-from PyQt5.QtWebKitWidgets import *
+#from PyQt5.QtWebKit import QWebView
+from PyQt5.QtWebKitWidgets import QWebView
 
 from .layerFieldGetter import LayerFieldGetter
 from .fs3Stats import FS3NumericalStatistics, FS3CharacterStatistics
@@ -590,6 +590,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.graphLayout.addWidget(self.graphView)
         self.graphFrame.setLayout(self.graphLayout)
         self.graphView.show()
+
 
 class MyTableWidgetItem(QTableWidgetItem):
     """
