@@ -43,6 +43,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.currentProject = QgsProject.instance()
         self.currentLayer = None
         self.allFields = None
+        self.emptyCellDict = {}    #{feature_id:cell}
 
         self.percentile25Update()
         self.currentDecimalPrecision = 0
@@ -50,6 +51,8 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         ### Tabs
         self.dataTableLayout = QVBoxLayout()
         self.tableWidget = QTableWidget()
+        ### Data Table Widget Connection
+        self.tableWidget.cellChanged.connect(self.attributeCellChanged)
         self.statisticLayout = QVBoxLayout()
         self.statisticTable = QTableWidget()
         self.uniqueLayout = QVBoxLayout()
@@ -169,6 +172,37 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
             # The checkbox is already unchecked, return
             return
         self.editModeCheck.setChecked(False)
+        
+    ### User has changed a value of a attribute cell
+    # TODO: A lot of print statements in this need to be changed to dialogues
+    @pyqtSlot('int', 'int')
+    def attributeCellChanged(self, row, column):
+        newValue = self.tableWidget.item(row, column)
+        if self.currentLayer.isEditable():
+            # Make the change then commit the change
+            fieldname = self.tableWidget.horizontalHeaderItem(column).text()
+            for fid, cell in self.emptyCellDict.items():
+                feature = self.currentLayer.getFeature(fid)
+                fieldIndex = feature.fieldNameIndex(fieldname)
+                if cell == newValue:
+                    success = self.currentLayer.changeAttributeValue(fid, 
+                                                            fieldIndex,
+                                                            newValue.text())
+                    if success:
+                        # Update was successful, commit changes
+                        successCommit = self.currentLayer.commitChanges()
+                        if not successCommit:
+                            print(len(self.currentLayer.commitErrors()))
+                            print(self.currentLayer.commitErrors()[0])
+                        else:
+                            #Else the operation was a success
+                            self.currentLayer.startEditing()
+                    else:
+                        # Update failed, report error
+                        print('Attribute update failed')
+                            
+                
+            
 
     ### Update on new selection
       # TODO: CHECK TO SEE IF THIS CAN BE REPLACED WITH refreshTable()
@@ -229,6 +263,8 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         Refresh the table content with coresponding Layer & field selection
         """
         self.tableWidget.setSortingEnabled(False)
+        self.emptyCellDict.clear()
+        self.tableWidget.blockSignals(True)
         self.tableWidget.clear()
 
         # Get selected fields
@@ -288,9 +324,13 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                         attribute = decimalRound(attribute,
                                                  self.currentDecimalPrecision)
                     if attribute == NULL:
-                        self.tableWidget.setItem(row, col, MyTableWidgetItem(""))
+                        cell = MyTableWidgetItem("")
+                        self.tableWidget.setItem(row, col, cell)
+                        self.emptyCellDict[feature.id()] = cell
                     else:
-                        self.tableWidget.setItem(row, col, MyTableWidgetItem(str(attribute)))
+                        cell = MyTableWidgetItem(str(attribute))
+                        self.tableWidget.setItem(row, col, cell)
+                        self.emptyCellDict[feature.id()] = cell
                     col += 1
 
             else:
@@ -305,9 +345,13 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                                                      self.currentDecimalPrecision)
                     statValues[col].append(attribute)
                     if attribute == NULL:
-                        self.tableWidget.setItem(row, col, MyTableWidgetItem(""))
+                        cell = MyTableWidgetItem("")
+                        self.tableWidget.setItem(row, col, cell)
+                        self.emptyCellDict[feature.id()] = cell
                     else:
-                        self.tableWidget.setItem(row, col, MyTableWidgetItem(str(attribute)))
+                        cell = MyTableWidgetItem(str(attribute))
+                        self.tableWidget.setItem(row, col, cell)
+                        self.emptyCellDict[feature.id()] = cell
                     col += 1
 
             row += 1
@@ -338,6 +382,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
 
         self.dataTableLayout.addWidget(self.tableWidget)
         self.dataTab.setLayout(self.dataTableLayout)
+        self.tableWidget.blockSignals(False)
         self.tableWidget.setSortingEnabled(True)
 
 
