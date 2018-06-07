@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="fr" sourcelanguage="en_US">
+<!DOCTYPE TS><TS version="2.0" language="fr" sourcelanguage="en_US">
 <context>
     <name>mainWindow</name>
     <message>
@@ -54,14 +53,17 @@
         <translation>Haut Extrémité</translation>
     </message>
     <message>
+        <location filename="../fs3.ui" line="181"/>
         <source>Previous</source>
         <translation type="obsolete">Précédent</translation>
     </message>
     <message>
+        <location filename="../fs3.ui" line="181"/>
         <source>Next</source>
         <translation type="obsolete">Suivant</translation>
     </message>
     <message>
+        <location filename="../fs3.ui" line="181"/>
         <source>Data Table</source>
         <translation type="obsolete">Tableau de Données</translation>
     </message>
