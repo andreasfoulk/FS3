@@ -60,7 +60,8 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.uniqueTable = QTableWidget()
         
         ###Background Color Brush
-        self.backgroundBrush = QColor.fromRgb(230,230,250)
+        self.backgroundBrush = QColor.fromRgb(230, 230, 250)
+        self.defaultBrush = QColor.fromRgb(0, 0, 0, a=0)
 
         #Refresh for the connecters
         self.refresh()
