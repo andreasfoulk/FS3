@@ -8,19 +8,18 @@
 from __future__ import print_function
 
 import os
-from qgis.core import QgsProject
+from qgis.core import QgsProject, NULL
 from PyQt5 import uic
 from PyQt5.QtCore import Qt, pyqtSlot
-from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt5.QtWidgets import QApplication, QMainWindow, QErrorMessage
 from PyQt5.QtWidgets import QVBoxLayout, QTableWidget, QTableWidgetItem
+from PyQt5.QtGui import QColor
 
 from .layerFieldGetter import LayerFieldGetter
 from .fs3Stats import FS3NumericalStatistics, FS3CharacterStatistics
 from .fs3Stats import removeEmptyCells
 from .fs3Unique import FS3Uniqueness
 from .roundFunc import decimalRound
-
-# pylint: disable=fixme
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
 
@@ -37,23 +36,36 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         super(FS3MainWindow, self).__init__(parent)
         self.setupUi(self)
         self.mainWindowSplitter.setStretchFactor(1, 10)
-        self.setWindowTitle('FS3 -- FieldStats3 -- Field Statistics 3')
+        self.setWindowTitle('FS3 -- FieldStats3 -- Field Statistics 3 -- F I E L D S T A T I S T I C S T H R E E')
 
         self.fieldGetterInst = LayerFieldGetter()
         self.currentProject = QgsProject.instance()
         self.currentLayer = None
         self.allFields = None
+        self.emptyCellDict = {}    #{feature_id:cell}
 
         self.percentile25Update()
         self.currentDecimalPrecision = 0
+        
+        self.error = QErrorMessage()
 
         ### Tabs
         self.dataTableLayout = QVBoxLayout()
         self.tableWidget = QTableWidget()
+        ### Data Table Widget Connection
+        self.tableWidget.cellChanged.connect(self.attributeCellChanged)
+        self.horizontalHeader = self.tableWidget.horizontalHeader()
+        self.horizontalHeader.sectionClicked.connect(self.handleDataSortSignal)
         self.statisticLayout = QVBoxLayout()
         self.statisticTable = QTableWidget()
         self.uniqueLayout = QVBoxLayout()
         self.uniqueTable = QTableWidget()
+        self.uniqueHHeader = self.uniqueTable.horizontalHeader()
+        self.uniqueHHeader.sectionClicked.connect(self.handleUniqueSortSignal)
+        
+        ###Background Color Brush
+        self.backgroundBrush = QColor.fromRgb(230, 230, 250)
+        self.defaultBrush = QColor.fromRgbF(0, 0, 0, 0)
 
         #Refresh for the connecters
         self.refresh()
@@ -71,6 +83,8 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.percentilesLineEdit.textChanged.connect(self.percentileTextChanged)
         # Limit to Selected
         self.limitToSelected.stateChanged.connect(self.handleLimitSelected)
+        # Toggle Edit Mode
+        self.editModeCheck.stateChanged.connect(self.handleEditModeChecked)
         # Decimal Selector
         self.numberOfDecimalsBox.valueChanged.connect(self.handleDecimalChanged)
 
@@ -127,18 +141,104 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
     ### Limit to Selected Checkbox
     @pyqtSlot()
     def handleLimitSelected(self):
-        #If there are selected layers in QGIS
-        if not self.currentLayer.getSelectedFeatures().isClosed():
-            #Update the table
-            self.refreshTable()
+        self.refreshTable()
+            
+    ### Edit Mode Checkbox
+    @pyqtSlot()
+    def handleEditModeChecked(self):
+        # Edit box was checked
+        # Check state
+        if self.editModeCheck.isChecked():
+            # Check if the layer is already in edit mode
+            if self.currentLayer.isEditable():
+                # Our work here is already done
+                return
+            # Else set the layer to editable
+            self.currentLayer.startEditing()
+        else:
+            # Else the checkbox is unchecked 
+            # Check state of the layer
+            if not self.currentLayer.isEditable():
+                # Our work here is already done
+                return
+            # Else set the layer to noneditable
+            self.currentLayer.commitChanges()
+            
+    ### Editing Started and Stopped Signals
+    @pyqtSlot()         
+    def editingStartedQGIS(self):
+        if self.editModeCheck.isChecked():
+            # The checkbox is already checked, return
+            return
+        self.editModeCheck.setChecked(True)
+            
+    @pyqtSlot()     
+    def editingStoppedQGIS(self):
+        if not self.editModeCheck.isChecked():
+            # The checkbox is already unchecked, return
+            return
+        self.editModeCheck.setChecked(False)
+        
+    ### User has changed a value of a attribute cell
+    @pyqtSlot('int', 'int')
+    def attributeCellChanged(self, row, column):
+        newValue = self.tableWidget.item(row, column)
+        if self.currentLayer.isEditable():
+            # Make the change then commit the change
+            fieldname = self.tableWidget.horizontalHeaderItem(column).text()
+            for fid, cell in self.emptyCellDict.items():
+                feature = self.currentLayer.getFeature(fid)
+                fieldIndex = feature.fieldNameIndex(fieldname)
+                if cell == newValue:
+                    success = self.currentLayer.changeAttributeValue(fid, 
+                                                            fieldIndex,
+                                                            newValue.text())
+                    if success:
+                        # Update was successful, commit changes
+                        successCommit = self.currentLayer.commitChanges()
+                        if not successCommit:
+                            commitError = str((len(self.currentLayer.commitErrors())))
+                            commitError += '\n' + str((self.currentLayer.commitErrors()[0]))
+                            self.error.showMessage(commitError)
+                        else:
+                            #Else the operation was a success
+                            self.currentLayer.startEditing()
+                    else:
+                        # Update failed, report error
+                        updateError = 'Attribute update failed'
+                        self.error.showMessage(updateError)
+
+    ### User has clicked on a header in the table
+    @pyqtSlot()
+    def handleDataSortSignal(self):
+        #Recolor the table
+        for i in range(0, self.tableWidget.columnCount()):
+            for j in range(0, self.tableWidget.rowCount()):
+                cell = self.tableWidget.item(j, i)
+                if (j%2) == 0:
+                    #This is an even row, color it
+                    cell.setBackground(self.backgroundBrush)
+                else:
+                    #This is an odd row, default its color
+                    cell.setBackground(self.defaultBrush)
+                    
+    @pyqtSlot()
+    def handleUniqueSortSignal(self):
+        #Recolor the table
+        for i in range(0, self.uniqueTable.columnCount()):
+            for j in range(0, self.uniqueTable.rowCount()):
+                cell = self.uniqueTable.item(j, i)
+                if (j%2) == 0:
+                    #This is an even row, color it
+                    cell.setBackground(self.backgroundBrush)
+                else:
+                    #This is an odd row, default its color
+                    cell.setBackground(self.defaultBrush)
 
     ### Update on new selection
-      # TODO: CHECK TO SEE IF THIS CAN BE REPLACED WITH refreshTable()
     @pyqtSlot()
     def handleSelectionChanged(self):
         #If there are selected layers in QGIS
-        if not self.currentLayer.getSelectedFeatures().isClosed():
-            print('Layers Selected')
         self.refreshTable()
 
     ### Decimal Selection Box
@@ -178,6 +278,11 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
 
             # Connect the current layer to a pyqtSlot
             self.currentLayer.selectionChanged.connect(self.handleSelectionChanged)
+            
+            #Listen for editing mode enabled and disabled
+            self.currentLayer.editingStarted.connect(self.editingStartedQGIS)
+            self.currentLayer.editingStopped.connect(self.editingStoppedQGIS)
+            
 
 
     @pyqtSlot()
@@ -186,6 +291,8 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         Refresh the table content with coresponding Layer & field selection
         """
         self.tableWidget.setSortingEnabled(False)
+        self.emptyCellDict.clear()
+        self.tableWidget.blockSignals(True)
         self.tableWidget.clear()
 
         # Get selected fields
@@ -244,7 +351,14 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                     if isinstance(attribute, float):
                         attribute = decimalRound(attribute,
                                                  self.currentDecimalPrecision)
-                    self.tableWidget.setItem(row, col, MyTableWidgetItem(str(attribute)))
+                    if attribute == NULL:
+                        cell = MyTableWidgetItem("")
+                        self.tableWidget.setItem(row, col, cell)
+                        self.emptyCellDict[feature.id()] = cell
+                    else:
+                        cell = MyTableWidgetItem(str(attribute))
+                        self.tableWidget.setItem(row, col, cell)
+                        self.emptyCellDict[feature.id()] = cell
                     col += 1
 
             else:
@@ -258,7 +372,14 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                         attribute = decimalRound(attribute,
                                                      self.currentDecimalPrecision)
                     statValues[col].append(attribute)
-                    self.tableWidget.setItem(row, col, MyTableWidgetItem(str(attribute)))
+                    if attribute == NULL:
+                        cell = MyTableWidgetItem("")
+                        self.tableWidget.setItem(row, col, cell)
+                        self.emptyCellDict[feature.id()] = cell
+                    else:
+                        cell = MyTableWidgetItem(str(attribute))
+                        self.tableWidget.setItem(row, col, cell)
+                        self.emptyCellDict[feature.id()] = cell
                     col += 1
 
             row += 1
@@ -289,7 +410,9 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
 
         self.dataTableLayout.addWidget(self.tableWidget)
         self.dataTab.setLayout(self.dataTableLayout)
+        self.tableWidget.blockSignals(False)
         self.tableWidget.setSortingEnabled(True)
+        self.handleDataSortSignal()
 
 
     def createNumericalStatistics(self, inputArray):
@@ -304,8 +427,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                 if float(percentile) < 0 or float(percentile) > 100:
                     raise ValueError
         except ValueError:
-            # TODO: Prompt this in a dialouge
-            print('Invalid Value for Percentile Detected!')
+            self.error.showMessage('Invalid Value for Percentile Detected!')
             percentileArray = []
         emptyCellsRemoved = removeEmptyCells(inputArray)
         numericalStatistics = FS3NumericalStatistics()
@@ -326,8 +448,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                 if float(percentile) < 0 or float(percentile) > 100:
                     raise ValueError
         except ValueError:
-            # TODO: Prompt this in a dialouge
-            print('Invalid Value for Percentile Detected!')
+            self.error.showMessage('Invalid Value for Percentile Detected!')
             percentileArray = []
         emptyCellsRemoved = removeEmptyCells(inputArray)
         characterStatistics = FS3CharacterStatistics()
@@ -438,6 +559,19 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
 
         self.statisticLayout.addWidget(self.statisticTable)
         self.statisticsTab.setLayout(self.statisticLayout)
+        self.handleStatisticsColor()
+        
+    def handleStatisticsColor(self):
+        #Recolor the table
+        for i in range(0, self.statisticTable.columnCount()):
+            for j in range(0, self.statisticTable.rowCount()):
+                cell = self.statisticTable.item(j, i)
+                if (j%2) == 0:
+                    #This is an even row, color it
+                    cell.setBackground(self.backgroundBrush)
+                else:
+                    #This is an odd row, default its color
+                    cell.setBackground(self.defaultBrush)
         
     def refreshUnique(self, fields, unique):
         #Start by clearing the layout
@@ -449,29 +583,30 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.uniqueTable.setColumnCount(unique.statCount)
         horizontalHeaders = unique.statName
         #Append the names of the fields to the value field
-        horizontalHeaders[0] += ' ('
+        horizontalHeaders[0] += ' (['
         for field in fields:
-            horizontalHeaders[0] += field + ', '
-        horizontalHeaders[0] = horizontalHeaders[0][:-2]
-        horizontalHeaders[0] += ')'
+            horizontalHeaders[0] += field + '] , ['
+        horizontalHeaders[0] = horizontalHeaders[0][:-5]
+        horizontalHeaders[0] += '])'
         self.uniqueTable.setHorizontalHeaderLabels(horizontalHeaders)
         for value in unique.uniqueValues:
-            self.uniqueTable.setItem(row, col,
-                                 MyTableWidgetItem(str(value)))
+            cell = MyTableWidgetItem(str(value))
+            self.uniqueTable.setItem(row, col, cell)
             row += 1
         row = 0
         col += 1
         for occurance in unique.uniqueNumOccur:
-            self.uniqueTable.setItem(row, col,
-                                 MyTableWidgetItem(str(occurance)))
+            cell = MyTableWidgetItem(str(occurance))
+            self.uniqueTable.setItem(row, col, cell)
             row += 1
         row = 0
         col += 1
         for percent in unique.uniquePercent:
-            self.uniqueTable.setItem(row, col,
-                                 MyTableWidgetItem(str(percent)))
+            cell = MyTableWidgetItem(str(percent))
+            self.uniqueTable.setItem(row, col, cell)
             row += 1
         self.uniqueTable.setSortingEnabled(True)
+        self.handleUniqueSortSignal()
         self.uniqueLayout.addWidget(self.uniqueTable)
         self.uniqueTab.setLayout(self.uniqueLayout)
 

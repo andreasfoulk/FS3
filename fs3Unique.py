@@ -48,10 +48,10 @@ class FS3Uniqueness(object):
         """
         returnArray = []
         for j in range(len(inputArray[0])):
-            returnArray.append("")
+            returnArray.append('[')
             for i in range(len(inputArray)):
-                returnArray[j] += str(inputArray[i][j]) + ', '
-            returnArray[j] = returnArray[j][:-2]
+                returnArray[j] += str(inputArray[i][j]) + '] , ['
+            returnArray[j] = returnArray[j][:-4]
         return returnArray
 
     def roundUniqueness(self, precision):
