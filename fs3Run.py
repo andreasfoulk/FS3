@@ -17,7 +17,7 @@ from PyQt5.QtWebKitWidgets import *
 from .layerFieldGetter import LayerFieldGetter
 from .fs3Stats import FS3NumericalStatistics, FS3CharacterStatistics
 from .fs3Stats import removeEmptyCells
-from .fs3Graphs import makeBarGraph
+from .fs3Graphs import makeBarGraph, makePieGraph
 from .fs3Unique import FS3Uniqueness
 from .roundFunc import decimalRound
 
@@ -82,6 +82,12 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                         .connect(self.refreshFields)
         self.selectFieldListWidget.itemSelectionChanged \
                         .connect(self.refreshAttributes)
+
+        self.fields = []
+        self.attributes = []
+        graphTypes = ['Bar', 'Pie']
+        self.graphTypeBox.insertItems(0, graphTypes)
+        self.graphTypeBox.currentIndexChanged.connect(self.refreshGraph)
 
 
     def refresh(self):
@@ -289,11 +295,13 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                     statistics.append(self.createCharacterStatistics(statValues[i]))
                     data.append(statValues[i])
 
+            self.fields = fields
+            self.attributes = data
             uniqueCalculation = self.createUniqueness(uniquenesses)
             self.refreshStatistics(fields, statistics)
 
             if data:
-                self.refreshGraph(fields, data)
+                self.refreshGraph()
 
             self.refreshUnique(fields, uniqueCalculation)
 
@@ -485,8 +493,16 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.uniqueLayout.addWidget(self.uniqueTable)
         self.uniqueTab.setLayout(self.uniqueLayout)
 
-    def refreshGraph(self, fields, stats):
-        plot_path = makeBarGraph(fields, stats) # Get graph from fs3Graphs
+
+    @pyqtSlot()
+    def refreshGraph(self):
+        if self.graphTypeBox.currentText() == 'Bar':
+            plot_path = makeBarGraph(self.fields, self.attributes) # Get graph from fs3Graphs
+        elif self.graphTypeBox.currentText() == 'Pie':
+            plot_path = makePieGraph(self.fields, self.attributes)
+        else:
+            plot_path = ''
+
         self.graphView.load(QUrl.fromLocalFile(plot_path))
         self.graphLayout.addWidget(self.graphView)
         self.graphFrame.setLayout(self.graphLayout)

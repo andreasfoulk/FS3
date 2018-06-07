@@ -2,7 +2,7 @@
 A simple data analysis plugin developed by Orden Aitchedji, McKenna Duzac, Andreas Foulk, and Tanner Lee.
 This plugin was developed with the guidance of Brian Krzys as part of our CSM 2018 summer session.
 It provides a quick and easy way to look at and analyze GIS data. Allowing the user to sort the data by the field of choice,
-receive general statistics on this field, look at the unique members of this field, and produce a varity of graphs using
+receive general statistics on this field, look at the unique members of this field, and produce a variety of graphs using
 this field and any others within the same dataset.
 ### Development Installation
 To install from source make sure pyrcc5 is installed then on a unix based machince from the root directory of this project run:
