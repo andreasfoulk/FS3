@@ -54,14 +54,18 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.tableWidget = QTableWidget()
         ### Data Table Widget Connection
         self.tableWidget.cellChanged.connect(self.attributeCellChanged)
+        self.horizontalHeader = self.tableWidget.horizontalHeader()
+        self.horizontalHeader.sectionClicked.connect(self.handleDataSortSignal)
         self.statisticLayout = QVBoxLayout()
         self.statisticTable = QTableWidget()
         self.uniqueLayout = QVBoxLayout()
         self.uniqueTable = QTableWidget()
+        self.uniqueHHeader = self.uniqueTable.horizontalHeader()
+        self.uniqueHHeader.sectionClicked.connect(self.handleUniqueSortSignal)
         
         ###Background Color Brush
         self.backgroundBrush = QColor.fromRgb(230, 230, 250)
-        self.defaultBrush = QColor.fromRgb(0, 0, 0, a=0)
+        self.defaultBrush = QColor.fromRgbF(0, 0, 0, 0)
 
         #Refresh for the connecters
         self.refresh()
@@ -203,9 +207,33 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                         # Update failed, report error
                         updateError = 'Attribute update failed'
                         self.error.showMessage(updateError)
-                            
-                
-            
+
+    ### User has clicked on a header in the table
+    @pyqtSlot()
+    def handleDataSortSignal(self):
+        #Recolor the table
+        for i in range(0, self.tableWidget.columnCount()):
+            for j in range(0, self.tableWidget.rowCount()):
+                cell = self.tableWidget.item(j, i)
+                if (j%2) == 0:
+                    #This is an even row, color it
+                    cell.setBackground(self.backgroundBrush)
+                else:
+                    #This is an odd row, default its color
+                    cell.setBackground(self.defaultBrush)
+                    
+    @pyqtSlot()
+    def handleUniqueSortSignal(self):
+        #Recolor the table
+        for i in range(0, self.uniqueTable.columnCount()):
+            for j in range(0, self.uniqueTable.rowCount()):
+                cell = self.uniqueTable.item(j, i)
+                if (j%2) == 0:
+                    #This is an even row, color it
+                    cell.setBackground(self.backgroundBrush)
+                else:
+                    #This is an odd row, default its color
+                    cell.setBackground(self.defaultBrush)
 
     ### Update on new selection
     @pyqtSlot()
@@ -325,16 +353,10 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                                                  self.currentDecimalPrecision)
                     if attribute == NULL:
                         cell = MyTableWidgetItem("")
-                        if row%2 == 0:
-                            #This is an even row, apply a stripe
-                            cell.setBackground(self.backgroundBrush)
                         self.tableWidget.setItem(row, col, cell)
                         self.emptyCellDict[feature.id()] = cell
                     else:
                         cell = MyTableWidgetItem(str(attribute))
-                        if (row%2) == 0:
-                            #This is an even row, apply a stripe
-                            cell.setBackground(self.backgroundBrush)
                         self.tableWidget.setItem(row, col, cell)
                         self.emptyCellDict[feature.id()] = cell
                     col += 1
@@ -390,6 +412,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.dataTab.setLayout(self.dataTableLayout)
         self.tableWidget.blockSignals(False)
         self.tableWidget.setSortingEnabled(True)
+        self.handleDataSortSignal()
 
 
     def createNumericalStatistics(self, inputArray):
@@ -536,6 +559,19 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
 
         self.statisticLayout.addWidget(self.statisticTable)
         self.statisticsTab.setLayout(self.statisticLayout)
+        self.handleStatisticsColor()
+        
+    def handleStatisticsColor(self):
+        #Recolor the table
+        for i in range(0, self.statisticTable.columnCount()):
+            for j in range(0, self.statisticTable.rowCount()):
+                cell = self.statisticTable.item(j, i)
+                if (j%2) == 0:
+                    #This is an even row, color it
+                    cell.setBackground(self.backgroundBrush)
+                else:
+                    #This is an odd row, default its color
+                    cell.setBackground(self.defaultBrush)
         
     def refreshUnique(self, fields, unique):
         #Start by clearing the layout
@@ -554,22 +590,23 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         horizontalHeaders[0] += '])'
         self.uniqueTable.setHorizontalHeaderLabels(horizontalHeaders)
         for value in unique.uniqueValues:
-            self.uniqueTable.setItem(row, col,
-                                 MyTableWidgetItem(str(value)))
+            cell = MyTableWidgetItem(str(value))
+            self.uniqueTable.setItem(row, col, cell)
             row += 1
         row = 0
         col += 1
         for occurance in unique.uniqueNumOccur:
-            self.uniqueTable.setItem(row, col,
-                                 MyTableWidgetItem(str(occurance)))
+            cell = MyTableWidgetItem(str(occurance))
+            self.uniqueTable.setItem(row, col, cell)
             row += 1
         row = 0
         col += 1
         for percent in unique.uniquePercent:
-            self.uniqueTable.setItem(row, col,
-                                 MyTableWidgetItem(str(percent)))
+            cell = MyTableWidgetItem(str(percent))
+            self.uniqueTable.setItem(row, col, cell)
             row += 1
         self.uniqueTable.setSortingEnabled(True)
+        self.handleUniqueSortSignal()
         self.uniqueLayout.addWidget(self.uniqueTable)
         self.uniqueTab.setLayout(self.uniqueLayout)
 
