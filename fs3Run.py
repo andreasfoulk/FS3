@@ -12,12 +12,13 @@ from qgis.core import QgsProject
 from PyQt5 import uic
 from PyQt5.QtCore import Qt, pyqtSlot, QUrl
 from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QTableWidget, QTableWidgetItem
+# TODO what do we need from the QWebKit?
 from PyQt5.QtWebKit import *
 from PyQt5.QtWebKitWidgets import *
 from .layerFieldGetter import LayerFieldGetter
 from .fs3Stats import FS3NumericalStatistics, FS3CharacterStatistics
 from .fs3Stats import removeEmptyCells
-from .fs3Graphs import makeBarGraph, makePieGraph
+from .fs3Graphs import Grapher
 from .fs3Unique import FS3Uniqueness
 from .roundFunc import decimalRound
 
@@ -83,11 +84,11 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.selectFieldListWidget.itemSelectionChanged \
                         .connect(self.refreshAttributes)
 
-        self.fields = []
-        self.attributes = []
-        graphTypes = ['Bar', 'Pie']
-        self.graphTypeBox.insertItems(0, graphTypes)
+        ### Handles graph stuffs
+        self.grapher = Grapher(self.graphTypeBox)
         self.graphTypeBox.currentIndexChanged.connect(self.refreshGraph)
+        self.selectFieldListWidget.itemSelectionChanged \
+                        .connect(self.refreshGraph)
 
 
     def refresh(self):
@@ -295,15 +296,13 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                     statistics.append(self.createCharacterStatistics(statValues[i]))
                     data.append(statValues[i])
 
+            self.grapher.setData(fields, data)
             self.fields = fields
             self.attributes = data
             uniqueCalculation = self.createUniqueness(uniquenesses)
-            self.refreshStatistics(fields, statistics)
-
-            if data:
-                self.refreshGraph()
-
             self.refreshUnique(fields, uniqueCalculation)
+
+            self.refreshStatistics(fields, statistics)
 
         self.dataTableLayout.addWidget(self.tableWidget)
         self.dataTab.setLayout(self.dataTableLayout)
@@ -493,16 +492,9 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.uniqueLayout.addWidget(self.uniqueTable)
         self.uniqueTab.setLayout(self.uniqueLayout)
 
-
     @pyqtSlot()
     def refreshGraph(self):
-        if self.graphTypeBox.currentText() == 'Bar':
-            plot_path = makeBarGraph(self.fields, self.attributes) # Get graph from fs3Graphs
-        elif self.graphTypeBox.currentText() == 'Pie':
-            plot_path = makePieGraph(self.fields, self.attributes)
-        else:
-            plot_path = ''
-
+        plot_path = self.grapher.makeGraph()
         self.graphView.load(QUrl.fromLocalFile(plot_path))
         self.graphLayout.addWidget(self.graphView)
         self.graphFrame.setLayout(self.graphLayout)
