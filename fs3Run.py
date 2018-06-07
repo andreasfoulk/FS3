@@ -566,6 +566,9 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         for i in range(0, self.statisticTable.columnCount()):
             for j in range(0, self.statisticTable.rowCount()):
                 cell = self.statisticTable.item(j, i)
+                if cell is None:
+                    cell = MyTableWidgetItem("")
+                    self.statisticTable.setItem(j, i, cell)
                 if (j%2) == 0:
                     #This is an even row, color it
                     cell.setBackground(self.backgroundBrush)
