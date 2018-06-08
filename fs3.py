@@ -28,11 +28,9 @@ class FS3Plugin(object):
         
         self.plugin_dir = os.path.dirname(__file__)
         locale = QSettings().value('locale/userLocale')[0:2]  
-        #locale = QSettings().value('locale/userLocale', 'en_US')
         locale_path = os.path.join(self.plugin_dir, 'i18n',
                 'fs3_{}.qm'.format(locale))
-
-        print(os.path.lexists(locale_path))
+    
         if os.path.exists(locale_path):
             self.translator = QTranslator()
             self.translator.load(locale_path)
@@ -87,8 +85,7 @@ class FS3Plugin(object):
         Creates and runs an instance of the window
         """
         layersCount = len(LayerFieldGetter.getVectorLayers())
-        if layersCount == 0:
-            self.iface.messageBar().pushMessage(QCoreApplication.translate("FS3Plugin",
-                "Project doesn't have any vector layers, You Fucking IDIOT"))
+        if layersCount == 0: 
+            self.iface.messageBar().pushMessage(self.translation("Project has NO vector layer loaded"))
             return
         self.mainWindow.show()

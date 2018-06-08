@@ -9,6 +9,7 @@ These functions are tested with uniqueTests.py
 
 from qgis.core import NULL
 from .roundFunc import decimalRound
+from PyQt5.QtCore import QTranslator, QCoreApplication
 
 class FS3Uniqueness(object):
     """
@@ -21,9 +22,9 @@ class FS3Uniqueness(object):
         self.uniqueNumOccur = 0
         self.uniquePercent = 0
         self.totalValues = 0
-        self.statName = ['Value',
-                         'Occurrences',
-                         'Percentage (%)']
+        self.statName = [QCoreApplication.translate("FS3Uniqueness", "Value"),
+                         QCoreApplication.translate("FS3Uniqueness", "Occurrences"),
+                         QCoreApplication.translate("FS3Uniqueness", "Percentage (%)")]
         self.statCount = 3
 
     def initialize(self, inputArray):
@@ -66,9 +67,9 @@ def uniqueValues(inputArray):
     valueList = []
     for x in inputArray:
         if x not in valueList:
-            if x == NULL and 'NULL (Empty)' not in valueList:
-                valueList.append('NULL (Empty)')
-            elif x == NULL and 'NULL (Empty)' in valueList:
+            if x == NULL and QCoreApplication.translate("FS3Uniqueness", "NULL (Empty)") not in valueList:
+                valueList.append(QCoreApplication.translate("FS3Uniqueness", "NULL (Empty)"))
+            elif x == NULL and QCoreApplication.translate("FS3Uniqueness", "NULL (Empty)") in valueList:
                 continue
             else:
                 valueList.append(x)
@@ -77,7 +78,7 @@ def uniqueValues(inputArray):
 def uniqueNumberOccurances(inputArray, originalArray):
     valueList = []
     for x in inputArray:
-        if x == 'NULL (Empty)':
+        if x == QCoreApplication.translate("FS3Uniqueness", "NULL (Empty)"):
             valueList.append(originalArray.count(None))
         else:
             valueList.append(originalArray.count(x))

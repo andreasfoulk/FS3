@@ -10,6 +10,7 @@ import statistics
 import numpy
 from .roundFunc import decimalRound
 from qgis.core import NULL
+from PyQt5.QtCore import QTranslator, QCoreApplication
 
 # pylint: disable=too-few-public-methods
 class FS3NumericalStatistics(object):
@@ -33,15 +34,15 @@ class FS3NumericalStatistics(object):
         self.coeffVarValue = 0
         self.percentiles = [0]
         self.statCount = 10
-        self.statName = ["Item Count",
-                         "Max Value",
-                         "Min Value",
-                         "Mean Value",
-                         "Median Value",
-                         "Mode Value",
-                         "Sum Value",
-                         "Standard Deviation",
-                         "Coefficient of Variation"]
+        self.statName = [QCoreApplication.translate("FS3NumericalStatistics", "Item Count"),
+                         QCoreApplication.translate("FS3NumericalStatistics", "Max Value"),
+                         QCoreApplication.translate("FS3NumericalStatistics", "Min Value"),
+                         QCoreApplication.translate("FS3NumericalStatistics", "Mean Value"),
+                         QCoreApplication.translate("FS3NumericalStatistics", "Median Value"),
+                         QCoreApplication.translate("FS3NumericalStatistics", "Mode Value"),
+                         QCoreApplication.translate("FS3NumericalStatistics", "Sum Value"),
+                         QCoreApplication.translate("FS3NumericalStatistics", "Standard Deviation"),
+                         QCoreApplication.translate("FS3NumericalStatistics", "Coefficient of Variation")]
 
     def initialize(self, inputArray, percentileArray):
         """
@@ -51,7 +52,7 @@ class FS3NumericalStatistics(object):
         """
         # Check to ensure we are not passing an empty list
         if len(inputArray) < 1:
-            self.statName.append('Percentile')
+            self.statName.append(QCoreApplication.translate("FS3NumericalStatistics", "Percentile"))
             return
         self.itemCount = itemCount(inputArray)
         self.maxValue = maxValue(inputArray)
@@ -66,7 +67,7 @@ class FS3NumericalStatistics(object):
         self.statCount = 8 + len(self.percentiles)
 
         for percentileNumber in percentileArray:
-            self.statName.append('Percentile: ' + str(percentileNumber) + '%')
+            self.statName.append(QCoreApplication.translate("FS3NumericalStatistics", "Percentile: ") + str(percentileNumber) + '%')
 
     def roundNumericStatistics(self, precision):
         self.itemCount = decimalRound(self.itemCount, precision)
@@ -116,15 +117,15 @@ class FS3CharacterStatistics(object):
         self.coeffVarLength = 0
         self.percentiles = [0]
         self.statCount = 10
-        self.statName = ["Item Count",
-                         "Max Length",
-                         "Min Length",
-                         "Mean Length",
-                         "Median Length",
-                         "Mode Length",
-                         "Sum Length",
-                         "Standard Deviation (Length)",
-                         "Coefficient of Variation (Length)"]
+        self.statName = [QCoreApplication.translate("fs3characterstatistics", "Item Count"),
+                         QCoreApplication.translate("fs3characterstatistics", "Max Length"),
+                         QCoreApplication.translate("fs3characterstatistics", "Min Length"),
+                         QCoreApplication.translate("fs3characterstatistics", "Mean Length"),
+                         QCoreApplication.translate("fs3characterstatistics", "Median Length"),
+                         QCoreApplication.translate("fs3characterstatistics", "Mode Length"),
+                         QCoreApplication.translate("fs3characterstatistics", "Sum Length"),
+                         QCoreApplication.translate("fs3characterstatistics", "Standard Deviation (Length)"),
+                         QCoreApplication.translate("fs3characterstatistics", "Coefficient of Variation (Length)")]
 
     def initialize(self, inputArray, percentileArray):
         """
@@ -134,7 +135,7 @@ class FS3CharacterStatistics(object):
         """
         # Check to ensure we are not passing an empty list
         if len(inputArray) < 1:
-            self.statName.append('Percentile')
+            self.statName.append(QCoreApplication.translate("fs3characterstatistics", "Percentile"))
             return
         # Start by converting the inputArray to a length array of the strings
         tempArray = []
@@ -154,8 +155,8 @@ class FS3CharacterStatistics(object):
         self.statCount = 8 + len(self.percentiles)
 
         for percentileNumber in percentileArray:
-            self.statName.append('Percentile: ' + str(percentileNumber) +
-                                 '% (Length)')
+            self.statName.append(QCoreApplication.translate("fs3characterstatistics",
+                "Percentile: ") + str(percentileNumber) + QCoreApplication.translate("fs3characterstatistics", " % (Length)"))
 
     def roundCharacterStatistics(self, precision):
         self.itemCount = decimalRound(self.itemCount, precision)

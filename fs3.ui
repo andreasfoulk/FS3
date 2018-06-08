@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>mainWindow</class>
+ <widget class="QMainWindow" name="mainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1000</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>1000</width>
+    <height>600</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <property name="windowOpacity">
+   <double>1.000000000000000</double>
+  </property>
+  <widget class="QWidget" name="mainWindowCentralWidget">
+   <layout class="QHBoxLayout" name="horizontalLayout_5">
+    <item>
+     <widget class="QSplitter" name="mainWindowSplitter">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+        <horstretch>18</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="childrenCollapsible">
+       <bool>false</bool>
+      </property>
+      <widget class="QFrame" name="inputPanel">
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+       <layout class="QGridLayout" name="gridLayout">
+        <item row="0" column="0">
+         <layout class="QVBoxLayout" name="inputPanelFormatTotal">
+          <item>
+           <layout class="QVBoxLayout" name="selectLayerFormat">
+            <item>
+             <widget class="QLabel" name="selectLayer">
+              <property name="text">
+               <string>Select Layer</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="selectLayerComboBox"/>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="selectFieldFormat">
+            <item>
+             <widget class="QLabel" name="selectField">
+              <property name="text">
+               <string>Select Fields</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QListWidget" name="selectFieldListWidget"/>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="limitAndDecimalFormat">
+            <item>
+             <widget class="QCheckBox" name="limitToSelected">
+              <property name="text">
+               <string>Limit to Selected</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="editModeCheck">
+              <property name="text">
+               <string>Enable Edit Mode</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="decimalHFormat">
+              <item>
+               <widget class="QSpinBox" name="numberOfDecimalsBox"/>
+              </item>
+              <item>
+               <widget class="QLabel" name="numberOfDecimals">
+                <property name="text">
+                 <string>Number of Decimals</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <spacer name="decimalPercentileSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeType">
+             <enum>QSizePolicy::Fixed</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>18</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="percentileFormat">
+            <item>
+             <widget class="QLabel" name="percentiles">
+              <property name="text">
+               <string>Percentiles</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="percentilesLineEdit"/>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="pushButtonFormat">
+            <item>
+             <layout class="QVBoxLayout" name="percentileButtonFormat">
+              <item>
+               <layout class="QHBoxLayout" name="percentile25And10Format">
+                <item>
+                 <widget class="QPushButton" name="percentile25">
+                  <property name="text">
+                   <string>25%</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="percentile10">
+                  <property name="text">
+                   <string>10%</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="percentile5AndHighEndFormat">
+                <item>
+                 <widget class="QPushButton" name="percentile5">
+                  <property name="text">
+                   <string>5%</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="percentileHighEnd">
+                  <property name="text">
+                   <string>High End</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="previousNextFormat"/>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QTabWidget" name="tabFields">
+       <property name="currentIndex">
+        <number>0</number>
+       </property>
+       <widget class="QWidget" name="dataTab">
+        <attribute name="title">
+         <string>Attributes</string>
+        </attribute>
+       </widget>
+       <widget class="QWidget" name="statisticsTab">
+        <attribute name="title">
+         <string>Statistics</string>
+        </attribute>
+       </widget>
+       <widget class="QWidget" name="uniqueTab">
+        <attribute name="title">
+         <string>Unique</string>
+        </attribute>
+       </widget>
+       <widget class="QWidget" name="graphTab">
+        <attribute name="title">
+         <string>Graph</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <item>
+          <widget class="QFrame" name="graphFrame">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>400</height>
+            </size>
+           </property>
+           <property name="sizeIncrement">
+            <size>
+             <width>0</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="baseSize">
+            <size>
+             <width>1</width>
+             <height>1</height>
+            </size>
+           </property>
+           <property name="frameShape">
+            <enum>QFrame::StyledPanel</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Raised</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QFrame" name="graphOptionsFrame">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="frameShape">
+            <enum>QFrame::StyledPanel</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Raised</enum>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_2">
+            <item row="1" column="0">
+             <widget class="QComboBox" name="graphTypeBox"/>
+            </item>
+            <item row="1" column="1">
+             <widget class="QLabel" name="graphTypeLabel">
+              <property name="text">
+               <string>Graph Type</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QPushButton" name="openGraphSettings">
+              <property name="text">
+               <string>Open Graph Settings</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1000</width>
+     <height>20</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
