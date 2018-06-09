@@ -1,16 +1,21 @@
 # -*- coding: utf-8 -*-
 """
 
-@author: Orden Aitchedji, Mckenna Duzac, Andreas Foulk, Tanner Lee
-@Repository: https://github.com/andreasfoulk/FS3
+    fs3Stats.py -- Plugin implimentation handling all statistics calculation
+                -- For more information see : https://github.com/andreasfoulk/FS3
+
+    Copyright (c) 2018 Orden Aitchedji, Mckenna Duzac, Andreas Foulk, Tanner Lee
+
+    This software may be modified and distributed under the terms
+    of the MIT license.  See the LICENSE file for details.
 
 """
 
 import statistics
 import numpy
-from .roundFunc import decimalRound
 from qgis.core import NULL
-from PyQt5.QtCore import QTranslator, QCoreApplication
+from .roundFunc import decimalRound
+from PyQt5.QtCore import  QCoreApplication
 
 # pylint: disable=too-few-public-methods
 class FS3NumericalStatistics(object):
@@ -70,6 +75,10 @@ class FS3NumericalStatistics(object):
             self.statName.append(QCoreApplication.translate("FS3NumericalStatistics", "Percentile: ") + str(percentileNumber) + '%')
 
     def roundNumericStatistics(self, precision):
+        """ 
+        roundNumericStatistics
+        Rounds all numerical analysis to a given precision
+        """
         self.itemCount = decimalRound(self.itemCount, precision)
         self.maxValue = decimalRound(self.maxValue, precision)
         self.minValue = decimalRound(self.minValue, precision)
@@ -155,10 +164,13 @@ class FS3CharacterStatistics(object):
         self.statCount = 8 + len(self.percentiles)
 
         for percentileNumber in percentileArray:
-            self.statName.append(QCoreApplication.translate("fs3characterstatistics",
-                "Percentile: ") + str(percentileNumber) + QCoreApplication.translate("fs3characterstatistics", " % (Length)"))
+            self.statName.append(QCoreApplication.translate("fs3characterstatistics", "Percentile: ") + str(percentileNumber) + QCoreApplication.translate("fs3characterstatistics", " % (Length)"))
 
     def roundCharacterStatistics(self, precision):
+        """
+        roundCharacterStatistics
+        Rounds all character statistics to a given precision
+        """
         self.itemCount = decimalRound(self.itemCount, precision)
         self.maxLength = decimalRound(self.maxLength, precision)
         self.minLength = decimalRound(self.minLength, precision)

@@ -2,8 +2,13 @@
 # pylint: disable=wildcard-import, method-hidden
 """
 
-@author: Orden Aitchedji, Mckenna Duzac, Andreas Foulk, Tanner Lee
-@Repository: https://github.com/andreasfoulk/FS3
+    fs3.py -- Plugin implimentation linking to QGIS
+           -- For more information see : https://github.com/andreasfoulk/FS3
+
+    Copyright (c) 2018 Orden Aitchedji, Mckenna Duzac, Andreas Foulk, Tanner Lee
+
+    This software may be modified and distributed under the terms
+    of the MIT license.  See the LICENSE file for details.
 
 """
 
@@ -12,25 +17,26 @@ from PyQt5.QtWidgets import QAction
 from PyQt5.QtGui import QIcon
 from .fs3Run import FS3MainWindow
 
-from .resources import * # pylint: disable=unused-import
+# pylint: disable=unused-import
+from .resources import *
 from .layerFieldGetter import LayerFieldGetter
 import os.path
 
 class FS3Plugin(object):
     """
     FS3Plugin handles the linking to QGIS.
-    The icon is declared here
-    The plugin is loaded to the toolbar here
-    And the main interface is called here
+    - The icon is declared here
+    - The plugin is loaded to the toolbar here
+    - The main interface is called here
     """
     def __init__(self, iface):
         self.iface = iface
-        
+
         self.plugin_dir = os.path.dirname(__file__)
-        locale = QSettings().value('locale/userLocale')[0:2]  
+        locale = QSettings().value('locale/userLocale')[0:2]
         locale_path = os.path.join(self.plugin_dir, 'i18n',
                 'fs3_{}.qm'.format(locale))
-    
+
         if os.path.exists(locale_path):
             self.translator = QTranslator()
             self.translator.load(locale_path)
@@ -72,9 +78,9 @@ class FS3Plugin(object):
         unload is a required method
         Used by QGIS to remove the plugin from the menu and toolbar
         """
-     
+
         #self.iface.removePluginMenu("&FS3 Plugin", self.action)
-    
+
         self.iface.removePluginMenu(self.translation(u'&FS3 Plugin'), self.action)
         self.iface.removeToolBarIcon(self.action)
 
@@ -85,7 +91,7 @@ class FS3Plugin(object):
         Creates and runs an instance of the window
         """
         layersCount = len(LayerFieldGetter.getVectorLayers())
-        if layersCount == 0: 
+        if layersCount == 0:
             self.iface.messageBar().pushMessage(self.translation("Project has NO vector layer loaded"))
             return
         self.mainWindow.show()
