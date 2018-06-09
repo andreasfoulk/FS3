@@ -13,7 +13,7 @@
 
 from qgis.core import NULL
 from .roundFunc import decimalRound
-from PyQt5.QtCore import QTranslator, QCoreApplication
+from PyQt5.QtCore import QCoreApplication
 
 class FS3Uniqueness(object):
     """
@@ -30,6 +30,7 @@ class FS3Uniqueness(object):
                          QCoreApplication.translate("FS3Uniqueness", "Occurrences"),
                          QCoreApplication.translate("FS3Uniqueness", "Percentage (%)")]
         self.statCount = 3
+        self.numItems = 0
 
     def initialize(self, inputArray):
         """

@@ -11,17 +11,15 @@
     of the MIT license.  See the LICENSE file for details.
 
 """
-
 from PyQt5.QtCore import QTranslator, QSettings, QCoreApplication, qVersion
 from PyQt5.QtWidgets import QAction
 from PyQt5.QtGui import QIcon
 from .fs3Run import FS3MainWindow
 
-# pylint: disable=unused-import
-from .resources import *
+from .resources import QtCore
 from .layerFieldGetter import LayerFieldGetter
 import os.path
-
+#os.system("python resources.py")
 class FS3Plugin(object):
     """
     FS3Plugin handles the linking to QGIS.
@@ -32,14 +30,13 @@ class FS3Plugin(object):
     def __init__(self, iface):
         self.iface = iface
 
-        self.plugin_dir = os.path.dirname(__file__)
+        self.pluginDir = os.path.dirname(__file__)
         locale = QSettings().value('locale/userLocale')[0:2]
-        locale_path = os.path.join(self.plugin_dir, 'i18n',
-                'fs3_{}.qm'.format(locale))
+        localePath = os.path.join(self.pluginDir, 'i18n', 'fs3_{}.qm'.format(locale))
 
-        if os.path.exists(locale_path):
+        if os.path.exists(localePath):
             self.translator = QTranslator()
-            self.translator.load(locale_path)
+            self.translator.load(localePath)
 
             if qVersion() > '4.3.3':
                 QCoreApplication.installTranslator(self.translator)
@@ -53,11 +50,11 @@ class FS3Plugin(object):
                               self.iface.mainWindow())
 
 
-    def translation(self, string_to_translate):
+    def translation(self, stringToTranslate):
         """
         Gets the Strings to translate using the Qt translation API
         """
-        return QCoreApplication.translate('FS3Plugin', string_to_translate)
+        return QCoreApplication.translate('FS3Plugin', stringToTranslate)
 
 
     def initGui(self):
