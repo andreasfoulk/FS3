@@ -19,7 +19,7 @@ from qgis.core import QgsProject, NULL
 from PyQt5 import uic
 from PyQt5.QtCore import Qt, pyqtSlot, QUrl
 from PyQt5.QtWidgets import QApplication, QMainWindow, QErrorMessage
-from PyQt5.QtWidgets import QVBoxLayout, QTableWidget, QTableWidgetItem
+from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem
 from PyQt5.QtWebKitWidgets import QWebView
 from PyQt5.QtGui import QColor
 
@@ -70,7 +70,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.statisticTable = QTableWidget()
         self.uniqueLayout = QVBoxLayout()
         self.uniqueTable = QTableWidget()
-        self.graphLayout = QVBoxLayout()
+        self.graphLayout = QHBoxLayout()
         self.graphView = QWebView()
         self.uniqueHHeader = self.uniqueTable.horizontalHeader()
         self.uniqueHHeader.sectionClicked.connect(self.handleUniqueSortSignal)

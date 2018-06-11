@@ -218,7 +218,7 @@ class Grapher:
         WARNING! The string ReplaceTheDiv is a default string that will be
         replaced in a second moment
         '''
-≠≠≠≠–
+        
         js_str = '''
         <script>
         // additional js function to select and click on the data
