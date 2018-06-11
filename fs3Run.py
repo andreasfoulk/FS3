@@ -71,6 +71,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.statisticTable = QTableWidget()
         self.uniqueLayout = QVBoxLayout()
         self.uniqueTable = QTableWidget()
+        self.uniqueTable.verticalHeader().hide()
         self.graphLayout = QHBoxLayout()
         self.graphView = QWebView()
         self.uniqueHHeader = self.uniqueTable.horizontalHeader()
@@ -474,9 +475,10 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         except ValueError:
             self.error.showMessage('Invalid Value for Percentile Detected!')
             percentileArray = []
+        originalSize = len(inputArray)
         emptyCellsRemoved = removeEmptyCells(inputArray)
         numericalStatistics = FS3NumericalStatistics()
-        numericalStatistics.initialize(emptyCellsRemoved, percentileArray)
+        numericalStatistics.initialize(emptyCellsRemoved, percentileArray, originalSize)
         numericalStatistics.roundNumericStatistics(self.currentDecimalPrecision)
         return numericalStatistics
 
@@ -495,9 +497,10 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         except ValueError:
             self.error.showMessage('Invalid Value for Percentile Detected!')
             percentileArray = []
+        originalSize = len(inputArray)
         emptyCellsRemoved = removeEmptyCells(inputArray)
         characterStatistics = FS3CharacterStatistics()
-        characterStatistics.initialize(emptyCellsRemoved, percentileArray)
+        characterStatistics.initialize(emptyCellsRemoved, percentileArray, originalSize)
         characterStatistics.roundCharacterStatistics(self.currentDecimalPrecision)
         return characterStatistics
 
@@ -537,9 +540,16 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         for stat in stats:
             #See if the field is numeric
             if isinstance(stat, FS3NumericalStatistics):
+                emptyData = stat.totalItemCount - stat.itemCount
                 row = 0
                 self.statisticTable.setItem(row, col,
+                                            QTableWidgetItem(str(stat.totalItemCount)))
+                row += 1
+                self.statisticTable.setItem(row, col,
                                             QTableWidgetItem(str(stat.itemCount)))
+                row += 1
+                self.statisticTable.setItem(row, col,
+                                            QTableWidgetItem(str(emptyData)))
                 row += 1
                 self.statisticTable.setItem(row, col,
                                             QTableWidgetItem(str(stat.maxValue)))
@@ -575,8 +585,15 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                 if numAndCharStats:
                     row = stat.statCount
 
+                emptyData = stat.totalItemCount - stat.itemCount
+                self.statisticTable.setItem(row, col,
+                                            QTableWidgetItem(str(stat.totalItemCount)))
+                row += 1
                 self.statisticTable.setItem(row, col,
                                             QTableWidgetItem(str(stat.itemCount)))
+                row += 1
+                self.statisticTable.setItem(row, col,
+                                            QTableWidgetItem(str(emptyData)))
                 row += 1
                 self.statisticTable.setItem(row, col,
                                             QTableWidgetItem(str(stat.maxLength)))
@@ -589,6 +606,9 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                 row += 1
                 self.statisticTable.setItem(row, col,
                                             QTableWidgetItem(str(stat.medianLength)))
+                row += 1
+                self.statisticTable.setItem(row, col,
+                                            QTableWidgetItem(str(stat.modeLength)))
                 row += 1
                 self.statisticTable.setItem(row, col,
                                             QTableWidgetItem(str(stat.sumLength)))
