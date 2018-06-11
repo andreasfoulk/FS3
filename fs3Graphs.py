@@ -13,6 +13,7 @@ import tempfile
 import os
 import platform
 import re
+from math import log10
 
 import plotly
 import plotly.graph_objs as go
@@ -40,6 +41,8 @@ class Grapher:
 
         self.fields = []
         self.attributes = []
+        self.xValues = []
+        self.yValues = []
         self.uniqueness = []
 
         self.graphTypeBox = graphTypeBox
@@ -49,25 +52,52 @@ class Grapher:
         self.optionsWindow = GraphOptionsWindow()
 
 
-    # Called from fs3Run.py in openGraphOptions as it is
-    # connected to the open graph setting button
     def openGraphOptions(self):
+        """
+        Opens the graph options dialog
+        Connected to Open Graph Settings button in fs3Run.py
+        """
         self.optionsWindow.exec_()
 
     def setData(self, fields, attributes, uniqueness):
-        # sort
-        print('do sort')
-
-        # transform
-        if self.optionsWindow.dataTransformBox.currentText() == 'Log':
-            print('do transform')
-
+        """
+        Sets self variables
+        xValues defaults to 1 through n if no default is selected
+        Checks if the data should be sorted or transformed
+        Does sort or transform
+        """
         self.fields = fields
         self.attributes = attributes
         self.uniqueness = uniqueness
 
+        self.xValues = [i for i in range(len(self.attributes[0]))]
+        self.yValues = attributes[0]
+
+        if self.optionsWindow.dataSortingBox.currentText() == 'Acending':
+            self.yValues = sorted(self.yValues)
+
+        if self.optionsWindow.dataSortingBox.currentText() == 'Decending':
+            self.yValues = sorted(self.yValues, reverse = True)
+
+        if self.optionsWindow.dataTransformBox.currentText() == 'Log':
+            try:
+                temp = []
+                for val in self.yValues:
+                    if val <= 0:
+                        temp.append(val)
+                    else:
+                        temp.append(log10(val))
+                self.yValues = temp
+            except TypeError:
+                # TODO Error message
+                pass
+
 
     def makeGraph(self):
+        """
+        Creates the currently selected graph type
+        returns the path of the created graph
+        """
 
         # refesh data to include any options from the options window
         self.setData(self.fields, self.attributes, self.uniqueness)
@@ -87,27 +117,18 @@ class Grapher:
 
     def makeBarGraph(self):
         allNull = True
-        for attribute in self.attributes:
-            for value in attribute:
-                if value != NULL:
-                    allNull = False
-                    break
+        for value in self.yValues:
+            if value != NULL:
+                allNull = False
+                break
         if allNull:
             return
-        if len(self.attributes) is 1:
-            self.attributes.append([i for i in range(len(self.attributes[0]))])
 
-            trace = go.Bar(
-                x = self.attributes[1],
-                y = self.attributes[0],
-                name='{}'.format(self.fields[0])
-            )
-        else:
-            trace = go.Bar(
-                x = self.attributes[0],
-                y = self.attributes[1],
-                name='{} x {}'.format(self.fields[0], self.fields[1])
-            )
+        trace = go.Bar(
+            x = self.xValues,
+            y = self.yValues,
+            name='{} x {}'.format('self.fields[0]', 'self.fields[1]')
+        )
 
         data = [trace]
         layout = go.Layout(
@@ -134,7 +155,6 @@ class Grapher:
 
         return plot_path
 
-        # return "/Users/andreasfoulk/dev/csm/446/unit1/AFmountains.html"
 
     def makePieGraph(self):
 
@@ -168,6 +188,7 @@ class Grapher:
 
         return plot_path
 
+
     def makeLineGraph(self):
 
         allNull = True
@@ -178,7 +199,7 @@ class Grapher:
                     break
         if allNull:
             return
-        
+
         if len(self.attributes) is 1:
             self.attributes.append([i for i in range(len(self.attributes[0]))])
 
@@ -220,6 +241,7 @@ class Grapher:
 
         return plot_path
 
+
     def makeScatterGraph(self):
 
         allNull = True
@@ -230,7 +252,7 @@ class Grapher:
                     break
         if allNull:
             return
-        
+
         # Create a trace
         if len(self.attributes) is 1:
             self.attributes.append([i for i in range(len(self.attributes[0]))])
@@ -271,6 +293,7 @@ class Grapher:
             f.write(raw_plot)
 
         return plot_path
+
 
     def js_callback(self):
         '''

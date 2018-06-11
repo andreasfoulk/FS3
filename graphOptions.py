@@ -21,4 +21,6 @@ class GraphOptionsWindow(QDialog, FORM_CLASS):
         transforms = ['None', 'Log']
         self.dataTransformBox.insertItems(0, transforms)
 
+        sorts = ['None', 'Acending', 'Decending']
+        self.dataSortingBox.insertItems(0, sorts)
 
