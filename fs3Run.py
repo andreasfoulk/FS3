@@ -23,6 +23,7 @@ from .fs3Stats import removeEmptyCells
 from .fs3Graphs import Grapher
 from .fs3Unique import FS3Uniqueness
 from .roundFunc import decimalRound
+from .graphOptions import GraphOptionsWindow
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
 
@@ -105,6 +106,12 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.selectFieldListWidget.itemSelectionChanged \
                         .connect(self.refreshGraph)
 
+        self.openGraphSettings.clicked.connect(self.openGraphOptions)
+
+    @pyqtSlot()
+    def openGraphOptions(self):
+        dialog = GraphOptionsWindow()
+        dialog.exec_()
 
     def refresh(self):
         """
@@ -590,7 +597,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         for i in range(0, self.statisticTable.columnCount()):
             for j in range(0, self.statisticTable.rowCount()):
                 cell = self.statisticTable.item(j, i)
-                if (j%2) == 0:
+                if (j % 2) == 0:
                     #This is an even row, color it
                     cell.setBackground(self.backgroundBrush)
                 else:
