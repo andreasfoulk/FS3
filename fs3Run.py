@@ -46,7 +46,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         super(FS3MainWindow, self).__init__(parent)
         self.setupUi(self)
         self.mainWindowSplitter.setStretchFactor(1, 10)
-        self.setWindowTitle('FS3 -- FieldStats3 -- Field Statistics 3 -- F I E L D S T A T I S T I C S T H R E E')
+        self.setWindowTitle('FS3 -- FieldStats3')
 
         self.fieldGetterInst = LayerFieldGetter()
         self.currentProject = QgsProject.instance()
@@ -60,6 +60,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.error = QErrorMessage()
 
         ### Tabs
+        self.tabFields.currentChanged.connect(self.graphTabLoaded)
         self.dataTableLayout = QVBoxLayout()
         self.tableWidget = QTableWidget()
         ### Data Table Widget Connection
@@ -114,7 +115,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
 
         ### Handles graph stuffs
         self.grapher = Grapher(self.graphTypeBox)
-        self.graphTypeBox.currentIndexChanged.connect(self.refreshGraph)
+        self.graphTypeBox.currentIndexChanged.connect(self.refreshAttributes)
 
         self.openGraphSettings.clicked.connect(self.grapher.openGraphOptions)
 
@@ -683,7 +684,17 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.resizeTimer.start(250)
 
     def windowTimeout(self):
-        self.refreshAttributes()
+        currentTab = self.tabFields.currentWidget()
+        if currentTab == self.graphTab:
+            #Refresh the attributes to create a new graph
+            self.refreshAttributes()
+        
+    @pyqtSlot()
+    def graphTabLoaded(self):
+        currentTab = self.tabFields.currentWidget()
+        if currentTab == self.graphTab:
+            #Refresh the attributes to create a new graph
+            self.refreshAttributes()
 
 class MyTableWidgetItem(QTableWidgetItem):
     """

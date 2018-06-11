@@ -14,30 +14,60 @@
    <string>Dialog</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
+   <item row="3" column="1">
+    <widget class="QLineEdit" name="customColorEdit1"/>
+   </item>
+   <item row="5" column="1">
+    <widget class="QLineEdit" name="customColorEdit3"/>
+   </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="xAxisDefaultLabel">
+     <property name="text">
+      <string>Default X-Axis Data</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="QComboBox" name="xAxisDefaultBox"/>
+   </item>
+   <item row="6" column="1">
+    <widget class="QLineEdit" name="customColorEdit4"/>
+   </item>
+   <item row="7" column="1">
+    <widget class="QLineEdit" name="customColorEdit5"/>
+   </item>
+   <item row="14" column="1">
+    <widget class="QPushButton" name="applyButon">
+     <property name="text">
+      <string>Apply</string>
+     </property>
+    </widget>
+   </item>
    <item row="1" column="1">
-    <widget class="QComboBox" name="comboBox"/>
+    <widget class="QComboBox" name="colorComboBox"/>
    </item>
    <item row="0" column="1">
-    <widget class="QLabel" name="label_4">
+    <widget class="QLabel" name="colorPaletteLabel">
      <property name="text">
       <string>Color Palette </string>
      </property>
     </widget>
    </item>
-   <item row="10" column="1">
-    <widget class="QDialogButtonBox" name="graphButtonBox">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+   <item row="8" column="0">
+    <widget class="QLabel" name="dataTransformLabel">
+     <property name="text">
+      <string>Data Transform</string>
      </property>
     </widget>
    </item>
-   <item row="8" column="0">
-    <widget class="QComboBox" name="dataTransformBox"/>
+   <item row="6" column="0">
+    <widget class="QLabel" name="yAxisTitleLabel">
+     <property name="text">
+      <string>Y-Axis Title</string>
+     </property>
+    </widget>
    </item>
-   <item row="9" column="0">
+   <item row="13" column="0">
     <spacer name="dataTransformSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -50,100 +80,54 @@
      </property>
     </spacer>
    </item>
-   <item row="4" column="0">
-    <widget class="QLabel" name="label">
-     <property name="text">
-      <string>Y-Axis Title</string>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="0">
-    <widget class="QLabel" name="dataTransformLabel">
-     <property name="text">
-      <string>Data Transform</string>
-     </property>
-    </widget>
-   </item>
    <item row="1" column="0">
-    <widget class="QLineEdit" name="lineEdit_3"/>
+    <widget class="QLineEdit" name="graphTitleEdit"/>
    </item>
-   <item row="3" column="0">
-    <widget class="QLineEdit" name="lineEdit_2"/>
-   </item>
-   <item row="0" column="0">
-    <widget class="QLabel" name="label_3">
-     <property name="text">
-      <string>Graph Title</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="0">
-    <widget class="QLabel" name="label_2">
-     <property name="text">
-      <string>X-Axis (Field) Title</string>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="0">
-    <widget class="QLineEdit" name="lineEdit"/>
+   <item row="10" column="0">
+    <widget class="QComboBox" name="dataTransformBox"/>
    </item>
    <item row="2" column="1">
-    <widget class="QLabel" name="label_5">
+    <widget class="QLabel" name="customColorCodeLabel">
      <property name="text">
       <string>Custom Color Codes</string>
      </property>
     </widget>
    </item>
-   <item row="3" column="1">
-    <widget class="QLineEdit" name="lineEdit_4"/>
+   <item row="0" column="0">
+    <widget class="QLabel" name="graphTitleLabel">
+     <property name="text">
+      <string>Graph Title</string>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="0">
+    <widget class="QLineEdit" name="yAxisTitleEdit"/>
+   </item>
+   <item row="4" column="0">
+    <widget class="QLabel" name="xAxisTitleLabel">
+     <property name="text">
+      <string>X-Axis Title</string>
+     </property>
+    </widget>
+   </item>
+   <item row="11" column="0">
+    <widget class="QLabel" name="dataSortingLabel">
+     <property name="text">
+      <string>Data Sorting</string>
+     </property>
+    </widget>
+   </item>
+   <item row="12" column="0">
+    <widget class="QComboBox" name="dataSortingBox"/>
    </item>
    <item row="4" column="1">
-    <widget class="QLineEdit" name="lineEdit_5"/>
+    <widget class="QLineEdit" name="customColorEdit2"/>
    </item>
-   <item row="5" column="1">
-    <widget class="QLineEdit" name="lineEdit_6"/>
-   </item>
-   <item row="6" column="1">
-    <widget class="QLineEdit" name="lineEdit_7"/>
-   </item>
-   <item row="8" column="1">
-    <widget class="QLineEdit" name="lineEdit_8"/>
+   <item row="5" column="0">
+    <widget class="QLineEdit" name="xAxisTitleEdit"/>
    </item>
   </layout>
  </widget>
  <resources/>
- <connections>
-  <connection>
-   <sender>graphButtonBox</sender>
-   <signal>accepted()</signal>
-   <receiver>Dialog</receiver>
-   <slot>accept()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>248</x>
-     <y>254</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>157</x>
-     <y>274</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>graphButtonBox</sender>
-   <signal>rejected()</signal>
-   <receiver>Dialog</receiver>
-   <slot>reject()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>316</x>
-     <y>260</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>286</x>
-     <y>274</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

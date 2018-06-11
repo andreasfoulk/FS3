@@ -134,8 +134,8 @@ class Grapher:
     def makePieGraph(self):
 
         trace = go.Pie(
-            labels = ['a','b','c','d'],
-            values = [10,20,30,40]
+            labels = self.uniqueness.uniqueValues,
+            values = self.uniqueness.uniqueNumOccur
         )
 
         data = [trace]
@@ -165,17 +165,20 @@ class Grapher:
 
     def makeLineGraph(self):
 
-        import numpy as np
+        if len(self.attributes) is 1:
+            self.attributes.append([i for i in range(len(self.attributes[0]))])
 
-        N = 500
-        random_x = np.linspace(0, 1, N)
-        random_y = np.random.randn(N)
-
-        # Create a trace
-        trace = go.Scatter(
-            x = random_x,
-            y = random_y
-        )
+            trace = go.Scatter(
+                x = self.attributes[1],
+                y = self.attributes[0],
+                name='{}'.format(self.fields[0])
+            )
+        else:
+            trace = go.Scatter(
+                x = self.attributes[0],
+                y = self.attributes[1],
+                name='{} x {}'.format(self.fields[0], self.fields[1])
+            )
 
         data = [trace]
 
@@ -205,18 +208,21 @@ class Grapher:
 
     def makeScatterGraph(self):
 
-        import numpy as np
-
-        N = 1000
-        random_x = np.random.randn(N)
-        random_y = np.random.randn(N)
-
         # Create a trace
-        trace = go.Scatter(
-            x = random_x,
-            y = random_y,
-            mode = 'markers'
-        )
+        if len(self.attributes) is 1:
+            self.attributes.append([i for i in range(len(self.attributes[0]))])
+
+            trace = go.Scatter(
+                x = self.attributes[1],
+                y = self.attributes[0],
+                mode = 'markers'
+            )
+        else:
+            trace = go.Scatter(
+                x = self.attributes[0],
+                y = self.attributes[1],
+                mode = 'markers'
+            )
 
         data = [trace]
         layout = go.Layout(
