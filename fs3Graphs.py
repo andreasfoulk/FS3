@@ -48,16 +48,13 @@ class Grapher:
 
         self.optionsWindow = GraphOptionsWindow()
 
+
     # Called from fs3Run.py in openGraphOptions as it is
     # connected to the open graph setting button
     def openGraphOptions(self):
         self.optionsWindow.exec_()
 
     def setData(self, fields, attributes, uniqueness):
-        self.fields = fields
-        self.attributes = attributes
-        self.uniqueness = uniqueness
-
         # sort
         print('do sort')
 
@@ -65,8 +62,16 @@ class Grapher:
         if self.optionsWindow.dataTransformBox.currentText() == 'Log':
             print('do transform')
 
+        self.fields = fields
+        self.attributes = attributes
+        self.uniqueness = uniqueness
+
 
     def makeGraph(self):
+
+        # refesh data to include any options from the options window
+        self.setData(self.fields, self.attributes, self.uniqueness)
+
         if self.graphTypeBox.currentText() == 'Bar':
             plot_path = self.makeBarGraph()
         elif self.graphTypeBox.currentText() == 'Pie':

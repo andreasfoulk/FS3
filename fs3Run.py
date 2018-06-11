@@ -118,6 +118,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.graphTypeBox.currentIndexChanged.connect(self.refreshAttributes)
 
         self.openGraphSettings.clicked.connect(self.grapher.openGraphOptions)
+        self.grapher.optionsWindow.applyButton.clicked.connect(self.refreshGraph)
 
     @pyqtSlot()
     def openGraphOptions(self):
@@ -443,8 +444,6 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                     statistics.append(self.createCharacterStatistics(statValues[i]))
                     data.append(statValues[i])
 
-            self.fields = fields
-            self.attributes = data
             uniqueCalculation = self.createUniqueness(uniquenesses)
             self.grapher.setData(fields, data, uniqueCalculation)
 
@@ -688,7 +687,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         if currentTab == self.graphTab:
             #Refresh the attributes to create a new graph
             self.refreshAttributes()
-        
+
     @pyqtSlot()
     def graphTabLoaded(self):
         currentTab = self.tabFields.currentWidget()
