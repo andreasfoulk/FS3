@@ -17,3 +17,8 @@ class GraphOptionsWindow(QDialog, FORM_CLASS):
         super(GraphOptionsWindow, self).__init__(parent)
         self.setupUi(self)
         self.setWindowTitle("Graph Options")
+
+        transforms = ['None', 'Log']
+        self.dataTransformBox.insertItems(0, transforms)
+
+

@@ -29,7 +29,6 @@ from .fs3Stats import removeEmptyCells
 from .fs3Graphs import Grapher
 from .fs3Unique import FS3Uniqueness
 from .roundFunc import decimalRound
-from .graphOptions import GraphOptionsWindow
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
 
@@ -75,7 +74,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.graphView = QWebView()
         self.uniqueHHeader = self.uniqueTable.horizontalHeader()
         self.uniqueHHeader.sectionClicked.connect(self.handleUniqueSortSignal)
-        
+
         ### Window resized
         self.resizeTimer = QTimer()
         self.resizeTimer.setSingleShot(True)
@@ -117,12 +116,11 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.grapher = Grapher(self.graphTypeBox)
         self.graphTypeBox.currentIndexChanged.connect(self.refreshGraph)
 
-        self.openGraphSettings.clicked.connect(self.openGraphOptions)
+        self.openGraphSettings.clicked.connect(self.grapher.openGraphOptions)
 
     @pyqtSlot()
     def openGraphOptions(self):
-        dialog = GraphOptionsWindow()
-        dialog.exec_()
+        self.grapher.openGraphOptions()
 
     def refresh(self):
         """
@@ -448,11 +446,11 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
             self.attributes = data
             uniqueCalculation = self.createUniqueness(uniquenesses)
             self.grapher.setData(fields, data, uniqueCalculation)
-            
+
             self.refreshUnique(fields, uniqueCalculation)
 
             self.refreshStatistics(fields, statistics)
-            
+
             self.refreshGraph()
 
         self.dataTableLayout.addWidget(self.tableWidget)
@@ -675,15 +673,15 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.graphLayout.addWidget(self.graphView)
         self.graphFrame.setLayout(self.graphLayout)
         self.graphView.show()
-        
+
     def resizeEvent(self, event):
         self.resized.emit()
         return super(FS3MainWindow, self).resizeEvent(event)
-    
+
     @pyqtSlot()
     def windowResized(self):
         self.resizeTimer.start(250)
-        
+
     def windowTimeout(self):
         self.refreshAttributes()
 
