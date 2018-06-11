@@ -444,10 +444,11 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                     statistics.append(self.createCharacterStatistics(statValues[i]))
                     data.append(statValues[i])
 
-            self.grapher.setData(fields, data)
             self.fields = fields
             self.attributes = data
             uniqueCalculation = self.createUniqueness(uniquenesses)
+            self.grapher.setData(fields, data, uniqueCalculation)
+            
             self.refreshUnique(fields, uniqueCalculation)
 
             self.refreshStatistics(fields, statistics)

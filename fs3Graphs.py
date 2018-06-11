@@ -39,9 +39,12 @@ class Grapher:
         graphTypes = ['Bar', 'Pie', 'Line', 'Scatter']
         self.graphTypeBox.insertItems(0, graphTypes)
 
-    def setData(self, fields, attributes):
+    def setData(self, fields, attributes, uniqueness):
         self.fields = fields
         self.attributes = attributes
+        self.uniqueness = uniqueness
+        for value in self.uniqueness.uniqueValues:
+            print(str(value))
 
     def makeGraph(self):
         if self.graphTypeBox.currentText() == 'Bar':
