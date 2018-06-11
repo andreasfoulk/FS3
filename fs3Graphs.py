@@ -13,10 +13,16 @@ import tempfile
 import os
 import platform
 import re
+
 import plotly
 import plotly.graph_objs as go
-from qgis.core import NULL
 from plotly import tools
+
+from qgis.core import NULL
+
+from PyQt5.QtCore import pyqtSlot
+
+from .graphOptions import GraphOptionsWindow
 
 class Grapher:
     """
@@ -32,17 +38,33 @@ class Grapher:
             self.polyfillpath = os.path.join(os.path.dirname(__file__), 'jsscripts/polyfill.min.js')
             self.plotlypath = os.path.join(os.path.dirname(__file__), 'jsscripts/plotly-1.34.0.min.js')
 
-        self.graphTypeBox = graphTypeBox
-
         self.fields = []
         self.attributes = []
+        self.uniqueness = []
+
+        self.graphTypeBox = graphTypeBox
         graphTypes = ['Bar', 'Pie', 'Line', 'Scatter']
         self.graphTypeBox.insertItems(0, graphTypes)
+
+        self.optionsWindow = GraphOptionsWindow()
+
+    # Called from fs3Run.py in openGraphOptions as it is
+    # connected to the open graph setting button
+    def openGraphOptions(self):
+        self.optionsWindow.exec_()
 
     def setData(self, fields, attributes, uniqueness):
         self.fields = fields
         self.attributes = attributes
         self.uniqueness = uniqueness
+
+        # sort
+        print('do sort')
+
+        # transform
+        if self.optionsWindow.dataTransformBox.currentText() == 'Log':
+            print('do transform')
+
 
     def makeGraph(self):
         if self.graphTypeBox.currentText() == 'Bar':
@@ -252,7 +274,7 @@ class Grapher:
         WARNING! The string ReplaceTheDiv is a default string that will be
         replaced in a second moment
         '''
-        
+
         js_str = '''
         <script>
         // additional js function to select and click on the data
