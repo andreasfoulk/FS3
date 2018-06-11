@@ -116,8 +116,6 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         ### Handles graph stuffs
         self.grapher = Grapher(self.graphTypeBox)
         self.graphTypeBox.currentIndexChanged.connect(self.refreshGraph)
-        self.selectFieldListWidget.itemSelectionChanged \
-                        .connect(self.refreshGraph)
 
         self.openGraphSettings.clicked.connect(self.openGraphOptions)
 
@@ -453,6 +451,8 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
             self.refreshUnique(fields, uniqueCalculation)
 
             self.refreshStatistics(fields, statistics)
+            
+            self.refreshGraph()
 
         self.dataTableLayout.addWidget(self.tableWidget)
         self.dataTab.setLayout(self.dataTableLayout)
@@ -685,7 +685,6 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         
     def windowTimeout(self):
         self.refreshAttributes()
-        self.refreshGraph()
 
 class MyTableWidgetItem(QTableWidgetItem):
     """
