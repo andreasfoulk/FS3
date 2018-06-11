@@ -69,7 +69,7 @@ class FS3NumericalStatistics(object):
         self.stdDevValue = stdDevValue(inputArray)
         self.coeffVarValue = coeffVarValue(inputArray)
         self.percentiles = percentileValues(inputArray, percentileArray)
-        self.statCount = 8 + len(self.percentiles)
+        self.statCount = 9 + len(self.percentiles)
 
         for percentileNumber in percentileArray:
             self.statName.append(QCoreApplication.translate("FS3NumericalStatistics", "Percentile: ") + str(percentileNumber) + '%')
@@ -161,7 +161,7 @@ class FS3CharacterStatistics(object):
         self.stdDevLength = stdDevValue(inputArray)
         self.coeffVarLength = coeffVarValue(inputArray)
         self.percentiles = percentileValues(inputArray, percentileArray)
-        self.statCount = 8 + len(self.percentiles)
+        self.statCount = 9 + len(self.percentiles)
 
         for percentileNumber in percentileArray:
             self.statName.append(QCoreApplication.translate("fs3characterstatistics", "Percentile: ") + str(percentileNumber) + QCoreApplication.translate("fs3characterstatistics", " % (Length)"))
