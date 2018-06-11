@@ -143,6 +143,15 @@ class Grapher:
 
     def makeLineGraph(self):
 
+        allNull = True
+        for attribute in self.attributes:
+            for value in attribute:
+                if value != NULL:
+                    allNull = False
+                    break
+        if allNull:
+            return
+        
         if len(self.attributes) is 1:
             self.attributes.append([i for i in range(len(self.attributes[0]))])
 
@@ -186,6 +195,15 @@ class Grapher:
 
     def makeScatterGraph(self):
 
+        allNull = True
+        for attribute in self.attributes:
+            for value in attribute:
+                if value != NULL:
+                    allNull = False
+                    break
+        if allNull:
+            return
+        
         # Create a trace
         if len(self.attributes) is 1:
             self.attributes.append([i for i in range(len(self.attributes[0]))])
