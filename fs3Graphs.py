@@ -15,6 +15,7 @@ import platform
 import re
 import plotly
 import plotly.graph_objs as go
+from qgis.core import NULL
 from plotly import tools
 
 class Grapher:
@@ -57,6 +58,14 @@ class Grapher:
         return plot_path
 
     def makeBarGraph(self):
+        allNull = True
+        for attribute in self.attributes:
+            for value in attribute:
+                if value != NULL:
+                    allNull = False
+                    break
+        if allNull:
+            return
         if len(self.attributes) is 1:
             self.attributes.append([i for i in range(len(self.attributes[0]))])
 

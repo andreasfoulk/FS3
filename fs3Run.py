@@ -17,7 +17,7 @@ import os
 from qgis.core import QgsProject, NULL
 
 from PyQt5 import uic
-from PyQt5.QtCore import Qt, pyqtSlot, QUrl
+from PyQt5.QtCore import Qt, pyqtSlot, QUrl, pyqtSignal, QTimer
 from PyQt5.QtWidgets import QApplication, QMainWindow, QErrorMessage
 from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem
 from PyQt5.QtWebKitWidgets import QWebView
@@ -42,6 +42,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
     Handles the creation and display of the window.
     Makes use of the fs3.ui QT ui file.
     """
+    resized = pyqtSignal()
     def __init__(self, parent=None):
         super(FS3MainWindow, self).__init__(parent)
         self.setupUi(self)
@@ -74,6 +75,12 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.graphView = QWebView()
         self.uniqueHHeader = self.uniqueTable.horizontalHeader()
         self.uniqueHHeader.sectionClicked.connect(self.handleUniqueSortSignal)
+        
+        ### Window resized
+        self.resizeTimer = QTimer()
+        self.resizeTimer.setSingleShot(True)
+        self.resizeTimer.timeout.connect(self.windowTimeout)
+        self.resized.connect(self.windowResized)
 
         ###Background Color Brush
         self.backgroundBrush = QColor.fromRgb(230, 230, 250)
@@ -667,7 +674,18 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.graphLayout.addWidget(self.graphView)
         self.graphFrame.setLayout(self.graphLayout)
         self.graphView.show()
-
+        
+    def resizeEvent(self, event):
+        self.resized.emit()
+        return super(FS3MainWindow, self).resizeEvent(event)
+    
+    @pyqtSlot()
+    def windowResized(self):
+        self.resizeTimer.start(250)
+        
+    def windowTimeout(self):
+        self.refreshAttributes()
+        self.refreshGraph()
 
 class MyTableWidgetItem(QTableWidgetItem):
     """
