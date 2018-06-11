@@ -1,14 +1,19 @@
 """
 
-@author: Orden Aitchedji, Mckenna Duzac, Andreas Foulk, Tanner Lee
-@Repository: https://github.com/andreasfoulk/FS3
+    fs3Unique.py -- Plugin implimentation handling all unique values computation
+                 -- For more information see : https://github.com/andreasfoulk/FS3
+                 -- These functions are tested with uniqueTests.py
 
-These functions are tested with uniqueTests.py
+    Copyright (c) 2018 Orden Aitchedji, Mckenna Duzac, Andreas Foulk, Tanner Lee
+
+    This software may be modified and distributed under the terms
+    of the MIT license.  See the LICENSE file for details.
 
 """
 
 from qgis.core import NULL
 from .roundFunc import decimalRound
+from PyQt5.QtCore import QCoreApplication
 
 class FS3Uniqueness(object):
     """
@@ -21,10 +26,11 @@ class FS3Uniqueness(object):
         self.uniqueNumOccur = 0
         self.uniquePercent = 0
         self.totalValues = 0
-        self.statName = ['Value',
-                         'Occurrences',
-                         'Percentage (%)']
+        self.statName = [QCoreApplication.translate("FS3Uniqueness", "Value"),
+                         QCoreApplication.translate("FS3Uniqueness", "Occurrences"),
+                         QCoreApplication.translate("FS3Uniqueness", "Percentage (%)")]
         self.statCount = 3
+        self.numItems = 0
 
     def initialize(self, inputArray):
         """
@@ -63,28 +69,40 @@ class FS3Uniqueness(object):
 
 
 def uniqueValues(inputArray):
+    """
+    uniqueValues
+    return all instances of unique values
+    """
     valueList = []
-    for x in inputArray:
-        if x not in valueList:
-            if x == NULL and 'NULL (Empty)' not in valueList:
-                valueList.append('NULL (Empty)')
-            elif x == NULL and 'NULL (Empty)' in valueList:
+    for value in inputArray:
+        if value not in valueList:
+            if value == NULL and QCoreApplication.translate("FS3Uniqueness", "NULL (Empty)") not in valueList:
+                valueList.append(QCoreApplication.translate("FS3Uniqueness", "NULL (Empty)"))
+            elif value == NULL and QCoreApplication.translate("FS3Uniqueness", "NULL (Empty)") in valueList:
                 continue
             else:
-                valueList.append(x)
+                valueList.append(value)
     return valueList
 
 def uniqueNumberOccurances(inputArray, originalArray):
+    """
+    uniqueNumberOccurances
+    returns total occurences of each unique values
+    """
     valueList = []
-    for x in inputArray:
-        if x == 'NULL (Empty)':
+    for value in inputArray:
+        if value == QCoreApplication.translate("FS3Uniqueness", "NULL (Empty)"):
             valueList.append(originalArray.count(None))
         else:
-            valueList.append(originalArray.count(x))
+            valueList.append(originalArray.count(value))
     return valueList
 
 def uniquePercent(inputArray, numItems):
+    """
+    uniquePercent
+    returns a percentage of occurences for the unique values
+    """
     valueList = []
-    for x in inputArray:
-        valueList.append((x/numItems)*100)
+    for value in inputArray:
+        valueList.append((value/numItems)*100)
     return valueList

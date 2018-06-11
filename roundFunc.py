@@ -1,9 +1,13 @@
 """
 
-@author: Orden Aitchedji, Mckenna Duzac, Andreas Foulk, Tanner Lee
-@Repository: https://github.com/andreasfoulk/FS3
+    roundFunc.py -- Plugin implimentation handling all numeric rounding
+                 -- For more information see : https://github.com/andreasfoulk/FS3
+                 -- This function is tested with helperTests.py
+    
+    Copyright (c) 2018 Orden Aitchedji, Mckenna Duzac, Andreas Foulk, Tanner Lee
 
-This function is tested with helperTests.py
+    This software may be modified and distributed under the terms
+    of the MIT license.  See the LICENSE file for details.
 
 """
 

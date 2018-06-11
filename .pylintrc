@@ -302,7 +302,7 @@ indent-after-paren=4
 indent-string='    '
 
 # Maximum number of characters on a single line.
-max-line-length=120
+max-line-length=200
 
 # Maximum number of lines in a module
 max-module-lines=1000
@@ -414,7 +414,7 @@ inlinevar-naming-style=any
 #inlinevar-rgx=
 
 # Naming style matching correct method names
-method-naming-style=camelCase
+method-naming-style=any
 
 # Regular expression matching correct method names. Overrides method-naming-
 # style
@@ -496,7 +496,7 @@ exclude-protected=_asdict,
                   _make
 
 # List of valid names for the first argument in a class method.
-valid-classmethod-first-arg=cls
+valid-classmethod-first-arg=cls, self
 
 # List of valid names for the first argument in a metaclass class method.
 valid-metaclass-classmethod-first-arg=mcs
@@ -508,31 +508,31 @@ valid-metaclass-classmethod-first-arg=mcs
 max-args=5
 
 # Maximum number of attributes for a class (see R0902).
-max-attributes=10
+max-attributes=20
 
 # Maximum number of boolean expressions in a if statement
 max-bool-expr=5
 
 # Maximum number of branch for function / method body
-max-branches=15
+max-branches=30
 
 # Maximum number of locals for function / method body
-max-locals=15
+max-locals=25
 
 # Maximum number of parents for a class (see R0901).
 max-parents=7
 
 # Maximum number of public methods for a class (see R0904).
-max-public-methods=20
+max-public-methods=30
 
 # Maximum number of return / yield for function / method body
 max-returns=6
 
 # Maximum number of statements in function / method body
-max-statements=50
+max-statements=100
 
 # Minimum number of public methods for a class (see R0903).
-min-public-methods=2
+min-public-methods=1
 
 
 [EXCEPTIONS]

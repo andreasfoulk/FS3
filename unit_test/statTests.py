@@ -1,14 +1,15 @@
 """
 
-@author: Orden Aitchedji, Mckenna Duzac, Andreas Foulk, Tanner Lee
-@Repository: https://github.com/andreasfoulk/FS3
+    statTests.py -- Handles testing for prpper case by case rounding.
+                 -- Functions take in a list of values
+                 -- Uses a sample standard deviation
+                 -- For more information see : https://github.com/andreasfoulk/FS3
+    
+    Copyright (c) 2018 Orden Aitchedji, Mckenna Duzac, Andreas Foulk, Tanner Lee
 
-All of these tests written with the following assumptions:
-    -functions take in a list of values
-    -using standard deviation, not population stdev
-        -just statistics.pstdev vs statistics.stdev
-
-The following functions need to be created for NumericStats:
+    This software may be modified and distributed under the terms
+    of the MIT license.  See the LICENSE file for details.
+    
 
 TODO:
     import stat files

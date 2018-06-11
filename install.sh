@@ -13,7 +13,7 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
 
     cp metadata.txt ~/.local/share/QGIS/QGIS3/profiles/default/python/plugins/FS3/.
     cp resources.qrc ~/.local/share/QGIS/QGIS3/profiles/default/python/plugins/FS3/.
-
+    cp -r i18n ~/.local/share/QGIS/QGIS3/profiles/default/python/plugins/FS3/.
 
 elif [[ "$OSTYPE" == "darwin"* ]]; then
 
@@ -25,7 +25,8 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
     cp jsscripts/*js ~/Library/Application\ Support/QGIS/QGIS3/profiles/default/python/plugins/FS3/jsscripts/.
 
     cp metadata.txt ~/Library/Application\ Support/QGIS/QGIS3/profiles/default/python/plugins/FS3/.
-    cp resources.qrc ~/Library/Application\ Support/QGIS/QGIS3/profiles/default/python/plugins/FS3/.
+    cp resources.qrc ~/Library/Application\ Support/QGIS/QGIS3/profiles/default/python/plugins/FS3/. 
+    cp -r i18n ~/Library/Application\ Support/QGIS/QGIS3/profiles/default/python/plugins/FS3/.
 
 else
     echo "Your OS is not supported with this installer"

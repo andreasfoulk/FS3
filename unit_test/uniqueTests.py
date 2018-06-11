@@ -1,9 +1,13 @@
 """
 
-@author: Orden Aitchedji, Mckenna Duzac, Andreas Foulk, Tanner Lee
-@Repository: https://github.com/andreasfoulk/FS3
+    statTests.py -- Handles testing for prpper case by case rounding.
+                 -- For more information see : https://github.com/andreasfoulk/FS3
+    
+    Copyright (c) 2018 Orden Aitchedji, Mckenna Duzac, Andreas Foulk, Tanner Lee
 
-All of these tests written with the following assumptions:
+    This software may be modified and distributed under the terms
+    of the MIT license.  See the LICENSE file for details.
+    
 
 TODO:
     Improper input cases not currently checked
@@ -103,8 +107,8 @@ class UniqueValueTests(unittest.TestCase):
         self.assertEqual(actual, expected)
 
 
-def Umain():
+def main():
     unittest.main()
 
 if __name__ == '__main__':
-    Umain()
+    main()

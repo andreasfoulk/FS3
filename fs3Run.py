@@ -1,13 +1,19 @@
 # -*- coding: utf-8 -*-
 """
 
-@author: Orden Aitchedji, Mckenna Duzac, Andreas Foulk, Tanner Lee
-@Repository: https://github.com/andreasfoulk/FS3
+    fs3Run.py -- Plugin implimentation handling UI features
+              -- For more information see : https://github.com/andreasfoulk/FS3
+
+    Copyright (c) 2018 Orden Aitchedji, Mckenna Duzac, Andreas Foulk, Tanner Lee
+
+    This software may be modified and distributed under the terms
+    of the MIT license.  See the LICENSE file for details.
 
 """
 from __future__ import print_function
 
 import os
+
 from qgis.core import QgsProject, NULL
 
 from PyQt5 import uic
@@ -143,6 +149,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
 
     @pyqtSlot()
     def percentileTextChanged(self):
+        """ Tokenize percentile display """
         try:
             percentileList = self.percentilesLineEdit.text().split(', ')
             for percentile in percentileList:
@@ -159,15 +166,12 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
     ### Limit to Selected Checkbox
     @pyqtSlot()
     def handleLimitSelected(self):
-        #If there are selected layers in QGIS
-        if not self.currentLayer.getSelectedFeatures().isClosed():
-            #Update the table
-            self.refreshAttributes()
-
+        self.refreshAttributes()
 
     ### Edit Mode Checkbox
     @pyqtSlot()
     def handleEditModeChecked(self):
+        """ Edit Mode trigger within plugin UI """
         # Edit box was checked
         # Check state
         if self.editModeCheck.isChecked():
@@ -189,6 +193,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
     ### Editing Started and Stopped Signals
     @pyqtSlot()
     def editingStartedQGIS(self):
+        """ Handles events when in Edit Mode """
         if self.editModeCheck.isChecked():
             # The checkbox is already checked, return
             return
@@ -196,6 +201,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
 
     @pyqtSlot()
     def editingStoppedQGIS(self):
+        """ Handles events when out of Edit Mode """
         if not self.editModeCheck.isChecked():
             # The checkbox is already unchecked, return
             return
@@ -204,6 +210,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
     ### User has changed a value of a attribute cell
     @pyqtSlot('int', 'int')
     def attributeCellChanged(self, row, column):
+        """ Handles updates case any change were made in Edit Mode """
         newValue = self.tableWidget.item(row, column)
         if self.currentLayer.isEditable():
             # Make the change then commit the change
@@ -215,6 +222,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                     success = self.currentLayer.changeAttributeValue(fid,
                                                             fieldIndex,
                                                             newValue.text())
+
                     if success:
                         # Update was successful, commit changes
                         successCommit = self.currentLayer.commitChanges()
@@ -234,6 +242,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
     ### User has clicked on a header in the table
     @pyqtSlot()
     def handleDataSortSignal(self):
+        """ Handles propper sorting of statistic data """
         #Recolor the table
         for i in range(0, self.tableWidget.columnCount()):
             for j in range(0, self.tableWidget.rowCount()):
@@ -247,6 +256,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
 
     @pyqtSlot()
     def handleUniqueSortSignal(self):
+        """ Handles propper sorting of unique data """
         #Recolor the table
         for i in range(0, self.uniqueTable.columnCount()):
             for j in range(0, self.uniqueTable.rowCount()):
@@ -392,8 +402,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                     fieldIndex = feature.fieldNameIndex(field)
                     attribute = feature.attributes()[fieldIndex]
                     if isinstance(attribute, float):
-                        attribute = decimalRound(attribute,
-                                                     self.currentDecimalPrecision)
+                        attribute = decimalRound(attribute, self.currentDecimalPrecision)
                     statValues[col].append(attribute)
                     if attribute == NULL:
                         cell = MyTableWidgetItem("")
@@ -539,6 +548,9 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                                             QTableWidgetItem(str(stat.medianValue)))
                 row += 1
                 self.statisticTable.setItem(row, col,
+                                            QTableWidgetItem(str(stat.modeValue)))
+                row += 1
+                self.statisticTable.setItem(row, col,
                                             QTableWidgetItem(str(stat.sumValue)))
                 row += 1
                 self.statisticTable.setItem(row, col,
@@ -593,19 +605,25 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.handleStatisticsColor()
 
     def handleStatisticsColor(self):
-        #Recolor the table
+        """ Method implements zebra colors with table rows """
         for i in range(0, self.statisticTable.columnCount()):
             for j in range(0, self.statisticTable.rowCount()):
                 cell = self.statisticTable.item(j, i)
-                if (j % 2) == 0:
+                if cell is None:
+                    cell = MyTableWidgetItem("")
+                    self.statisticTable.setItem(j, i, cell)
+                if (j%2) == 0:
                     #This is an even row, color it
                     cell.setBackground(self.backgroundBrush)
                 else:
                     #This is an odd row, default its color
                     cell.setBackground(self.defaultBrush)
 
-
     def refreshUnique(self, fields, unique):
+        """
+        refreshUnique
+        Method that updates the unique table
+        """
         #Start by clearing the layout
         self.uniqueTable.setSortingEnabled(False)
         row = 0
