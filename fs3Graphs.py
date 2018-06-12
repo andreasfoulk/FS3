@@ -63,11 +63,19 @@ class Grapher:
         self.fields = fields
         self.attributes = attributes
         self.uniqueness = uniqueness
+        self.hasNull = False
 
         # When this is something else sorting will need to be done as pairs...
         self.xValues = list(range(len(self.attributes[0])))
         self.yValues = attributes[0]
 
+        # Start by removing the null attributes and their associated fields
+        for index in range(0, len(self.yValues)):
+            if self.yValues[index] == NULL:
+                # Remove this from both lists
+                self.hasNull = True
+                self.yValues[index] = 'NULL'
+        
         if self.optionsWindow.dataSortingBox.currentText() == 'Acending':
             self.yValues = sorted(self.yValues)
 
@@ -123,7 +131,14 @@ class Grapher:
 
         data = [trace]
         layout = go.Layout(
-            barmode = 'group'
+                title = self.optionsWindow.graphTitleEdit.text(),
+                barmode = 'group',
+                xaxis = dict(
+                        title = self.optionsWindow.xAxisTitleEdit.text()
+                        ),
+                yaxis = dict(
+                        title = self.optionsWindow.yAxisTitleEdit.text()
+                        )
         )
 
         fig = go.Figure(data = data, layout = layout)
@@ -156,7 +171,8 @@ class Grapher:
 
         data = [trace]
         layout = go.Layout(
-            barmode = 'group'
+                title = self.optionsWindow.graphTitleEdit.text(),
+                barmode = 'group'
         )
 
         fig = go.Figure(data = data, layout = layout)
@@ -209,7 +225,14 @@ class Grapher:
         data = [trace]
 
         layout = go.Layout(
-            barmode = 'group'
+                title = self.optionsWindow.graphTitleEdit.text(),
+                barmode = 'group',
+                xaxis = dict(
+                        title = self.optionsWindow.xAxisTitleEdit.text()
+                        ),
+                yaxis = dict(
+                        title = self.optionsWindow.yAxisTitleEdit.text()
+                        )
         )
 
         fig = go.Figure(data = data, layout = layout)
@@ -262,7 +285,14 @@ class Grapher:
 
         data = [trace]
         layout = go.Layout(
-            barmode = 'group'
+                title = self.optionsWindow.graphTitleEdit.text(),
+                barmode = 'group',
+                xaxis = dict(
+                        title = self.optionsWindow.xAxisTitleEdit.text()
+                        ),
+                yaxis = dict(
+                        title = self.optionsWindow.yAxisTitleEdit.text()
+                        )
         )
 
         fig = go.Figure(data = data, layout = layout)

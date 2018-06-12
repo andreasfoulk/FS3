@@ -190,6 +190,10 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                 # Our work here is already done
                 return
             # Else set the layer to editable
+            editMessage = 'FS3 Performance may be slow '
+            editMessage += 'while in edit mode.'
+            editMessage += '\nPlease ensure it is disabled when not in use.'
+            self.error.showMessage(editMessage)
             self.currentLayer.startEditing()
         else:
             # Else the checkbox is unchecked
