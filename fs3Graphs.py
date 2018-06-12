@@ -99,6 +99,7 @@ class Grapher:
                     fieldIndex = feature.fieldNameIndex(self.optionsWindow.xAxisDefaultBox.currentText())
                     self.xValues.append(feature.attributes()[fieldIndex])
 
+        self.allYValues = attributes
         self.yValues = attributes[0]
 
         self.hasNull = False
@@ -112,6 +113,7 @@ class Grapher:
 
         # Apply sort and transform
         if self.optionsWindow.dataSortingBox.currentText() == 'Ascending':
+            #zipped = zip(self.xValues, *self.allYValues)
             self.yValues = sorted(self.yValues)
 
         if self.optionsWindow.dataSortingBox.currentText() == 'Descending':
@@ -149,12 +151,15 @@ class Grapher:
 
     def makeBarGraph(self):
 
-        trace = go.Bar(
-            x = self.xValues,
-            y = self.yValues
-        )
+        data = []
+        for yValues in self.allYValues:
+            data.append(
+                trace = go.Bar(
+                    x = self.xValues,
+                    y = yValues
+                )
+            )
 
-        data = [trace]
         layout = go.Layout(
                 title = self.optionsWindow.graphTitleEdit.text(),
                 barmode = 'group',
