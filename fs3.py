@@ -52,13 +52,14 @@ class FS3Plugin(object):
                               "FS3 -- FieldStats3",
                               self.iface.mainWindow())
 
-
     def translation(self, stringToTranslate):
         """
+        translation
         Gets the Strings to translate using the Qt translation API
+        @param stringToTranslate string to be translated
+        @return translated string
         """
         return QCoreApplication.translate('FS3Plugin', stringToTranslate)
-
 
     def initGui(self):
         """

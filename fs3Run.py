@@ -117,40 +117,63 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
 
     @pyqtSlot()
     def openGraphOptions(self):
+        """
+        openGraphOptions
+        Opens the Graph Options UI
+        """
         dialog = GraphOptionsWindow()
         dialog.exec_()
 
     def refresh(self):
         """
-        Reload data
+        refresh
+        Reloads data
         """
         self.refreshLayers()
         self.refreshFields()
         self.refreshAttributes()
 
 
-    ### Fill LineEdit with percentile numbers when the buttons are pressed
     @pyqtSlot()
     def percentile25Update(self):
+        """
+        percentile25Update
+        Fills LineEdit with 25th percentile numbers
+        """
         self.percentilesLineEdit.setText("25, 50, 75, 100")
 
     @pyqtSlot()
     def percentile10Update(self):
+        """
+        percentile10Update
+        Fills LineEdit with 10th percentile numbers
+        """
         percentile10Str = ", ".join(str(x * 10) for x in range(1, 11))
         self.percentilesLineEdit.setText(percentile10Str)
 
     @pyqtSlot()
     def percentile5Update(self):
+        """
+        percentile5Update
+        Fills LineEdit with 5th percentile numbers
+        """
         percentile5Str = ", ".join(str(x * 5) for x in range(1, 21))
         self.percentilesLineEdit.setText(percentile5Str)
 
     @pyqtSlot()
     def percentileHighEndUpdate(self):
+        """
+        percentileHighEndUpdate
+        Fills LineEdit with High End (50, 80, 95) percentile numbers
+        """
         self.percentilesLineEdit.setText("50, 80, 95")
 
     @pyqtSlot()
     def percentileTextChanged(self):
-        """ Tokenize percentile display """
+        """
+        percentileTextChanged
+        Tokenize percentile display
+        """
         try:
             percentileList = self.percentilesLineEdit.text().split(', ')
             for percentile in percentileList:
@@ -164,15 +187,20 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
             return
 
 
-    ### Limit to Selected Checkbox
     @pyqtSlot()
     def handleLimitSelected(self):
+        """
+        handleLimitSelected
+        Limit to selected checkbox
+        """
         self.refreshAttributes()
 
-    ### Edit Mode Checkbox
     @pyqtSlot()
     def handleEditModeChecked(self):
-        """ Edit Mode trigger within plugin UI """
+        """
+        handleEditModeChecked
+        Edit Mode trigger within plugin UI
+        """
         # Edit box was checked
         # Check state
         if self.editModeCheck.isChecked():
@@ -191,10 +219,12 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
             # Else set the layer to noneditable
             self.currentLayer.commitChanges()
 
-    ### Editing Started and Stopped Signals
     @pyqtSlot()
     def editingStartedQGIS(self):
-        """ Handles events when in Edit Mode """
+        """
+        editingStartedQGIS
+        Handles events when in Edit Mode
+        """
         if self.editModeCheck.isChecked():
             # The checkbox is already checked, return
             return
@@ -202,16 +232,23 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
 
     @pyqtSlot()
     def editingStoppedQGIS(self):
-        """ Handles events when out of Edit Mode """
+        """
+        editingStoppedQGIS
+        Handles events when out of Edit Mode
+        """
         if not self.editModeCheck.isChecked():
             # The checkbox is already unchecked, return
             return
         self.editModeCheck.setChecked(False)
 
-    ### User has changed a value of a attribute cell
     @pyqtSlot('int', 'int')
     def attributeCellChanged(self, row, column):
-        """ Handles updates case any change were made in Edit Mode """
+        """
+        attributeCellChanged
+        Handles updates case any change were made in Edit Mode
+        @param row Row of data table cell that was changed
+        @param column Column of data table cell that was changed
+        """
         newValue = self.tableWidget.item(row, column)
         if self.currentLayer.isEditable():
             # Make the change then commit the change
@@ -240,10 +277,12 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                         self.error.showMessage(updateError)
 
 
-    ### User has clicked on a header in the table
     @pyqtSlot()
     def handleDataSortSignal(self):
-        """ Handles propper sorting of statistic data """
+        """
+        handleDataSortSignal
+        Handles propper sorting of statistic data
+        """
         #Recolor the table
         for i in range(0, self.tableWidget.columnCount()):
             for j in range(0, self.tableWidget.rowCount()):
@@ -257,7 +296,10 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
 
     @pyqtSlot()
     def handleUniqueSortSignal(self):
-        """ Handles propper sorting of unique data """
+        """
+        handleUniqueSortSignal
+        Handles propper sorting of unique data
+        """
         #Recolor the table
         for i in range(0, self.uniqueTable.columnCount()):
             for j in range(0, self.uniqueTable.rowCount()):
@@ -269,20 +311,27 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                     #This is an odd row, default its color
                     cell.setBackground(self.defaultBrush)
 
-    ### Update on new selection
     @pyqtSlot()
     def handleSelectionChanged(self):
+        """
+        handleSelectionChanged
+        Update on a new selection
+        """
         #If there are selected layers in QGIS
         self.refreshAttributes()
 
-    ### Decimal Selection Box
     @pyqtSlot()
     def handleDecimalChanged(self):
+        """
+        handleDecimalChanged
+        Handles Decimal selection box
+        """
         self.currentDecimalPrecision = self.numberOfDecimalsBox.value()
         self.refreshAttributes()
 
     def refreshLayers(self):
         """
+        refreshLayers
         Reload the layers coboBox with the current content of the layers list
         """
         self.selectLayerComboBox.clear()
@@ -294,6 +343,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
     @pyqtSlot()
     def refreshFields(self):
         """
+        refreshFields
         Reload the fields coboBox with the current content of the field lists
         """
         self.selectFieldListWidget.clear()
@@ -322,6 +372,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
     @pyqtSlot()
     def refreshAttributes(self):
         """
+        refreshAttributes
         Refresh the table content with coresponding Layer & field selection
         """
         self.tableWidget.setSortingEnabled(False)
@@ -459,6 +510,8 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         """
         createNumericalStatistics
         Methods that instantiates Numerical Statistics and initializes them
+        @param inputArray Data from selected field(s) that statistics should be run on
+        @return numericalStatistics Finished Statistics Object
         """
         percentileArray = []
         try:
@@ -479,7 +532,9 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
     def createCharacterStatistics(self, inputArray):
         """
         createNumericalStatistics
-        Methods that instantiates Numerical Statistics and initializes them
+        Methods that instantiates Character Statistics and initializes them
+        @param inputArray Data from selected field(s) that statistics should be run on
+        @return characterStatistics Finished Statistics Object
         """
         percentileArray = []
         try:
@@ -500,6 +555,8 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         """
         createUniqueness
         Method that instantiates Uniqueness class and initializes it
+        @param inputArray Data from selected field(s) that uniqueness should be run on
+        @return uniqueness FS3Uniqueness object with calculated uniqueness
         """
         uniqueness = FS3Uniqueness()
         uniqueness.initialize(inputArray)
@@ -511,6 +568,8 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         """
         refreshStatistics
         Method that updates the statistic table
+        @param fields Fields that are selected
+        @param stats The current stats that are displayed
         """
         numAndCharStats = False
         verticalHeaders = stats[0].statName
@@ -609,7 +668,10 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.handleStatisticsColor()
 
     def handleStatisticsColor(self):
-        """ Method implements zebra colors with table rows """
+        """
+        handleStatisticsColor
+        Method implements zebra colors with table rows
+        """
         for i in range(0, self.statisticTable.columnCount()):
             for j in range(0, self.statisticTable.rowCount()):
                 cell = self.statisticTable.item(j, i)
@@ -627,6 +689,8 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         """
         refreshUnique
         Method that updates the unique table
+        @param fields Currently selected fields
+        @param unique Currently displayed unique data
         """
         #Start by clearing the layout
         self.uniqueTable.setSortingEnabled(False)
@@ -666,6 +730,10 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
 
     @pyqtSlot()
     def refreshGraph(self):
+        """
+        refreshGraph
+        Refreshes the graph on data change
+        """
         plot_path = self.grapher.makeGraph()
         self.graphView.load(QUrl.fromLocalFile(plot_path))
         self.graphLayout.addWidget(self.graphView)

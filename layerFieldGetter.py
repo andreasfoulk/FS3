@@ -9,10 +9,8 @@
     of the MIT license.  See the LICENSE file for details.
 
 """
-#from PyQt5.QtCore import QVariant
-from qgis.core import QgsProject, QgsMapLayer
 
-#https://qgis.org/api/classQgsProject.html
+from qgis.core import QgsProject, QgsMapLayer
 
 class LayerFieldGetter(object):
     """
@@ -26,7 +24,9 @@ class LayerFieldGetter(object):
     @staticmethod
     def getVectorLayers():
         """
+        getVectorLayers
         Retrieve the layers currently loaded in to QGIS
+        @return A sorted list of all layers currently loaded in to QGIS
         """
         project = QgsProject.instance()
         layerMap = project.mapLayers()
@@ -39,7 +39,10 @@ class LayerFieldGetter(object):
     @staticmethod
     def getSingleLayer(layerName):
         """
+        getSingleLayer
         Returns a single vector layer
+        @param layerName Layer to retrieve
+        @return layer
         """
         project = QgsProject.instance()
         layerMap = project.mapLayers()
@@ -54,7 +57,10 @@ class LayerFieldGetter(object):
     @staticmethod
     def getAllFields(layer):
         """
+        getAllFields
         Returns the name of the fields in a given layer
+        @param layer Layer to retrieve fields list for
+        @return fieldLists List of all fields for the given layer
         """
         fields = layer.fields()
         fieldLists = []

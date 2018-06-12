@@ -35,6 +35,7 @@ class FS3Uniqueness(object):
     def initialize(self, inputArray):
         """
         initialize
+        @param inputArray Array of data to be analyzed
         """
         if len(inputArray) > 1:
             inputArray = self.multiListHandler(inputArray)
@@ -51,6 +52,8 @@ class FS3Uniqueness(object):
         """
         multiListHandler
         Handles the instance where inputArray has more than one list
+        @param inputArray Array of Lists to be merged
+        @return returnArray Array of zipped lists
         """
         returnArray = []
         for j in range(len(inputArray[0])):
@@ -61,6 +64,11 @@ class FS3Uniqueness(object):
         return returnArray
 
     def roundUniqueness(self, precision):
+        """
+        roundUniqueness
+        Rounds the unique occurance percentages to user-selected precision
+        @param precision User-selected decimal precision
+        """
         tempArray = []
         for percent in self.uniquePercent:
             tempArray.append(decimalRound(percent, precision))
@@ -72,6 +80,8 @@ def uniqueValues(inputArray):
     """
     uniqueValues
     return all instances of unique values
+    @param inputArray Array of values (with likely/possible duplicates)
+    @return valueList List of unique values from inputArray
     """
     valueList = []
     for value in inputArray:
@@ -88,6 +98,9 @@ def uniqueNumberOccurances(inputArray, originalArray):
     """
     uniqueNumberOccurances
     returns total occurences of each unique values
+    @param inputArray Array of unique values from originalArray
+    @param originalArray Array of all values (with likely/possible duplicates)
+    @return valueList List containing number of occurances in originalArray of each value in inputArray
     """
     valueList = []
     for value in inputArray:
@@ -101,6 +114,9 @@ def uniquePercent(inputArray, numItems):
     """
     uniquePercent
     returns a percentage of occurences for the unique values
+    @param inputArray Array with occurance counts for each unique value
+    @param numItems Total number of items in original array
+    @return valueList List where valueList[n] = (inputArray[n]/numItems)*100 <- the percentage of the original array that is inputArray[n]
     """
     valueList = []
     for value in inputArray:

@@ -170,6 +170,7 @@ class FS3CharacterStatistics(object):
         """
         roundCharacterStatistics
         Rounds all character statistics to a given precision
+        @param precision User-selected number of decimals to round to
         """
         self.itemCount = decimalRound(self.itemCount, precision)
         self.maxLength = decimalRound(self.maxLength, precision)
