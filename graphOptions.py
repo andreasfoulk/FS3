@@ -6,6 +6,7 @@ import os
 from PyQt5 import uic
 from PyQt5.QtWidgets import QDialog
 
+
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'graphOptions.ui'))
 
@@ -21,6 +22,5 @@ class GraphOptionsWindow(QDialog, FORM_CLASS):
         transforms = ['None', 'Log']
         self.dataTransformBox.insertItems(0, transforms)
 
-        sorts = ['None', 'Acending', 'Decending']
+        sorts = ['None', 'Ascending', 'Descending']
         self.dataSortingBox.insertItems(0, sorts)
-

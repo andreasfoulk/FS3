@@ -24,6 +24,7 @@ from qgis.core import NULL
 from PyQt5.QtCore import pyqtSlot
 
 from .graphOptions import GraphOptionsWindow
+from .layerFieldGetter import LayerFieldGetter
 
 class Grapher:
     """
@@ -45,27 +46,58 @@ class Grapher:
 
         self.optionsWindow = GraphOptionsWindow()
 
+        self.layer = None
+
 
     def openGraphOptions(self):
         """
         Opens the graph options dialog
         Connected to Open Graph Settings button in fs3Run.py
         """
+        self.setLayerFields()
         self.optionsWindow.exec_()
 
-    def setData(self, fields, attributes, uniqueness):
+    def setLayerFields(self):
+        """
+        Fill the default x-axis combobox with the current layer's fields
+        """
+        if self.layer is not None:
+            getter = LayerFieldGetter()
+            fields = getter.getAllFields(self.layer)
+            self.optionsWindow.xAxisDefaultBox.insertItem(0, 'None')
+            self.optionsWindow.xAxisDefaultBox.insertItems(1, fields)
+
+    def setData(self, layer, attributes, uniqueness, limitToSelected):
         """
         Sets self variables
         xValues defaults to 1 through n if no default is selected
         Checks if the data should be sorted or transformed
         Does sort or transform
         """
-        self.fields = fields
+        self.layer = layer
         self.attributes = attributes
         self.uniqueness = uniqueness
+        self.limitToSelected = limitToSelected
 
-        # When this is something else sorting will need to be done as pairs...
-        self.xValues = list(range(len(self.attributes[0])))
+        # When this is something else sorting will need to be done as pairs..
+        if self.optionsWindow.xAxisDefaultBox.currentText() == 'None':
+            self.xValues = list(range(len(self.attributes[0])))
+        else:
+            if self.limitToSelected:
+                if not self.layer.getSelectedFeatures().isClosed():
+                    # If there are features selected, get them
+                    features = self.layer.getSelectedFeatures()
+                else:
+                    # Else get all features
+                    features = self.layer.getFeatures()
+            else:
+                features = self.layer.getFeatures()
+
+            self.xValues = []
+            for feature in features:
+                fieldIndex = feature.fieldNameIndex(self.optionsWindow.xAxisDefaultBox.currentText())
+                self.xValues.append(feature.attributes()[fieldIndex])
+
         self.yValues = attributes[0]
 
         if self.optionsWindow.dataSortingBox.currentText() == 'Acending':
@@ -78,10 +110,8 @@ class Grapher:
             try:
                 self.yValues = [log10(val) if val > 0 else 0 for val in self.yValues]
             except TypeError:
-                # TODO Error message?
+                # Don't do anything for characture data
                 pass
-
-            # TODO update axis label to reflect transform?
 
 
     def makeGraph(self):
@@ -91,7 +121,7 @@ class Grapher:
         """
 
         # refesh data to include any options from the options window
-        self.setData(self.fields, self.attributes, self.uniqueness)
+        self.setData(self.layer, self.attributes, self.uniqueness, self.limitToSelected)
 
         if self.graphTypeBox.currentText() == 'Bar':
             plot_path = self.makeBarGraph()
@@ -197,13 +227,13 @@ class Grapher:
             trace = go.Scatter(
                 x = self.attributes[1],
                 y = self.attributes[0],
-                name='{}'.format(self.fields[0])
+                name='{}'.format('self.fields[0]')
             )
         else:
             trace = go.Scatter(
                 x = self.attributes[0],
                 y = self.attributes[1],
-                name='{} x {}'.format(self.fields[0], self.fields[1])
+                name='{} x {}'.format('self.fields[0]', 'self.fields[1]')
             )
 
         data = [trace]

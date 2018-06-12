@@ -334,11 +334,9 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.tableWidget.blockSignals(True)
         self.tableWidget.clear()
 
-        # Get selected fields
-        fields = []
+        # Get selected fields form list widget
         selectedFields = self.selectFieldListWidget.selectedItems()
-        for field in selectedFields:
-            fields.append(field.text())
+        fields = [field.text() for field in selectedFields]
 
         # If the field is not set yet (Layer was swapped)
         # Return until the refresh is ready
@@ -446,7 +444,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                     data.append(statValues[i])
 
             uniqueCalculation = self.createUniqueness(uniquenesses)
-            self.grapher.setData(fields, data, uniqueCalculation)
+            self.grapher.setData(self.currentLayer, data, uniqueCalculation, self.limitToSelected.isChecked())
 
             self.refreshUnique(fields, uniqueCalculation)
 
