@@ -12,17 +12,22 @@ can load them into the gui.
 import tempfile
 import os
 import platform
+<<<<<<< HEAD
+import re
+=======
 from math import log10
 from operator import itemgetter
 
+>>>>>>> f0cd6055efd567ef04780d73a7dc7592284954ec
 import plotly
 import plotly.graph_objs as go
+import plotly.offline as offline
+
+from math import log10
 from plotly import tools
-
+#from shutil import copyfile
 from qgis.core import NULL
-
 from PyQt5.QtCore import pyqtSlot
-
 from .graphOptions import GraphOptionsWindow
 from .layerFieldGetter import LayerFieldGetter
 
@@ -183,9 +188,18 @@ class Grapher:
 
         # first lines of additional html with the link to the local javascript
         raw_plot = '<head><meta charset="utf-8" /><script src="{}"></script><script src="{}"></script></head>'.format(self.polyfillpath, self.plotlypath)
+<<<<<<< HEAD
+
+        # call the plot method without all the javascript code
+        raw_plot += plotly.offline.plot(fig, output_type='div',
+        filename='bar-graph', include_plotlyjs=False, show_link=False, image='png')
+=======
         # call the plot method without all the javascript code
         raw_plot += plotly.offline.plot(fig, output_type='div', include_plotlyjs=False, show_link=False)
+>>>>>>> f0cd6055efd567ef04780d73a7dc7592284954ec
 
+        # Generate a temporary html file that can be viewed on a web browser
+        # Allows use of plotly's full features QGIS does not support.
         plot_path = os.path.join(tempfile.gettempdir(), 'temp_plot_name.html')
         with open(plot_path, "w") as f:
             f.write(raw_plot)
@@ -210,9 +224,18 @@ class Grapher:
 
         # first lines of additional html with the link to the local javascript
         raw_plot = '<head><meta charset="utf-8" /><script src="{}"></script><script src="{}"></script></head>'.format(self.polyfillpath, self.plotlypath)
+<<<<<<< HEAD
+
+        # call the plot method without all the javascript code
+        raw_plot += plotly.offline.plot(fig, output_type='div',
+        filename='pie-graph', include_plotlyjs=False, show_link=False, image='png')
+=======
         # call the plot method without all the javascript code
         raw_plot += plotly.offline.plot(fig, output_type='div', include_plotlyjs=False, show_link=False)
+>>>>>>> f0cd6055efd567ef04780d73a7dc7592284954ec
 
+        # Generate a temporary html file that can be viewed on a web browser
+        # Allows use of plotly's full features QGIS does not support.
         plot_path = os.path.join(tempfile.gettempdir(), 'temp_plot_name.html')
         with open(plot_path, "w") as f:
             f.write(raw_plot)
@@ -248,9 +271,18 @@ class Grapher:
 
         # first lines of additional html with the link to the local javascript
         raw_plot = '<head><meta charset="utf-8" /><script src="{}"></script><script src="{}"></script></head>'.format(self.polyfillpath, self.plotlypath)
+        
         # call the plot method without all the javascript code
+<<<<<<< HEAD
+        raw_plot += plotly.offline.plot(fig, output_type='div',
+                include_plotlyjs=False, filename='/tmp/line-graph', show_link=False, image='png')
+        
+        # Generate a temporary html file that can be viewed on a web browser
+        # Allows use of plotly's full features QGIS does not support.
+=======
         raw_plot += plotly.offline.plot(fig, output_type='div', include_plotlyjs=False, show_link=False)
 
+>>>>>>> f0cd6055efd567ef04780d73a7dc7592284954ec
         plot_path = os.path.join(tempfile.gettempdir(), 'temp_plot_name.html')
         with open(plot_path, "w") as f:
             f.write(raw_plot)
@@ -259,10 +291,34 @@ class Grapher:
 
 
     def makeScatterGraph(self):
+        #img_name = 'my-plot'
+        #dload = os.path.expanduser('~/Downloads')
+        #save_dir = '/tmp'
 
+<<<<<<< HEAD
+        allNull = True
+        for attribute in self.attributes:
+            for value in attribute:
+                if value != NULL:
+                    allNull = False
+                    break
+        if allNull:
+            return
+
+        # Create a trace
+        if len(self.attributes) is 1:
+            self.attributes.append([i for i in range(len(self.attributes[0]))]) 
+            trace = go.Scatter(
+                x = self.attributes[1],
+                y = self.attributes[0],
+                mode = 'markers'
+            )
+        else: 
+=======
         data = []
         i = 0
         for yValues in self.allYValues:
+>>>>>>> f0cd6055efd567ef04780d73a7dc7592284954ec
             trace = go.Scatter(
                     x = self.xValues,
                     y = yValues,
@@ -273,6 +329,10 @@ class Grapher:
             i += 1
 
         layout = go.Layout(
+<<<<<<< HEAD
+            barmode = 'group'
+        ) 
+=======
                 title = self.optionsWindow.graphTitleEdit.text(),
                 barmode = 'group',
                 xaxis = dict(
@@ -282,16 +342,33 @@ class Grapher:
                         title = self.optionsWindow.yAxisTitleEdit.text()
                         )
         )
+>>>>>>> f0cd6055efd567ef04780d73a7dc7592284954ec
 
         fig = go.Figure(data = data, layout = layout)
 
         # first lines of additional html with the link to the local javascript
         raw_plot = '<head><meta charset="utf-8" /><script src="{}"></script><script src="{}"></script></head>'.format(self.polyfillpath, self.plotlypath)
+<<<<<<< HEAD
+
+        # call the plot method without all the javascript code
+        raw_plot += plotly.offline.plot(fig, output_type='div',
+        include_plotlyjs=False, show_link=False, filename='/tmp/scatter-graph', image='png')  
+=======
         # call the plot method without all the javascript code
         raw_plot += plotly.offline.plot(fig, output_type='div', include_plotlyjs=False, show_link=False)
+>>>>>>> f0cd6055efd567ef04780d73a7dc7592284954ec
 
+        # Generate a temporary html file that can be viewed on a web browser
+        # Allows use of plotly's full features QGIS does not support.
         plot_path = os.path.join(tempfile.gettempdir(), 'temp_plot_name.html')
         with open(plot_path, "w") as f:
             f.write(raw_plot)
-
+        
+        #copyfile('{}/{}.png'.format(save_dir, img_name),
+        #       '{}/{}.png'.format(dload, img_name))       
         return plot_path
+<<<<<<< HEAD
+
+        return js_str
+=======
+>>>>>>> f0cd6055efd567ef04780d73a7dc7592284954ec
