@@ -53,6 +53,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.setWindowIcon(QIcon(self.iconPath))
 
         self.fieldGetterInst = LayerFieldGetter()
+        self.grapher = Grapher(self.graphTypeBox)
         self.currentProject = QgsProject.instance()
         self.currentLayer = None
         self.allFields = None
@@ -67,6 +68,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.tabFields.currentChanged.connect(self.graphTabLoaded)
         self.dataTableLayout = QVBoxLayout()
         self.tableWidget = QTableWidget()
+
         ### Data Table Widget Connection
         self.tableWidget.cellChanged.connect(self.attributeCellChanged)
         self.horizontalHeader = self.tableWidget.horizontalHeader()
@@ -119,7 +121,6 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                         .connect(self.refreshAttributes)
 
         ### Handles graph stuffs
-        self.grapher = Grapher(self.graphTypeBox)
         self.graphTypeBox.currentIndexChanged.connect(self.refreshAttributes)
 
         self.openGraphSettings.clicked.connect(self.grapher.openGraphOptions)
@@ -329,6 +330,9 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
             #Listen for editing mode enabled and disabled
             self.currentLayer.editingStarted.connect(self.editingStartedQGIS)
             self.currentLayer.editingStopped.connect(self.editingStoppedQGIS)
+
+            # Update grapher layer
+            self.grapher.setData(self.currentLayer)
 
 
 

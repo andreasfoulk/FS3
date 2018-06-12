@@ -29,3 +29,5 @@ class GraphOptionsWindow(QDialog, FORM_CLASS):
 
         sorts = ['None', 'Ascending', 'Descending']
         self.dataSortingBox.insertItems(0, sorts)
+
+        self.xAxisDefaultBox.insertItem(0, 'None')

@@ -46,8 +46,6 @@ class Grapher:
 
         self.optionsWindow = GraphOptionsWindow()
 
-        self.layer = None
-
 
     def openGraphOptions(self):
         """
@@ -61,13 +59,15 @@ class Grapher:
         """
         Fill the default x-axis combobox with the current layer's fields
         """
+        self.optionsWindow.xAxisDefaultBox.clear()
+
         if self.layer is not None:
             getter = LayerFieldGetter()
             fields = getter.getAllFields(self.layer)
             self.optionsWindow.xAxisDefaultBox.insertItem(0, 'None')
             self.optionsWindow.xAxisDefaultBox.insertItems(1, fields)
 
-    def setData(self, layer, attributes, uniqueness, limitToSelected):
+    def setData(self, layer, attributes=[[]], uniqueness=[], limitToSelected=False):
         """
         Sets self variables
         xValues defaults to 1 through n if no default is selected
@@ -83,20 +83,21 @@ class Grapher:
         if self.optionsWindow.xAxisDefaultBox.currentText() == 'None':
             self.xValues = list(range(len(self.attributes[0])))
         else:
-            if self.limitToSelected:
-                if not self.layer.getSelectedFeatures().isClosed():
-                    # If there are features selected, get them
-                    features = self.layer.getSelectedFeatures()
+            if self.layer:
+                if self.limitToSelected:
+                    if not self.layer.getSelectedFeatures().isClosed():
+                        # If there are features selected, get them
+                        features = self.layer.getSelectedFeatures()
+                    else:
+                        # Else get all features
+                        features = self.layer.getFeatures()
                 else:
-                    # Else get all features
                     features = self.layer.getFeatures()
-            else:
-                features = self.layer.getFeatures()
 
-            self.xValues = []
-            for feature in features:
-                fieldIndex = feature.fieldNameIndex(self.optionsWindow.xAxisDefaultBox.currentText())
-                self.xValues.append(feature.attributes()[fieldIndex])
+                self.xValues = []
+                for feature in features:
+                    fieldIndex = feature.fieldNameIndex(self.optionsWindow.xAxisDefaultBox.currentText())
+                    self.xValues.append(feature.attributes()[fieldIndex])
 
         self.yValues = attributes[0]
 
@@ -110,10 +111,10 @@ class Grapher:
                 self.yValues[index] = 'NULL'
 
         # Apply sort and transform
-        if self.optionsWindow.dataSortingBox.currentText() == 'Acending':
+        if self.optionsWindow.dataSortingBox.currentText() == 'Ascending':
             self.yValues = sorted(self.yValues)
 
-        if self.optionsWindow.dataSortingBox.currentText() == 'Decending':
+        if self.optionsWindow.dataSortingBox.currentText() == 'Descending':
             self.yValues = sorted(self.yValues, reverse = True)
 
         if self.optionsWindow.dataTransformBox.currentText() == 'Log':
@@ -147,18 +148,10 @@ class Grapher:
         return plot_path
 
     def makeBarGraph(self):
-        allNull = True
-        for value in self.yValues:
-            if value != NULL:
-                allNull = False
-                break
-        if allNull:
-            return
 
         trace = go.Bar(
             x = self.xValues,
-            y = self.yValues,
-            name='{} x {}'.format('self.fields[0]', 'self.fields[1]')
+            y = self.yValues
         )
 
         data = [trace]
@@ -226,15 +219,6 @@ class Grapher:
 
     def makeLineGraph(self):
 
-        allNull = True
-        for attribute in self.attributes:
-            for value in attribute:
-                if value != NULL:
-                    allNull = False
-                    break
-        if allNull:
-            return
-
         if len(self.attributes) is 1:
             self.attributes.append([i for i in range(len(self.attributes[0]))])
 
@@ -283,15 +267,6 @@ class Grapher:
 
 
     def makeScatterGraph(self):
-
-        allNull = True
-        for attribute in self.attributes:
-            for value in attribute:
-                if value != NULL:
-                    allNull = False
-                    break
-        if allNull:
-            return
 
         # Create a trace
         if len(self.attributes) is 1:
