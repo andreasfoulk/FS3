@@ -67,7 +67,7 @@ class Grapher:
             self.optionsWindow.xAxisDefaultBox.insertItem(0, 'None')
             self.optionsWindow.xAxisDefaultBox.insertItems(1, fields)
 
-    def setData(self, layer, attributes=[[]], uniqueness=[], limitToSelected=False, fields=[]):
+    def setData(self, layer, attributes=[[]], uniqueness=[], limitToSelected=False, fields=['']):
         """
         Sets self variables
         xValues defaults to 1 through n if no default is selected
@@ -98,19 +98,18 @@ class Grapher:
                 self.xValues = []
                 for feature in features:
                     fieldIndex = feature.fieldNameIndex(self.optionsWindow.xAxisDefaultBox.currentText())
-                    self.xValues.append(feature.attributes()[fieldIndex])
+                    value = feature.attributes()[fieldIndex]
+                    if not value:
+                        value = 'NULL'
+                    self.xValues.append(value)
 
         self.allYValues = attributes
-        self.yValues = attributes[0]
 
-        self.hasNull = False
-
-        # Remove the null attributes and their associated fields
-        for index in range(0, len(self.yValues)):
-            if self.yValues[index] == NULL:
-                # Remove this from both lists
-                self.hasNull = True
-                self.yValues[index] = 'NULL'
+        # Replace NULL with 'NULL'
+        for i in range(len(self.allYValues)):
+            for j in range(len(self.allYValues[i])):
+                if not self.allYValues[i][j]:
+                    self.allYValues[i][j] = 'NULL'
 
         # Apply sort and transform
         if self.optionsWindow.dataSortingBox.currentText() == 'Ascending':
