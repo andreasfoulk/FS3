@@ -3,7 +3,7 @@
     layerFieldGetter.py -- Plugin implimentation linking to QGIS
                         -- For more information see : https://github.com/andreasfoulk/FS3
 
-    Copyright (c) 2018 Orden Aitchedji, Mckenna Duzac, Andreas Foulk, Tanner Lee
+    Copyright (c) 2018 Orden Aitchedji, McKenna Duzac, Andreas Foulk, Tanner Lee
 
     This software may be modified and distributed under the terms
     of the MIT license.  See the LICENSE file for details.
@@ -26,7 +26,7 @@ class LayerFieldGetter(object):
     @staticmethod
     def getVectorLayers():
         """
-        The current map layer is loaded into qgis
+        Retrieve the layers currently loaded in to QGIS
         """
         project = QgsProject.instance()
         layerMap = project.mapLayers()
@@ -54,7 +54,7 @@ class LayerFieldGetter(object):
     @staticmethod
     def getAllFields(layer):
         """
-        Returns the name of the fields
+        Returns the name of the fields in a given layer
         """
         fields = layer.fields()
         fieldLists = []
