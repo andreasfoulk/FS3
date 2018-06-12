@@ -27,9 +27,9 @@ from .graphOptions import GraphOptionsWindow
 
 class Grapher:
     """
-    This class contains all the data
+    The Grapher class graphs for some reason
     """
-    def __init__(self, graphTypeBox=None):
+    def __init__(self, graphTypeBox):
         if platform.system() == 'Windows':
             self.polyfillpath = 'file:///'
             self.plotlypath = 'file:///'
@@ -38,12 +38,6 @@ class Grapher:
         else:
             self.polyfillpath = os.path.join(os.path.dirname(__file__), 'jsscripts/polyfill.min.js')
             self.plotlypath = os.path.join(os.path.dirname(__file__), 'jsscripts/plotly-1.34.0.min.js')
-
-        self.fields = []
-        self.attributes = []
-        self.xValues = []
-        self.yValues = []
-        self.uniqueness = []
 
         self.graphTypeBox = graphTypeBox
         graphTypes = ['Bar', 'Pie', 'Line', 'Scatter']
@@ -70,7 +64,8 @@ class Grapher:
         self.attributes = attributes
         self.uniqueness = uniqueness
 
-        self.xValues = [i for i in range(len(self.attributes[0]))]
+        # When this is something else sorting will need to be done as pairs...
+        self.xValues = list(range(len(self.attributes[0])))
         self.yValues = attributes[0]
 
         if self.optionsWindow.dataSortingBox.currentText() == 'Acending':
@@ -81,16 +76,12 @@ class Grapher:
 
         if self.optionsWindow.dataTransformBox.currentText() == 'Log':
             try:
-                temp = []
-                for val in self.yValues:
-                    if val <= 0:
-                        temp.append(val)
-                    else:
-                        temp.append(log10(val))
-                self.yValues = temp
+                self.yValues = [log10(val) if val > 0 else 0 for val in self.yValues]
             except TypeError:
-                # TODO Error message
+                # TODO Error message?
                 pass
+
+            # TODO update axis label to reflect transform?
 
 
     def makeGraph(self):
