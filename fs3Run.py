@@ -21,7 +21,7 @@ from PyQt5.QtCore import Qt, pyqtSlot, QUrl, pyqtSignal, QTimer
 from PyQt5.QtWidgets import QApplication, QMainWindow, QErrorMessage
 from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem
 from PyQt5.QtWebKitWidgets import QWebView
-from PyQt5.QtGui import QColor
+from PyQt5.QtGui import QColor, QIcon
 
 from .layerFieldGetter import LayerFieldGetter
 from .fs3Stats import FS3NumericalStatistics, FS3CharacterStatistics
@@ -29,6 +29,8 @@ from .fs3Stats import removeEmptyCells
 from .fs3Graphs import Grapher
 from .fs3Unique import FS3Uniqueness
 from .roundFunc import decimalRound
+
+from .resources import *
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
 
@@ -47,8 +49,11 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.setupUi(self)
         self.mainWindowSplitter.setStretchFactor(1, 10)
         self.setWindowTitle('FS3 -- FieldStats3')
+        self.iconPath = ":/plugins/FS3/FS3Icon.png"
+        self.setWindowIcon(QIcon(self.iconPath))
 
         self.fieldGetterInst = LayerFieldGetter()
+        self.grapher = Grapher(self.graphTypeBox)
         self.currentProject = QgsProject.instance()
         self.currentLayer = None
         self.allFields = None
@@ -63,6 +68,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.tabFields.currentChanged.connect(self.graphTabLoaded)
         self.dataTableLayout = QVBoxLayout()
         self.tableWidget = QTableWidget()
+
         ### Data Table Widget Connection
         self.tableWidget.cellChanged.connect(self.attributeCellChanged)
         self.horizontalHeader = self.tableWidget.horizontalHeader()
@@ -115,7 +121,6 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                         .connect(self.refreshAttributes)
 
         ### Handles graph stuffs
-        self.grapher = Grapher(self.graphTypeBox)
         self.graphTypeBox.currentIndexChanged.connect(self.refreshAttributes)
 
         self.openGraphSettings.clicked.connect(self.grapher.openGraphOptions)
@@ -186,6 +191,10 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                 # Our work here is already done
                 return
             # Else set the layer to editable
+            editMessage = 'FS3 Performance may be slow '
+            editMessage += 'while in edit mode.'
+            editMessage += '\nPlease ensure it is disabled when not in use.'
+            self.error.showMessage(editMessage)
             self.currentLayer.startEditing()
         else:
             # Else the checkbox is unchecked
@@ -322,6 +331,9 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
             self.currentLayer.editingStarted.connect(self.editingStartedQGIS)
             self.currentLayer.editingStopped.connect(self.editingStoppedQGIS)
 
+            # Update grapher layer
+            self.grapher.setData(self.currentLayer)
+
 
 
     @pyqtSlot()
@@ -334,11 +346,9 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.tableWidget.blockSignals(True)
         self.tableWidget.clear()
 
-        # Get selected fields
-        fields = []
+        # Get selected fields form list widget
         selectedFields = self.selectFieldListWidget.selectedItems()
-        for field in selectedFields:
-            fields.append(field.text())
+        fields = [field.text() for field in selectedFields]
 
         # If the field is not set yet (Layer was swapped)
         # Return until the refresh is ready
@@ -446,7 +456,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                     data.append(statValues[i])
 
             uniqueCalculation = self.createUniqueness(uniquenesses)
-            self.grapher.setData(fields, data, uniqueCalculation)
+            self.grapher.setData(self.currentLayer, data, uniqueCalculation, self.limitToSelected.isChecked(), fields)
 
             self.refreshUnique(fields, uniqueCalculation)
 

@@ -12,7 +12,13 @@ can load them into the gui.
 import tempfile
 import os
 import platform
+<<<<<<< HEAD
 import re
+=======
+from math import log10
+from operator import itemgetter
+
+>>>>>>> f0cd6055efd567ef04780d73a7dc7592284954ec
 import plotly
 import plotly.graph_objs as go
 import plotly.offline as offline
@@ -23,12 +29,13 @@ from plotly import tools
 from qgis.core import NULL
 from PyQt5.QtCore import pyqtSlot
 from .graphOptions import GraphOptionsWindow
+from .layerFieldGetter import LayerFieldGetter
 
 class Grapher:
     """
-    This class contains all the data
+    The Grapher class graphs for some reason
     """
-    def __init__(self, graphTypeBox=None):
+    def __init__(self, graphTypeBox):
         if platform.system() == 'Windows':
             self.polyfillpath = 'file:///'
             self.plotlypath = 'file:///'
@@ -37,12 +44,6 @@ class Grapher:
         else:
             self.polyfillpath = os.path.join(os.path.dirname(__file__), 'jsscripts/polyfill.min.js')
             self.plotlypath = os.path.join(os.path.dirname(__file__), 'jsscripts/plotly-1.34.0.min.js')
-
-        self.fields = []
-        self.attributes = []
-        self.xValues = []
-        self.yValues = []
-        self.uniqueness = []
 
         self.graphTypeBox = graphTypeBox
         graphTypes = ['Bar', 'Pie', 'Line', 'Scatter']
@@ -56,40 +57,86 @@ class Grapher:
         Opens the graph options dialog
         Connected to Open Graph Settings button in fs3Run.py
         """
+        self.setLayerFields()
         self.optionsWindow.exec_()
 
-    def setData(self, fields, attributes, uniqueness):
+    def setLayerFields(self):
+        """
+        Fill the default x-axis combobox with the current layer's fields
+        """
+        self.optionsWindow.xAxisDefaultBox.clear()
+
+        if self.layer is not None:
+            getter = LayerFieldGetter()
+            fields = getter.getAllFields(self.layer)
+            self.optionsWindow.xAxisDefaultBox.insertItem(0, 'None')
+            self.optionsWindow.xAxisDefaultBox.insertItems(1, fields)
+
+    def setData(self, layer, attributes=[[]], uniqueness=[], limitToSelected=False, fields=[]):
         """
         Sets self variables
         xValues defaults to 1 through n if no default is selected
         Checks if the data should be sorted or transformed
         Does sort or transform
         """
-        self.fields = fields
+        self.layer = layer
         self.attributes = attributes
         self.uniqueness = uniqueness
+        self.limitToSelected = limitToSelected
+        self.fields = fields
 
-        self.xValues = [i for i in range(len(self.attributes[0]))]
+        # Set x-axis to selected field
+        if self.optionsWindow.xAxisDefaultBox.currentText() == 'None':
+            self.xValues = list(range(len(self.attributes[0])))
+        else:
+            if self.layer:
+                if self.limitToSelected:
+                    if not self.layer.getSelectedFeatures().isClosed():
+                        # If there are features selected, get them
+                        features = self.layer.getSelectedFeatures()
+                    else:
+                        # Else get all features
+                        features = self.layer.getFeatures()
+                else:
+                    features = self.layer.getFeatures()
+
+                self.xValues = []
+                for feature in features:
+                    fieldIndex = feature.fieldNameIndex(self.optionsWindow.xAxisDefaultBox.currentText())
+                    self.xValues.append(feature.attributes()[fieldIndex])
+
+        self.allYValues = attributes
         self.yValues = attributes[0]
 
-        if self.optionsWindow.dataSortingBox.currentText() == 'Acending':
-            self.yValues = sorted(self.yValues)
+        self.hasNull = False
 
-        if self.optionsWindow.dataSortingBox.currentText() == 'Decending':
-            self.yValues = sorted(self.yValues, reverse = True)
+        # Remove the null attributes and their associated fields
+        for index in range(0, len(self.yValues)):
+            if self.yValues[index] == NULL:
+                # Remove this from both lists
+                self.hasNull = True
+                self.yValues[index] = 'NULL'
+
+        # Apply sort and transform
+        if self.optionsWindow.dataSortingBox.currentText() == 'Ascending':
+            zipped = zip(self.xValues, *self.allYValues)
+            zipped = sorted(zipped, key = itemgetter(1))
+            self.xValues, *self.allYValues = zip(*list(zipped))
+
+        if self.optionsWindow.dataSortingBox.currentText() == 'Descending':
+            zipped = zip(self.xValues, *self.allYValues)
+            zipped = sorted(zipped, key = itemgetter(1), reverse = True)
+            self.xValues, *self.allYValues = zip(*list(zipped))
 
         if self.optionsWindow.dataTransformBox.currentText() == 'Log':
-            try:
-                temp = []
-                for val in self.yValues:
-                    if val <= 0:
-                        temp.append(val)
-                    else:
-                        temp.append(log10(val))
-                self.yValues = temp
-            except TypeError:
-                # TODO Error message
-                pass
+            temp = []
+            for yValues in self.allYValues:
+                try:
+                    temp.append([log10(val) if val > 0 else 0 for val in yValues])
+                except TypeError:
+                    # Don't do anything for characture data
+                    pass
+            self.allYValues = temp
 
 
     def makeGraph(self):
@@ -99,7 +146,7 @@ class Grapher:
         """
 
         # refesh data to include any options from the options window
-        self.setData(self.fields, self.attributes, self.uniqueness)
+        self.setData(self.layer, self.attributes, self.uniqueness, self.limitToSelected, self.fields)
 
         if self.graphTypeBox.currentText() == 'Bar':
             plot_path = self.makeBarGraph()
@@ -115,33 +162,42 @@ class Grapher:
         return plot_path
 
     def makeBarGraph(self):
-        allNull = True
-        for value in self.yValues:
-            if value != NULL:
-                allNull = False
-                break
-        if allNull:
-            return
 
-        trace = go.Bar(
-            x = self.xValues,
-            y = self.yValues,
-            name='{} x {}'.format('self.fields[0]', 'self.fields[1]')
-        )
+        data = []
+        i = 0
+        for yValues in self.allYValues:
+            trace = go.Bar(
+                    x = self.xValues,
+                    y = yValues,
+                    name = self.fields[i]
+            )
+            data.append(trace)
+            i += 1
 
-        data = [trace]
         layout = go.Layout(
-            barmode = 'group'
+                title = self.optionsWindow.graphTitleEdit.text(),
+                barmode = 'group',
+                xaxis = dict(
+                        title = self.optionsWindow.xAxisTitleEdit.text()
+                        ),
+                yaxis = dict(
+                        title = self.optionsWindow.yAxisTitleEdit.text()
+                        )
         )
 
         fig = go.Figure(data = data, layout = layout)
 
         # first lines of additional html with the link to the local javascript
         raw_plot = '<head><meta charset="utf-8" /><script src="{}"></script><script src="{}"></script></head>'.format(self.polyfillpath, self.plotlypath)
+<<<<<<< HEAD
 
         # call the plot method without all the javascript code
         raw_plot += plotly.offline.plot(fig, output_type='div',
         filename='bar-graph', include_plotlyjs=False, show_link=False, image='png')
+=======
+        # call the plot method without all the javascript code
+        raw_plot += plotly.offline.plot(fig, output_type='div', include_plotlyjs=False, show_link=False)
+>>>>>>> f0cd6055efd567ef04780d73a7dc7592284954ec
 
         # Generate a temporary html file that can be viewed on a web browser
         # Allows use of plotly's full features QGIS does not support.
@@ -161,17 +217,23 @@ class Grapher:
 
         data = [trace]
         layout = go.Layout(
-            barmode = 'group'
+                title = self.optionsWindow.graphTitleEdit.text(),
+                barmode = 'group'
         )
 
         fig = go.Figure(data = data, layout = layout)
 
         # first lines of additional html with the link to the local javascript
         raw_plot = '<head><meta charset="utf-8" /><script src="{}"></script><script src="{}"></script></head>'.format(self.polyfillpath, self.plotlypath)
+<<<<<<< HEAD
 
         # call the plot method without all the javascript code
         raw_plot += plotly.offline.plot(fig, output_type='div',
         filename='pie-graph', include_plotlyjs=False, show_link=False, image='png')
+=======
+        # call the plot method without all the javascript code
+        raw_plot += plotly.offline.plot(fig, output_type='div', include_plotlyjs=False, show_link=False)
+>>>>>>> f0cd6055efd567ef04780d73a7dc7592284954ec
 
         # Generate a temporary html file that can be viewed on a web browser
         # Allows use of plotly's full features QGIS does not support.
@@ -184,34 +246,26 @@ class Grapher:
 
     def makeLineGraph(self):
 
-        allNull = True
-        for attribute in self.attributes:
-            for value in attribute:
-                if value != NULL:
-                    allNull = False
-                    break
-        if allNull:
-            return
-
-        if len(self.attributes) is 1:
-            self.attributes.append([i for i in range(len(self.attributes[0]))])
-
+        data = []
+        i = 0
+        for yValues in self.allYValues:
             trace = go.Scatter(
-                x = self.attributes[1],
-                y = self.attributes[0],
-                name='{}'.format(self.fields[0])
+                    x = self.xValues,
+                    y = yValues,
+                    name = self.fields[i]
             )
-        else:
-            trace = go.Scatter(
-                x = self.attributes[0],
-                y = self.attributes[1],
-                name='{} x {}'.format(self.fields[0], self.fields[1])
-            )
-
-        data = [trace]
+            data.append(trace)
+            i += 1
 
         layout = go.Layout(
-            barmode = 'group'
+                title = self.optionsWindow.graphTitleEdit.text(),
+                barmode = 'group',
+                xaxis = dict(
+                        title = self.optionsWindow.xAxisTitleEdit.text()
+                        ),
+                yaxis = dict(
+                        title = self.optionsWindow.yAxisTitleEdit.text()
+                        )
         )
 
         fig = go.Figure(data = data, layout = layout)
@@ -220,11 +274,16 @@ class Grapher:
         raw_plot = '<head><meta charset="utf-8" /><script src="{}"></script><script src="{}"></script></head>'.format(self.polyfillpath, self.plotlypath)
         
         # call the plot method without all the javascript code
+<<<<<<< HEAD
         raw_plot += plotly.offline.plot(fig, output_type='div',
                 include_plotlyjs=False, filename='/tmp/line-graph', show_link=False, image='png')
         
         # Generate a temporary html file that can be viewed on a web browser
         # Allows use of plotly's full features QGIS does not support.
+=======
+        raw_plot += plotly.offline.plot(fig, output_type='div', include_plotlyjs=False, show_link=False)
+
+>>>>>>> f0cd6055efd567ef04780d73a7dc7592284954ec
         plot_path = os.path.join(tempfile.gettempdir(), 'temp_plot_name.html')
         with open(plot_path, "w") as f:
             f.write(raw_plot)
@@ -237,6 +296,7 @@ class Grapher:
         #dload = os.path.expanduser('~/Downloads')
         #save_dir = '/tmp'
 
+<<<<<<< HEAD
         allNull = True
         for attribute in self.attributes:
             for value in attribute:
@@ -255,25 +315,49 @@ class Grapher:
                 mode = 'markers'
             )
         else: 
+=======
+        data = []
+        i = 0
+        for yValues in self.allYValues:
+>>>>>>> f0cd6055efd567ef04780d73a7dc7592284954ec
             trace = go.Scatter(
-                x = self.attributes[0],
-                y = self.attributes[1],
-                mode = 'markers'
+                    x = self.xValues,
+                    y = yValues,
+                    name = self.fields[i],
+                    mode = 'markers'
             )
+            data.append(trace)
+            i += 1
 
-        data = [trace]
         layout = go.Layout(
+<<<<<<< HEAD
             barmode = 'group'
         ) 
+=======
+                title = self.optionsWindow.graphTitleEdit.text(),
+                barmode = 'group',
+                xaxis = dict(
+                        title = self.optionsWindow.xAxisTitleEdit.text()
+                        ),
+                yaxis = dict(
+                        title = self.optionsWindow.yAxisTitleEdit.text()
+                        )
+        )
+>>>>>>> f0cd6055efd567ef04780d73a7dc7592284954ec
 
         fig = go.Figure(data = data, layout = layout)
 
         # first lines of additional html with the link to the local javascript
         raw_plot = '<head><meta charset="utf-8" /><script src="{}"></script><script src="{}"></script></head>'.format(self.polyfillpath, self.plotlypath)
+<<<<<<< HEAD
 
         # call the plot method without all the javascript code
         raw_plot += plotly.offline.plot(fig, output_type='div',
         include_plotlyjs=False, show_link=False, filename='/tmp/scatter-graph', image='png')  
+=======
+        # call the plot method without all the javascript code
+        raw_plot += plotly.offline.plot(fig, output_type='div', include_plotlyjs=False, show_link=False)
+>>>>>>> f0cd6055efd567ef04780d73a7dc7592284954ec
 
         # Generate a temporary html file that can be viewed on a web browser
         # Allows use of plotly's full features QGIS does not support.
@@ -284,5 +368,8 @@ class Grapher:
         #copyfile('{}/{}.png'.format(save_dir, img_name),
         #       '{}/{}.png'.format(dload, img_name))       
         return plot_path
+<<<<<<< HEAD
 
         return js_str
+=======
+>>>>>>> f0cd6055efd567ef04780d73a7dc7592284954ec
