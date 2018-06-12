@@ -21,7 +21,7 @@ from PyQt5.QtCore import Qt, pyqtSlot, QUrl, pyqtSignal, QTimer
 from PyQt5.QtWidgets import QApplication, QMainWindow, QErrorMessage
 from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem
 from PyQt5.QtWebKitWidgets import QWebView
-from PyQt5.QtGui import QColor
+from PyQt5.QtGui import QColor, QIcon
 
 from .layerFieldGetter import LayerFieldGetter
 from .fs3Stats import FS3NumericalStatistics, FS3CharacterStatistics
@@ -29,6 +29,8 @@ from .fs3Stats import removeEmptyCells
 from .fs3Graphs import Grapher
 from .fs3Unique import FS3Uniqueness
 from .roundFunc import decimalRound
+
+from .resources import *
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
 
@@ -47,6 +49,8 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.setupUi(self)
         self.mainWindowSplitter.setStretchFactor(1, 10)
         self.setWindowTitle('FS3 -- FieldStats3')
+        self.iconPath = ":/plugins/FS3/FS3Icon.png"
+        self.setWindowIcon(QIcon(self.iconPath))
 
         self.fieldGetterInst = LayerFieldGetter()
         self.currentProject = QgsProject.instance()
@@ -186,6 +190,10 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                 # Our work here is already done
                 return
             # Else set the layer to editable
+            editMessage = 'FS3 Performance may be slow '
+            editMessage += 'while in edit mode.'
+            editMessage += '\nPlease ensure it is disabled when not in use.'
+            self.error.showMessage(editMessage)
             self.currentLayer.startEditing()
         else:
             # Else the checkbox is unchecked
