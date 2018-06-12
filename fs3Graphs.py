@@ -12,18 +12,14 @@ can load them into the gui.
 import tempfile
 import os
 import platform
-
-import re
-
 from math import log10
 from operator import itemgetter
-
 
 import plotly
 import plotly.graph_objs as go
 import plotly.offline as offline
 
-from math import log10
+
 from plotly import tools
 #from shutil import copyfile
 from qgis.core import NULL
@@ -72,7 +68,7 @@ class Grapher:
             self.optionsWindow.xAxisDefaultBox.insertItem(0, 'None')
             self.optionsWindow.xAxisDefaultBox.insertItems(1, fields)
 
-    def setData(self, layer, attributes=[[]], uniqueness=[], limitToSelected=False, fields=[]):
+    def setData(self, layer, attributes=[[]], uniqueness=[], limitToSelected=False, fields=['']):
         """
         Sets self variables
         xValues defaults to 1 through n if no default is selected
@@ -103,19 +99,18 @@ class Grapher:
                 self.xValues = []
                 for feature in features:
                     fieldIndex = feature.fieldNameIndex(self.optionsWindow.xAxisDefaultBox.currentText())
-                    self.xValues.append(feature.attributes()[fieldIndex])
+                    value = feature.attributes()[fieldIndex]
+                    if not value:
+                        value = 'NULL'
+                    self.xValues.append(value)
 
         self.allYValues = attributes
-        self.yValues = attributes[0]
 
-        self.hasNull = False
-
-        # Remove the null attributes and their associated fields
-        for index in range(0, len(self.yValues)):
-            if self.yValues[index] == NULL:
-                # Remove this from both lists
-                self.hasNull = True
-                self.yValues[index] = 'NULL'
+        # Replace NULL with 'NULL'
+        for i in range(len(self.allYValues)):
+            for j in range(len(self.allYValues[i])):
+                if not self.allYValues[i][j]:
+                    self.allYValues[i][j] = 'NULL'
 
         # Apply sort and transform
         if self.optionsWindow.dataSortingBox.currentText() == 'Ascending':
@@ -190,7 +185,6 @@ class Grapher:
         # first lines of additional html with the link to the local javascript
         raw_plot = '<head><meta charset="utf-8" /><script src="{}"></script><script src="{}"></script></head>'.format(self.polyfillpath, self.plotlypath)
 
-
         # call the plot method without all the javascript code
         raw_plot += plotly.offline.plot(fig, output_type='div',
         filename='bar-graph', include_plotlyjs=False, show_link=False, image='png')
@@ -221,7 +215,6 @@ class Grapher:
 
         # first lines of additional html with the link to the local javascript
         raw_plot = '<head><meta charset="utf-8" /><script src="{}"></script><script src="{}"></script></head>'.format(self.polyfillpath, self.plotlypath)
-
 
         # call the plot method without all the javascript code
         raw_plot += plotly.offline.plot(fig, output_type='div',
@@ -264,12 +257,12 @@ class Grapher:
 
         # first lines of additional html with the link to the local javascript
         raw_plot = '<head><meta charset="utf-8" /><script src="{}"></script><script src="{}"></script></head>'.format(self.polyfillpath, self.plotlypath)
-        
+
         # call the plot method without all the javascript code
 
         raw_plot += plotly.offline.plot(fig, output_type='div',
                 include_plotlyjs=False, filename='/tmp/line-graph', show_link=False, image='png')
-        
+
         # Generate a temporary html file that can be viewed on a web browser
         # Allows use of plotly's full features QGIS does not support.
         plot_path = os.path.join(tempfile.gettempdir(), 'temp_plot_name.html')
@@ -283,10 +276,10 @@ class Grapher:
         #img_name = 'my-plot'
         #dload = os.path.expanduser('~/Downloads')
         #save_dir = '/tmp'
+
         data = []
         i = 0
         for yValues in self.allYValues:
-
             trace = go.Scatter(
                     x = self.xValues,
                     y = yValues,
@@ -297,38 +290,32 @@ class Grapher:
             i += 1
 
         layout = go.Layout(
-                title = self.optionsWindow.graphTitleEdit.text(),
-                barmode = 'group',
-                xaxis = dict(
-                        title = self.optionsWindow.xAxisTitleEdit.text()
-                        ),
-                yaxis = dict(
-                        title = self.optionsWindow.yAxisTitleEdit.text()
-                        )
+            title = self.optionsWindow.graphTitleEdit.text(),
+            barmode = 'group',
+            xaxis = dict(
+                    title = self.optionsWindow.xAxisTitleEdit.text()
+                    ),
+            yaxis = dict(
+                    title = self.optionsWindow.yAxisTitleEdit.text()
+                    )
         )
-
 
         fig = go.Figure(data = data, layout = layout)
 
         # first lines of additional html with the link to the local javascript
         raw_plot = '<head><meta charset="utf-8" /><script src="{}"></script><script src="{}"></script></head>'.format(self.polyfillpath, self.plotlypath)
-
-
+        
         # call the plot method without all the javascript code
         raw_plot += plotly.offline.plot(fig, output_type='div',
-        include_plotlyjs=False, show_link=False, filename='/tmp/scatter-graph', image='png')  
+        include_plotlyjs=False, show_link=False, filename='/tmp/scatter-graph', image='png')
 
         # Generate a temporary html file that can be viewed on a web browser
         # Allows use of plotly's full features QGIS does not support.
         plot_path = os.path.join(tempfile.gettempdir(), 'temp_plot_name.html')
         with open(plot_path, "w") as f:
             f.write(raw_plot)
-        
+
         #copyfile('{}/{}.png'.format(save_dir, img_name),
-        #       '{}/{}.png'.format(dload, img_name))       
+        #       '{}/{}.png'.format(dload, img_name))
         return plot_path
-
-
-        return js_str
-
 
