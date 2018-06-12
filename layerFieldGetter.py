@@ -16,11 +16,11 @@ from qgis.core import QgsProject, QgsMapLayer
 
 class LayerFieldGetter(object):
     """
-    TODO This classes docstring
+    Handles Layer and Field retrieval
     """
     def __init__(self):
         """
-        Must have for self construtor?
+        Must have for self construtor
         """
 
     @staticmethod
@@ -61,66 +61,3 @@ class LayerFieldGetter(object):
         for field in fields:
             fieldLists.append(field.name())
         return fieldLists
-
-    @staticmethod
-    def getNextField(layer, fieldName):
-        """
-        Get the next field to work with
-        """
-        fields = LayerFieldGetter.getAllFields(layer)
-        current = 0
-        for field in fields:
-            if field == fieldName:
-                if current < len(fields) - 1:
-                    return fields[current + 1]
-                return field[0]
-            current += 1
-        return None
-
-    @staticmethod
-    def getPreviousField(layer, fieldName):
-        """
-        Get the next field to work with
-        """
-        fields = LayerFieldGetter.getAllFields(layer)
-        current = 0
-        for field in fields:
-            if field == fieldName:
-                if current > 0:
-                    return fields[current - 1]
-                return field[len(fields) - 1]
-            current += 1
-        return None
-
-    @staticmethod
-    def getFieldType(layer, fieldName):
-        """
-        Returns the selected field type
-        """
-        fields = layer.pendingFields()
-        for field in fields:
-            if field.name() == fieldName:
-                return field.typeName()
-        return None
-
-    @staticmethod
-    def getFieldLength(layer, fieldName):
-        """
-        Returns the selected field length
-        """
-        fields = layer.pendingFields()
-        for field in fields:
-            if field.name() == fieldName:
-                return field.length()
-        return None
-
-    @staticmethod
-    def getFieldPrecision(layer, fieldName):
-        """
-        Return the precision for the field selected
-        """
-        fields = layer.pendingFields()
-        for field in fields:
-            if field.name() == fieldName:
-                return field.precision()
-        return None
