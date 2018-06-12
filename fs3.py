@@ -2,7 +2,7 @@
 # pylint: disable=wildcard-import, method-hidden
 """
 
-    fs3.py -- Plugin implimentation linking to QGIS
+    fs3.py -- Plugin implementation; linking to QGIS
            -- For more information see : https://github.com/andreasfoulk/FS3
 
     Copyright (c) 2018 Orden Aitchedji, McKenna Duzac, Andreas Foulk, Tanner Lee
@@ -11,6 +11,7 @@
     of the MIT license.  See the LICENSE file for details.
 
 """
+
 from PyQt5.QtCore import QTranslator, QSettings, QCoreApplication, qVersion
 from PyQt5.QtWidgets import QAction
 from PyQt5.QtGui import QIcon
@@ -19,14 +20,16 @@ from .fs3Run import FS3MainWindow
 from .resources import QtCore
 from .layerFieldGetter import LayerFieldGetter
 import os.path
-#os.system("python resources.py")
+
 class FS3Plugin(object):
     """
     FS3Plugin handles the linking to QGIS.
     - The icon is declared here
     - The plugin is loaded to the toolbar here
     - The main interface is called here
+    - Translation is handled here
     """
+
     def __init__(self, iface):
         self.iface = iface
 
@@ -75,9 +78,6 @@ class FS3Plugin(object):
         unload is a required method
         Used by QGIS to remove the plugin from the menu and toolbar
         """
-
-        #self.iface.removePluginMenu("&FS3 Plugin", self.action)
-
         self.iface.removePluginMenu(self.translation(u'&FS3 Plugin'), self.action)
         self.iface.removeToolBarIcon(self.action)
 
