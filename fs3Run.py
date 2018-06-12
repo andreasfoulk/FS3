@@ -456,7 +456,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                     data.append(statValues[i])
 
             uniqueCalculation = self.createUniqueness(uniquenesses)
-            self.grapher.setData(self.currentLayer, data, uniqueCalculation, self.limitToSelected.isChecked())
+            self.grapher.setData(self.currentLayer, data, uniqueCalculation, self.limitToSelected.isChecked(), fields)
 
             self.refreshUnique(fields, uniqueCalculation)
 
