@@ -15,6 +15,8 @@ import platform
 from math import log10
 from operator import itemgetter
 
+from qgis.core import NULL
+
 from PyQt5.QtCore import QCoreApplication
 
 import plotly
@@ -113,12 +115,11 @@ class Grapher:
                 for feature in features:
                     fieldIndex = feature.fieldNameIndex(self.optionsWindow.xAxisDefaultBox.currentText())
                     value = feature.attributes()[fieldIndex]
-                    if not value:
+                    if value == NULL:
                         value = QCoreApplication.translate("Grapher", "NULL")
                     self.xValues.append(value)
 
         self.allYValues = self.attributes
-        print(self.allYValues)
 
         # Apply sort and transform
         if self.optionsWindow.dataSortingBox.currentText() == QCoreApplication.translate("Grapher", "Ascending"):
@@ -145,11 +146,16 @@ class Grapher:
                     temp.append(yValues)
             self.allYValues = temp
 
+        ## Prepare data for plotly
         # Replace NULL with 'NULL'
         for i in range(len(self.allYValues)):
             for j in range(len(self.allYValues[i])):
-                if not self.allYValues[i][j]:
+                if self.allYValues[i][j] == NULL:
                     self.allYValues[i][j] = QCoreApplication.translate("Grapher", "NULL")
+
+        # Plotly doesn't like unordered number for x, will auto reorder them
+        if self.optionsWindow.xAxisDefaultBox.currentText() == QCoreApplication.translate("Grapher", "None"):
+            self.xValues = list(range(len(self.allYValues[0])))
 
 
     def makeGraph(self):
