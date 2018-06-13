@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    fs3Run.py -- This file creates plotly graphs and writes them to a 
+    fs3Graphs.py -- This file creates plotly graphs and writes them to a 
                  file so that the QWebView can load them into the gui.
               -- For more information see : https://github.com/andreasfoulk/FS3
               
