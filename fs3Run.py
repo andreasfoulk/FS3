@@ -743,7 +743,6 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         success = self.graphFrame.grab().save(path, 
                                       format='PNG', 
                                       quality=100)
-        print(success)
         if not success:
             #Cannot write file to that filepath
             pngError = 'Error: Cannot write file to given filepath!\n'
