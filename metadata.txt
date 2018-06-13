@@ -16,7 +16,7 @@ version=1.0
 author=Orden Aitchedji, McKenna Duzac, Andreas Foulk, Tanner Lee
 email=afoulk@mines.edu
 
-about=This plugin was created by Orden Aitchedji, McKenna Duzac, Andreas Foulk and Tanner Lee during the 2018 summer field section at the Colorado School Of Mines in collaboration with Brian Krzys at Newmont Exploration.
+about=This plugin provides a way for users to quickly view statistics and graphs of their data. It also supports editing and graph exporting. It was created by Orden Aitchedji, McKenna Duzac, Andreas Foulk and Tanner Lee during the 2018 summer field section at the Colorado School Of Mines in collaboration with Brian Krzys at Newmont Exploration.
 
 tracker=https://github.com/andreasfoulk/FS3/issues
 repository=https://github.com/andreasfoulk/FS3
