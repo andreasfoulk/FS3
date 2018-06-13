@@ -11,37 +11,37 @@
     <message>
         <location filename="../graphOptions.ui" line="23"/>
         <source>Data Transform</source>
-        <translation type="unfinished"></translation>
+        <translation>Transformation de données</translation>
     </message>
     <message>
         <location filename="../graphOptions.ui" line="33"/>
         <source>Data Sorting</source>
-        <translation type="unfinished"></translation>
+        <translation>Triage des données</translation>
     </message>
     <message>
         <location filename="../graphOptions.ui" line="43"/>
         <source>Graph Title</source>
-        <translation type="unfinished"></translation>
+        <translation>Titre du graphique</translation>
     </message>
     <message>
         <location filename="../graphOptions.ui" line="53"/>
         <source>Default X-Axis Data</source>
-        <translation type="unfinished"></translation>
+        <translation>Axe des abscisses par défaut</translation>
     </message>
     <message>
         <location filename="../graphOptions.ui" line="63"/>
         <source>X-Axis Title</source>
-        <translation type="unfinished"></translation>
+        <translation>Titre d&apos;axe abscisses (x)</translation>
     </message>
     <message>
         <location filename="../graphOptions.ui" line="73"/>
         <source>Y-Axis Title</source>
-        <translation type="unfinished"></translation>
+        <translation>Titre d&apos;axe ordonnées (y)</translation>
     </message>
     <message>
         <location filename="../graphOptions.ui" line="115"/>
         <source>Apply</source>
-        <translation type="unfinished"></translation>
+        <translation>Appliquer</translation>
     </message>
 </context>
 <context>
