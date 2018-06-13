@@ -155,7 +155,6 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
     def percentile5Update(self):
         percentile5Str = ", ".join(str(x * 5) for x in range(1, 21))
         self.percentilesLineEdit.setText(percentile5Str)
-        #success = self.graphFrame.grab().save("C:/Users/Whitetop/FS3Graph.png", format='PNG', quality=100)
 
     @pyqtSlot()
     def percentileHighEndUpdate(self):
@@ -738,6 +737,20 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
             pngError += 'Please open the graph settings window '
             pngError += 'and set an export path for the image.'
             self.error.showMessage(pngError)
+            return
+        #If a filepath can be found, attempt to save the image to it
+        path += '/FS3Graph.png'
+        success = self.graphFrame.grab().save(path, 
+                                      format='PNG', 
+                                      quality=100)
+        print(success)
+        if not success:
+            #Cannot write file to that filepath
+            pngError = 'Error: Cannot write file to given filepath!\n'
+            pngError += 'Please ensure the filepath was entered correctly '
+            pngError += 'and it is a writable directory'
+            self.error.showMessage(pngError)
+            return
 
 class MyTableWidgetItem(QTableWidgetItem):
     """
