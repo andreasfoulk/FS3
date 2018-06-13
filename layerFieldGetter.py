@@ -16,7 +16,7 @@ from qgis.core import QgsProject, QgsMapLayer
 
 class LayerFieldGetter(object):
     """
-    TODO This classes docstring
+    This class contains static methods used to retrive data from QGIS
     """
     def __init__(self):
         """
@@ -26,7 +26,7 @@ class LayerFieldGetter(object):
     @staticmethod
     def getVectorLayers():
         """
-        The current map layer is loaded into qgis
+        The current map layer loaded into qgis
         """
         project = QgsProject.instance()
         layerMap = project.mapLayers()

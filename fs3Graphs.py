@@ -20,7 +20,6 @@ import plotly.graph_objs as go
 
 from .graphOptions import GraphOptionsWindow
 from .layerFieldGetter import LayerFieldGetter
-from PyQt5.QtCore import QCoreApplication
 
 class Grapher:
     """
@@ -48,7 +47,7 @@ class Grapher:
         self.allYValues = [[]]
         self.attributes = [[]]
         self.uniqueness = []
-        self.fields = []
+        self.fields = ['']
         self.limitToSelected = False
 
 
@@ -66,7 +65,7 @@ class Grapher:
         """
         self.optionsWindow.xAxisDefaultBox.clear()
 
-        if self.layer is not None:
+        if self.layer:
             getter = LayerFieldGetter()
             fields = getter.getAllFields(self.layer)
             self.optionsWindow.xAxisDefaultBox.insertItem(0, 'None')
@@ -80,10 +79,15 @@ class Grapher:
         Does sort or transform
         """
         self.layer = layer
-        self.attributes = attributes
-        self.uniqueness = uniqueness
         self.limitToSelected = limitToSelected
-        self.fields = fields
+        self.attributes = attributes
+        if uniqueness:
+            self.uniqueness = uniqueness
+        if fields:
+            self.fields = fields
+
+        if not self.attributes:
+            return
 
         # Set x-axis to selected field
         if self.optionsWindow.xAxisDefaultBox.currentText() == 'None':
@@ -108,24 +112,22 @@ class Grapher:
                         value = 'NULL'
                     self.xValues.append(value)
 
-        self.allYValues = attributes
-
-        # Replace NULL with 'NULL'
-        for i in range(len(self.allYValues)):
-            for j in range(len(self.allYValues[i])):
-                if not self.allYValues[i][j]:
-                    self.allYValues[i][j] = 'NULL'
+        self.allYValues = self.attributes
 
         # Apply sort and transform
         if self.optionsWindow.dataSortingBox.currentText() == 'Ascending':
             zipped = zip(self.xValues, *self.allYValues)
             zipped = sorted(zipped, key=itemgetter(1))
             self.xValues, *self.allYValues = zip(*list(zipped))
+            self.xValues = list(self.xValues)
+            self.allYValues = [list(yValues) for yValues in self.allYValues]
 
         if self.optionsWindow.dataSortingBox.currentText() == 'Descending':
             zipped = zip(self.xValues, *self.allYValues)
             zipped = sorted(zipped, key=itemgetter(1), reverse=True)
             self.xValues, *self.allYValues = zip(*list(zipped))
+            self.xValues = list(self.xValues)
+            self.allYValues = [list(yValues) for yValues in self.allYValues]
 
         if self.optionsWindow.dataTransformBox.currentText() == 'Log':
             temp = []
@@ -134,8 +136,15 @@ class Grapher:
                     temp.append([log10(val) if val > 0 else 0 for val in yValues])
                 except TypeError:
                     # Don't do anything for characture data
-                    pass
+                    temp.append(yValues)
             self.allYValues = temp
+
+        # Replace NULL with 'NULL'
+        for i in range(len(self.allYValues)):
+            for j in range(len(self.allYValues[i])):
+                if not self.allYValues[i][j]:
+                    self.allYValues[i][j] = 'NULL'
+
 
 
     def makeGraph(self):
@@ -143,6 +152,10 @@ class Grapher:
         Creates the currently selected graph type
         returns the path of the created graph
         """
+
+        # Ensure there is data to graph
+        if not self.attributes:
+            return ''
 
         # refesh data to include any options from the options window
         self.setData(self.layer, self.attributes, self.uniqueness, self.limitToSelected, self.fields)
