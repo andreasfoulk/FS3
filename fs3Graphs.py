@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue May 31 11:24:02 2018
-
-@author: Andreas Foulk
-
-@descriptions: This file creates plotly graphs
-and writes them to a file so that the QWebView
-can load them into the gui.
+    fs3Run.py -- This file creates plotly graphs and writes them to a 
+                 file so that the QWebView can load them into the gui.
+              -- For more information see : https://github.com/andreasfoulk/FS3
+              
+    Copyright (c) 2018 Orden Aitchedji, McKenna Duzac, Andreas Foulk, Tanner Lee
+    
+    This software may be modified and distributed under the terms
+    of the MIT license.  See the LICENSE file for details.
 """
 
 import tempfile
