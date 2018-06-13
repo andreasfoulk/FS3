@@ -15,12 +15,12 @@ import platform
 from math import log10
 from operator import itemgetter
 
-from qgis.core import NULL
+import plotly
+import plotly.graph_objs as go
 
 from PyQt5.QtCore import QCoreApplication
 
-import plotly
-import plotly.graph_objs as go
+from qgis.core import NULL
 
 from .graphOptions import GraphOptionsWindow
 from .layerFieldGetter import LayerFieldGetter
@@ -41,9 +41,9 @@ class Grapher:
 
         self.graphTypeBox = graphTypeBox
         graphTypes = [QCoreApplication.translate("Grapher", "Bar"),
-                QCoreApplication.translate("Grapher", "Pie"),
-                QCoreApplication.translate("Grapher", "Line"),
-                QCoreApplication.translate("Grapher", "Scatter")]
+                      QCoreApplication.translate("Grapher", "Pie"),
+                      QCoreApplication.translate("Grapher", "Line"),
+                      QCoreApplication.translate("Grapher", "Scatter")]
         self.graphTypeBox.insertItems(0, graphTypes)
 
         self.optionsWindow = GraphOptionsWindow()
