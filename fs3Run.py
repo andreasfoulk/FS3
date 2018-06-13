@@ -13,6 +13,8 @@
 from __future__ import print_function
 
 import os
+import tempfile
+import webbrowser
 
 from qgis.core import QgsProject, NULL
 
@@ -127,6 +129,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.grapher.optionsWindow.applyButton.clicked.connect(self.refreshGraph)
         
         self.pngExportButton.clicked.connect(self.exportToPNG)
+        self.htmlOpenButton.clicked.connect(self.openHTML)
 
     @pyqtSlot()
     def openGraphOptions(self):
@@ -750,6 +753,13 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
             pngError += 'and it is a writable directory'
             self.error.showMessage(pngError)
             return
+        
+    @pyqtSlot()
+    def openHTML(self):
+        # Pull the path of the temp directory
+        directory = tempfile.gettempdir()
+        path = directory+'/temp_plot_name.html'
+        webbrowser.open('file://'+os.path.realpath(path))
 
 class MyTableWidgetItem(QTableWidgetItem):
     """
