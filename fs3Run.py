@@ -19,7 +19,7 @@ import webbrowser
 from qgis.core import QgsProject, NULL
 
 from PyQt5 import uic
-from PyQt5.QtCore import Qt, pyqtSlot, QUrl, pyqtSignal, QTimer
+from PyQt5.QtCore import Qt, pyqtSlot, QUrl, pyqtSignal, QTimer, QCoreApplication
 from PyQt5.QtWidgets import QApplication, QMainWindow, QErrorMessage
 from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem
 from PyQt5.QtWebKitWidgets import QWebView
@@ -322,7 +322,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         if layer != None:
             self.currentLayer = layer
             self.allFields = self.currentLayer.fields()
-            self.selectFieldListWidget.insertItem(0, "All")
+            self.selectFieldListWidget.insertItem(0, QCoreApplication.translate("FS3MainWindow", "All"))
             self.selectFieldListWidget.insertItems \
                 (1, self.fieldGetterInst.getAllFields(layer))
 
@@ -394,7 +394,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         # for each row
         row = 0
         for feature in features:
-            if 'All' in fields:
+            if QCoreApplication.translate("FS3MainWindow", "All") in fields:
                 attributes = feature.attributes()
                 self.tableWidget.setColumnCount(len(attributes))
 
@@ -439,7 +439,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
             featureInst = feature
 
 
-        if 'All' in fields:
+        if QCoreApplication.translate("FS3MainWindow", "All") in fields:
             fields = self.fieldGetterInst.getAllFields(self.currentLayer)
             self.tableWidget.setHorizontalHeaderLabels(fields)
         else:
