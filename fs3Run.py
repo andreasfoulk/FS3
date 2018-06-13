@@ -125,6 +125,8 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
 
         self.openGraphSettings.clicked.connect(self.grapher.openGraphOptions)
         self.grapher.optionsWindow.applyButton.clicked.connect(self.refreshGraph)
+        
+        self.pngExportButton.clicked.connect(self.exportToPNG)
 
     @pyqtSlot()
     def openGraphOptions(self):
@@ -725,6 +727,17 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         if currentTab == self.graphTab:
             #Refresh the attributes to create a new graph
             self.refreshAttributes()
+            
+    @pyqtSlot()
+    def exportToPNG(self):
+        # Attempt to pull a file location from the grapher options
+        path = self.grapher.optionsWindow.pngExportEdit.text()
+        if (path is None) or (path == ''):
+            # The user has not entered a path yet
+            pngError = 'Error: No export path detected!\n'
+            pngError += 'Please open the graph settings window '
+            pngError += 'and set an export path for the image.'
+            self.error.showMessage(pngError)
 
 class MyTableWidgetItem(QTableWidgetItem):
     """
