@@ -15,18 +15,13 @@ import platform
 from math import log10
 from operator import itemgetter
 
+from PyQt5.QtCore import QCoreApplication
+
 import plotly
 import plotly.graph_objs as go
-import plotly.offline as offline
 
-
-from plotly import tools
-#from shutil import copyfile
-from qgis.core import NULL
-from PyQt5.QtCore import pyqtSlot
 from .graphOptions import GraphOptionsWindow
 from .layerFieldGetter import LayerFieldGetter
-from PyQt5.QtCore import QCoreApplication
 
 class Grapher:
     """
@@ -43,13 +38,22 @@ class Grapher:
             self.plotlypath = os.path.join(os.path.dirname(__file__), 'jsscripts/plotly-1.34.0.min.js')
 
         self.graphTypeBox = graphTypeBox
-        graphTypes = [QCoreApplication.translate("Grapher", "Bar"), 
+        graphTypes = [QCoreApplication.translate("Grapher", "Bar"),
                 QCoreApplication.translate("Grapher", "Pie"),
                 QCoreApplication.translate("Grapher", "Line"),
                 QCoreApplication.translate("Grapher", "Scatter")]
         self.graphTypeBox.insertItems(0, graphTypes)
 
         self.optionsWindow = GraphOptionsWindow()
+
+        # Assign with setData
+        self.layer = None
+        self.xValues = []
+        self.allYValues = [[]]
+        self.attributes = [[]]
+        self.uniqueness = []
+        self.fields = ['']
+        self.limitToSelected = False
 
 
     def openGraphOptions(self):
@@ -66,13 +70,13 @@ class Grapher:
         """
         self.optionsWindow.xAxisDefaultBox.clear()
 
-        if self.layer is not None:
+        if self.layer:
             getter = LayerFieldGetter()
             fields = getter.getAllFields(self.layer)
             self.optionsWindow.xAxisDefaultBox.insertItem(0, QCoreApplication.translate("Grapher", "None"))
             self.optionsWindow.xAxisDefaultBox.insertItems(1, fields)
 
-    def setData(self, layer, attributes=[[]], uniqueness=[], limitToSelected=False, fields=['']):
+    def setData(self, layer, attributes=None, uniqueness=None, limitToSelected=False, fields=None):
         """
         Sets self variables
         xValues defaults to 1 through n if no default is selected
@@ -80,10 +84,15 @@ class Grapher:
         Does sort or transform
         """
         self.layer = layer
-        self.attributes = attributes
-        self.uniqueness = uniqueness
         self.limitToSelected = limitToSelected
-        self.fields = fields
+        self.attributes = attributes
+        if uniqueness:
+            self.uniqueness = uniqueness
+        if fields:
+            self.fields = fields
+
+        if not self.attributes:
+            return
 
         # Set x-axis to selected field
         if self.optionsWindow.xAxisDefaultBox.currentText() == QCoreApplication.translate("Grapher", "None"):
@@ -108,24 +117,23 @@ class Grapher:
                         value = QCoreApplication.translate("Grapher", "NULL")
                     self.xValues.append(value)
 
-        self.allYValues = attributes
-
-        # Replace NULL with 'NULL'
-        for i in range(len(self.allYValues)):
-            for j in range(len(self.allYValues[i])):
-                if not self.allYValues[i][j]:
-                    self.allYValues[i][j] = QCoreApplication.translate("Grapher", "NULL")
+        self.allYValues = self.attributes
+        print(self.allYValues)
 
         # Apply sort and transform
         if self.optionsWindow.dataSortingBox.currentText() == QCoreApplication.translate("Grapher", "Ascending"):
             zipped = zip(self.xValues, *self.allYValues)
-            zipped = sorted(zipped, key = itemgetter(1))
+            zipped = sorted(zipped, key=itemgetter(1))
             self.xValues, *self.allYValues = zip(*list(zipped))
+            self.xValues = list(self.xValues)
+            self.allYValues = [list(yValues) for yValues in self.allYValues]
 
         if self.optionsWindow.dataSortingBox.currentText() == QCoreApplication.translate("Grapher", "Descending"):
             zipped = zip(self.xValues, *self.allYValues)
-            zipped = sorted(zipped, key = itemgetter(1), reverse = True)
+            zipped = sorted(zipped, key=itemgetter(1), reverse=True)
             self.xValues, *self.allYValues = zip(*list(zipped))
+            self.xValues = list(self.xValues)
+            self.allYValues = [list(yValues) for yValues in self.allYValues]
 
         if self.optionsWindow.dataTransformBox.currentText() == QCoreApplication.translate("Grapher", "Log"):
             temp = []
@@ -134,8 +142,14 @@ class Grapher:
                     temp.append([log10(val) if val > 0 else 0 for val in yValues])
                 except TypeError:
                     # Don't do anything for characture data
-                    pass
+                    temp.append(yValues)
             self.allYValues = temp
+
+        # Replace NULL with 'NULL'
+        for i in range(len(self.allYValues)):
+            for j in range(len(self.allYValues[i])):
+                if not self.allYValues[i][j]:
+                    self.allYValues[i][j] = QCoreApplication.translate("Grapher", "NULL")
 
 
     def makeGraph(self):
@@ -144,182 +158,196 @@ class Grapher:
         returns the path of the created graph
         """
 
+        # Ensure there is data to graph
+        if not self.attributes:
+            return ''
+
         # refesh data to include any options from the options window
         self.setData(self.layer, self.attributes, self.uniqueness, self.limitToSelected, self.fields)
 
         if self.graphTypeBox.currentText() == QCoreApplication.translate("Grapher", "Bar"):
-            plot_path = self.makeBarGraph()
+            plotPath = self.makeBarGraph()
         elif self.graphTypeBox.currentText() == QCoreApplication.translate("Grapher", "Pie"):
-            plot_path = self.makePieGraph()
+            plotPath = self.makePieGraph()
         elif self.graphTypeBox.currentText() == QCoreApplication.translate("Grapher", "Line"):
-            plot_path = self.makeLineGraph()
+            plotPath = self.makeLineGraph()
         elif self.graphTypeBox.currentText() == QCoreApplication.translate("Grapher", "Scatter"):
-            plot_path = self.makeScatterGraph()
+            plotPath = self.makeScatterGraph()
         else:
-            plot_path = ''
+            plotPath = ''
 
-        return plot_path
+        return plotPath
 
     def makeBarGraph(self):
+        """
+        Constructs a plotly js bar graph and saves to a tempfile
+        returns the path to this tempfile
+        """
 
         data = []
         i = 0
         for yValues in self.allYValues:
             trace = go.Bar(
-                    x = self.xValues,
-                    y = yValues,
-                    name = self.fields[i]
+                x=self.xValues,
+                y=yValues,
+                name=self.fields[i]
             )
             data.append(trace)
             i += 1
 
         layout = go.Layout(
-                title = self.optionsWindow.graphTitleEdit.text(),
-                barmode = 'group',
-                xaxis = dict(
-                        title = self.optionsWindow.xAxisTitleEdit.text()
-                        ),
-                yaxis = dict(
-                        title = self.optionsWindow.yAxisTitleEdit.text()
-                        )
+            title=self.optionsWindow.graphTitleEdit.text(),
+            barmode='group',
+            xaxis=dict(
+                title=self.optionsWindow.xAxisTitleEdit.text()
+                ),
+            yaxis=dict(
+                title=self.optionsWindow.yAxisTitleEdit.text()
+                )
         )
 
-        fig = go.Figure(data = data, layout = layout)
+        fig = go.Figure(data=data, layout=layout)
 
         # first lines of additional html with the link to the local javascript
-        raw_plot = '<head><meta charset="utf-8" /><script src="{}"></script><script src="{}"></script></head>'.format(self.polyfillpath, self.plotlypath)
+        rawPlot = '<head><meta charset="utf-8" /><script src="{}"></script><script src="{}"></script></head>'.format(self.polyfillpath, self.plotlypath)
 
         # call the plot method without all the javascript code
-        raw_plot += plotly.offline.plot(fig, output_type='div',
-        filename='bar-graph', include_plotlyjs=False, show_link=False, image='png')
+        rawPlot += plotly.offline.plot(fig, output_type='div',
+                                       filename='bar-graph', include_plotlyjs=False, show_link=False, image='png')
 
         # Generate a temporary html file that can be viewed on a web browser
         # Allows use of plotly's full features QGIS does not support.
-        plot_path = os.path.join(tempfile.gettempdir(), 'temp_plot_name.html')
-        with open(plot_path, "w") as f:
-            f.write(raw_plot)
+        plotPath = os.path.join(tempfile.gettempdir(), 'temp_plot_name.html')
+        with open(plotPath, "w") as file:
+            file.write(rawPlot)
 
-        return plot_path
+        return plotPath
 
 
     def makePieGraph(self):
+        """
+        Constructs a plotly js pie graph and saves to a tempfile
+        returns the path to this tempfile
+        """
 
         trace = go.Pie(
-            labels = self.uniqueness.uniqueValues,
-            values = self.uniqueness.uniqueNumOccur
+            labels=self.uniqueness.uniqueValues,
+            values=self.uniqueness.uniqueNumOccur
         )
 
         data = [trace]
         layout = go.Layout(
-                title = self.optionsWindow.graphTitleEdit.text(),
-                barmode = 'group'
+            title=self.optionsWindow.graphTitleEdit.text(),
+            barmode='group'
         )
 
-        fig = go.Figure(data = data, layout = layout)
+        fig = go.Figure(data=data, layout=layout)
 
         # first lines of additional html with the link to the local javascript
-        raw_plot = '<head><meta charset="utf-8" /><script src="{}"></script><script src="{}"></script></head>'.format(self.polyfillpath, self.plotlypath)
+        rawPlot = '<head><meta charset="utf-8" /><script src="{}"></script><script src="{}"></script></head>'.format(self.polyfillpath, self.plotlypath)
 
         # call the plot method without all the javascript code
-        raw_plot += plotly.offline.plot(fig, output_type='div',
-        filename='pie-graph', include_plotlyjs=False, show_link=False, image='png')
+        rawPlot += plotly.offline.plot(fig, output_type='div',
+                                       filename='pie-graph', include_plotlyjs=False, show_link=False, image='png')
 
         # Generate a temporary html file that can be viewed on a web browser
         # Allows use of plotly's full features QGIS does not support.
-        plot_path = os.path.join(tempfile.gettempdir(), 'temp_plot_name.html')
-        with open(plot_path, "w") as f:
-            f.write(raw_plot)
-            
-        return plot_path
+        plotPath = os.path.join(tempfile.gettempdir(), 'temp_plot_name.html')
+        with open(plotPath, "w") as file:
+            file.write(rawPlot)
+
+        return plotPath
 
 
     def makeLineGraph(self):
+        """
+        Constructs a plotly js line graph and saves to a tempfile
+        returns the path to this tempfile
+        """
 
         data = []
         i = 0
         for yValues in self.allYValues:
             trace = go.Scatter(
-                    x = self.xValues,
-                    y = yValues,
-                    name = self.fields[i]
+                x=self.xValues,
+                y=yValues,
+                name=self.fields[i]
             )
             data.append(trace)
             i += 1
 
         layout = go.Layout(
-                title = self.optionsWindow.graphTitleEdit.text(),
-                barmode = 'group',
-                xaxis = dict(
-                        title = self.optionsWindow.xAxisTitleEdit.text()
-                        ),
-                yaxis = dict(
-                        title = self.optionsWindow.yAxisTitleEdit.text()
-                        )
+            title=self.optionsWindow.graphTitleEdit.text(),
+            barmode='group',
+            xaxis=dict(
+                title=self.optionsWindow.xAxisTitleEdit.text()
+                ),
+            yaxis=dict(
+                title=self.optionsWindow.yAxisTitleEdit.text()
+                )
         )
 
-        fig = go.Figure(data = data, layout = layout)
+        fig = go.Figure(data=data, layout=layout)
 
         # first lines of additional html with the link to the local javascript
-        raw_plot = '<head><meta charset="utf-8" /><script src="{}"></script><script src="{}"></script></head>'.format(self.polyfillpath, self.plotlypath)
+        rawPlot = '<head><meta charset="utf-8" /><script src="{}"></script><script src="{}"></script></head>'.format(self.polyfillpath, self.plotlypath)
 
         # call the plot method without all the javascript code
 
-        raw_plot += plotly.offline.plot(fig, output_type='div',
-                include_plotlyjs=False, filename='/tmp/line-graph', show_link=False, image='png')
+        rawPlot += plotly.offline.plot(fig, output_type='div',
+                                       include_plotlyjs=False, filename='/tmp/line-graph', show_link=False, image='png')
 
         # Generate a temporary html file that can be viewed on a web browser
         # Allows use of plotly's full features QGIS does not support.
-        plot_path = os.path.join(tempfile.gettempdir(), 'temp_plot_name.html')
-        with open(plot_path, "w") as f:
-            f.write(raw_plot)
+        plotPath = os.path.join(tempfile.gettempdir(), 'temp_plot_name.html')
+        with open(plotPath, "w") as file:
+            file.write(rawPlot)
 
-        return plot_path
+        return plotPath
 
 
     def makeScatterGraph(self):
-        #img_name = 'my-plot'
-        #dload = os.path.expanduser('~/Downloads')
-        #save_dir = '/tmp'
+        """
+        Constructs a plotly js scatter chart and saves to a tempfile
+        returns the path to this tempfile
+        """
 
         data = []
         i = 0
         for yValues in self.allYValues:
             trace = go.Scatter(
-                    x = self.xValues,
-                    y = yValues,
-                    name = self.fields[i],
-                    mode = 'markers'
+                x=self.xValues,
+                y=yValues,
+                name=self.fields[i],
+                mode='markers'
             )
             data.append(trace)
             i += 1
 
         layout = go.Layout(
-            title = self.optionsWindow.graphTitleEdit.text(),
-            barmode = 'group',
-            xaxis = dict(
-                    title = self.optionsWindow.xAxisTitleEdit.text()
-                    ),
-            yaxis = dict(
-                    title = self.optionsWindow.yAxisTitleEdit.text()
-                    )
+            title=self.optionsWindow.graphTitleEdit.text(),
+            barmode='group',
+            xaxis=dict(
+                title=self.optionsWindow.xAxisTitleEdit.text()
+                ),
+            yaxis=dict(
+                title=self.optionsWindow.yAxisTitleEdit.text()
+                )
         )
 
-        fig = go.Figure(data = data, layout = layout)
+        fig = go.Figure(data=data, layout=layout)
 
         # first lines of additional html with the link to the local javascript
-        raw_plot = '<head><meta charset="utf-8" /><script src="{}"></script><script src="{}"></script></head>'.format(self.polyfillpath, self.plotlypath)
-        
+        rawPlot = '<head><meta charset="utf-8" /><script src="{}"></script><script src="{}"></script></head>'.format(self.polyfillpath, self.plotlypath)
+
         # call the plot method without all the javascript code
-        raw_plot += plotly.offline.plot(fig, output_type='div',
-        include_plotlyjs=False, show_link=False, filename='/tmp/scatter-graph', image='png')
+        rawPlot += plotly.offline.plot(fig, output_type='div',
+                                       include_plotlyjs=False, show_link=False, filename='/tmp/scatter-graph', image='png')
 
         # Generate a temporary html file that can be viewed on a web browser
         # Allows use of plotly's full features QGIS does not support.
-        plot_path = os.path.join(tempfile.gettempdir(), 'temp_plot_name.html')
-        with open(plot_path, "w") as f:
-            f.write(raw_plot)
+        plotPath = os.path.join(tempfile.gettempdir(), 'temp_plot_name.html')
+        with open(plotPath, "w") as file:
+            file.write(rawPlot)
 
-        #copyfile('{}/{}.png'.format(save_dir, img_name),
-        #       '{}/{}.png'.format(dload, img_name))
-        return plot_path
-
+        return plotPath
