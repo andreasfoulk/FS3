@@ -1,147 +1,210 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS><TS version="2.0" language="es" sourcelanguage="en_US">
 <context>
+    <name>Dialog</name>
+    <message>
+        <location filename="../graphOptions.ui" line="14"/>
+        <source>Dialog</source>
+        <translation type="unfinished">Diálogo</translation>
+    </message>
+    <message>
+        <location filename="../graphOptions.ui" line="23"/>
+        <source>Data Transform</source>
+        <translation type="unfinished">Transformen los Datos</translation>
+    </message>
+    <message>
+        <location filename="../graphOptions.ui" line="33"/>
+        <source>Data Sorting</source>
+        <translation type="unfinished">Ordenando los Datos</translation>
+    </message>
+    <message>
+        <location filename="../graphOptions.ui" line="43"/>
+        <source>Graph Title</source>
+        <translation type="unfinished">Título del Gráfico</translation>
+    </message>
+    <message>
+        <location filename="../graphOptions.ui" line="53"/>
+        <source>Default X-Axis Data</source>
+        <translation type="unfinished">Eje X Datos Predeterminado</translation>
+    </message>
+    <message>
+        <location filename="../graphOptions.ui" line="63"/>
+        <source>X-Axis Title</source>
+        <translation type="unfinished">Eje X Título</translation>
+    </message>
+    <message>
+        <location filename="../graphOptions.ui" line="73"/>
+        <source>Y-Axis Title</source>
+        <translation type="unfinished">Eje Y Título</translation>
+    </message>
+    <message>
+        <location filename="../graphOptions.ui" line="115"/>
+        <source>Apply</source>
+        <translation type="unfinished">Aplicar</translation>
+    </message>
+</context>
+<context>
     <name>FS3NumericalStatistics</name>
     <message>
-        <location filename="../fs3Stats.py" line="70"/>
+        <location filename="../fs3Stats.py" line="80"/>
         <source>Percentile: </source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Percentil: </translation>
     </message>
     <message>
-        <location filename="../fs3Stats.py" line="55"/>
+        <location filename="../fs3Stats.py" line="63"/>
         <source>Percentile</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../fs3Stats.py" line="37"/>
-        <source>Item Count</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../fs3Stats.py" line="38"/>
-        <source>Max Value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../fs3Stats.py" line="39"/>
-        <source>Min Value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../fs3Stats.py" line="40"/>
-        <source>Mean Value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../fs3Stats.py" line="41"/>
-        <source>Median Value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../fs3Stats.py" line="42"/>
-        <source>Mode Value</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Percentil</translation>
     </message>
     <message>
         <location filename="../fs3Stats.py" line="43"/>
+        <source>Item Count</source>
+        <translation type="unfinished">Numero de Artículos</translation>
+    </message>
+    <message>
+        <location filename="../fs3Stats.py" line="46"/>
+        <source>Max Value</source>
+        <translation type="unfinished">Valor Máximo</translation>
+    </message>
+    <message>
+        <location filename="../fs3Stats.py" line="47"/>
+        <source>Min Value</source>
+        <translation type="unfinished">Valor Mínimo</translation>
+    </message>
+    <message>
+        <location filename="../fs3Stats.py" line="48"/>
+        <source>Mean Value</source>
+        <translation type="unfinished">Valor Promedio</translation>
+    </message>
+    <message>
+        <location filename="../fs3Stats.py" line="49"/>
+        <source>Median Value</source>
+        <translation type="unfinished">Valor Mediana</translation>
+    </message>
+    <message>
+        <location filename="../fs3Stats.py" line="50"/>
+        <source>Mode Value</source>
+        <translation type="unfinished">Valor Moda</translation>
+    </message>
+    <message>
+        <location filename="../fs3Stats.py" line="51"/>
         <source>Sum Value</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Suma (valor)</translation>
+    </message>
+    <message>
+        <location filename="../fs3Stats.py" line="52"/>
+        <source>Standard Deviation</source>
+        <translation type="unfinished">Desviación Típica</translation>
+    </message>
+    <message>
+        <location filename="../fs3Stats.py" line="53"/>
+        <source>Coefficient of Variation</source>
+        <translation type="unfinished">Coeficiente de Variación</translation>
     </message>
     <message>
         <location filename="../fs3Stats.py" line="44"/>
-        <source>Standard Deviation</source>
-        <translation type="unfinished"></translation>
+        <source>Item Count (Filled)</source>
+        <translation type="unfinished">Numero de Artículos (lleno)</translation>
     </message>
     <message>
         <location filename="../fs3Stats.py" line="45"/>
-        <source>Coefficient of Variation</source>
-        <translation type="unfinished"></translation>
+        <source>Item Count (Empty)</source>
+        <translation type="unfinished">Numero de Artículos (vacío)</translation>
     </message>
 </context>
 <context>
     <name>FS3Uniqueness</name>
     <message>
-        <location filename="../fs3Unique.py" line="25"/>
+        <location filename="../fs3Unique.py" line="29"/>
         <source>Value</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Valor</translation>
     </message>
     <message>
-        <location filename="../fs3Unique.py" line="26"/>
+        <location filename="../fs3Unique.py" line="30"/>
         <source>Occurrences</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Ocurrencias</translation>
     </message>
     <message>
-        <location filename="../fs3Unique.py" line="27"/>
+        <location filename="../fs3Unique.py" line="31"/>
         <source>Percentage (%)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Percentil (%)</translation>
     </message>
     <message>
-        <location filename="../fs3Unique.py" line="81"/>
+        <location filename="../fs3Unique.py" line="94"/>
         <source>NULL (Empty)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"> NULO (vacío)</translation>
     </message>
 </context>
 <context>
     <name>fs3characterstatistics</name>
     <message>
-        <location filename="../fs3Stats.py" line="138"/>
+        <location filename="../fs3Stats.py" line="155"/>
         <source>Percentile</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Percentil</translation>
     </message>
     <message>
-        <location filename="../fs3Stats.py" line="158"/>
+        <location filename="../fs3Stats.py" line="177"/>
         <source>Percentile: </source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Percentil: </translation>
     </message>
     <message>
-        <location filename="../fs3Stats.py" line="158"/>
+        <location filename="../fs3Stats.py" line="177"/>
         <source> % (Length)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"> % (longitud)</translation>
     </message>
     <message>
-        <location filename="../fs3Stats.py" line="120"/>
+        <location filename="../fs3Stats.py" line="135"/>
         <source>Item Count</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Numero de Artículos</translation>
     </message>
     <message>
-        <location filename="../fs3Stats.py" line="121"/>
+        <location filename="../fs3Stats.py" line="138"/>
         <source>Max Length</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Longitud Máximo</translation>
     </message>
     <message>
-        <location filename="../fs3Stats.py" line="122"/>
+        <location filename="../fs3Stats.py" line="139"/>
         <source>Min Length</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Longitud Mínimo</translation>
     </message>
     <message>
-        <location filename="../fs3Stats.py" line="123"/>
+        <location filename="../fs3Stats.py" line="140"/>
         <source>Mean Length</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Longitud Promedio</translation>
     </message>
     <message>
-        <location filename="../fs3Stats.py" line="124"/>
+        <location filename="../fs3Stats.py" line="141"/>
         <source>Median Length</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Longitud Mediana</translation>
     </message>
     <message>
-        <location filename="../fs3Stats.py" line="125"/>
+        <location filename="../fs3Stats.py" line="142"/>
         <source>Mode Length</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Longitud Moda</translation>
     </message>
     <message>
-        <location filename="../fs3Stats.py" line="126"/>
+        <location filename="../fs3Stats.py" line="143"/>
         <source>Sum Length</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Suma (longitud)</translation>
     </message>
     <message>
-        <location filename="../fs3Stats.py" line="127"/>
+        <location filename="../fs3Stats.py" line="144"/>
         <source>Standard Deviation (Length)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Desviación Típica (longitud)</translation>
     </message>
     <message>
-        <location filename="../fs3Stats.py" line="128"/>
+        <location filename="../fs3Stats.py" line="145"/>
         <source>Coefficient of Variation (Length)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Coeficiente de Variación (longitud)</translation>
+    </message>
+    <message>
+        <location filename="../fs3Stats.py" line="136"/>
+        <source>Item Count (Filled)</source>
+        <translation type="unfinished">Numero de Artículos (lleno)</translation>
+    </message>
+    <message>
+        <location filename="../fs3Stats.py" line="137"/>
+        <source>Item Count (Empty)</source>
+        <translation type="unfinished">Numero de Artículos (vacío)</translation>
     </message>
 </context>
 <context>
@@ -219,17 +282,17 @@
     <message>
         <location filename="../fs3.ui" line="156"/>
         <source>25%</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">25%</translation>
     </message>
     <message>
         <location filename="../fs3.ui" line="163"/>
         <source>10%</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">10%</translation>
     </message>
     <message>
         <location filename="../fs3.ui" line="174"/>
         <source>5%</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">5%</translation>
     </message>
 </context>
 </TS>

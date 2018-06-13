@@ -20,6 +20,7 @@ import plotly.graph_objs as go
 
 from .graphOptions import GraphOptionsWindow
 from .layerFieldGetter import LayerFieldGetter
+from PyQt5.QtCore import QCoreApplication
 
 class Grapher:
     """
