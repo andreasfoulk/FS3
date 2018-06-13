@@ -196,9 +196,8 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                 # Our work here is already done
                 return
             # Else set the layer to editable
-            editMessage = 'FS3 Performance may be slow '
-            editMessage += 'while in edit mode.'
-            editMessage += '\nPlease ensure it is disabled when not in use.'
+            editMessage = QCoreApplication.translate("FS3MainWindow", "FS3 Performance may be slow while in edit mode.")
+            editMessage += QCoreApplication.translate("FS3MainWindow", "\nPlease ensure it is disabled when not in use.")
             self.error.showMessage(editMessage)
             self.currentLayer.startEditing()
         else:
@@ -255,7 +254,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                             self.currentLayer.startEditing()
                     else:
                         # Update failed, report error
-                        updateError = 'Attribute update failed'
+                        updateError = QCoreApplication.translate("FS3MainWindow", "Attribute update failed")
                         self.error.showMessage(updateError)
 
 
@@ -488,7 +487,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                 if float(percentile) < 0 or float(percentile) > 100:
                     raise ValueError
         except ValueError:
-            self.error.showMessage('Invalid Value for Percentile Detected!')
+            self.error.showMessage(QCoreApplication.translate("FS3MainWindow", "Invalid Value for Percentile Detected!"))
             percentileArray = []
         originalSize = len(inputArray)
         emptyCellsRemoved = removeEmptyCells(inputArray)
@@ -510,7 +509,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                 if float(percentile) < 0 or float(percentile) > 100:
                     raise ValueError
         except ValueError:
-            self.error.showMessage('Invalid Value for Percentile Detected!')
+            self.error.showMessage(QCoreApplication.translate("FS3MainWindow", "Invalid Value for Percentile Detected!"))
             percentileArray = []
         originalSize = len(inputArray)
         emptyCellsRemoved = removeEmptyCells(inputArray)
@@ -736,9 +735,9 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         path = self.grapher.optionsWindow.pngExportEdit.text()
         if (path is None) or (path == ''):
             # The user has not entered a path yet
-            pngError = 'Error: No export path detected!\n'
-            pngError += 'Please open the graph settings window '
-            pngError += 'and set an export path for the image.'
+            pngError = QCoreApplication.translate("FS3MainWindow", "Error: No export path detected!\n")
+            pngError += QCoreApplication.translate("FS3MainWindow", "Please open the graph settings window ")
+            pngError += QCoreApplication.translate("FS3MainWindow", "and set an export path for the image.")
             self.error.showMessage(pngError)
             return
         #If a filepath can be found, attempt to save the image to it

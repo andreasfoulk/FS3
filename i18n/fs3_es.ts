@@ -9,47 +9,91 @@
         <translation>Diálogo</translation>
     </message>
     <message>
-        <location filename="../graphOptions.ui" line="23"/>
+        <location filename="../graphOptions.ui" line="65"/>
         <source>Data Transform</source>
         <translation>Transformen los Datos</translation>
     </message>
     <message>
-        <location filename="../graphOptions.ui" line="33"/>
+        <location filename="../graphOptions.ui" line="82"/>
         <source>Data Sorting</source>
         <translation>Ordenando los Datos</translation>
     </message>
     <message>
-        <location filename="../graphOptions.ui" line="43"/>
+        <location filename="../graphOptions.ui" line="72"/>
         <source>Graph Title</source>
         <translation>Título del Gráfico</translation>
     </message>
     <message>
-        <location filename="../graphOptions.ui" line="53"/>
+        <location filename="../graphOptions.ui" line="92"/>
         <source>Default X-Axis Data</source>
         <translation>Eje X Datos Predeterminado</translation>
     </message>
     <message>
-        <location filename="../graphOptions.ui" line="63"/>
+        <location filename="../graphOptions.ui" line="102"/>
         <source>X-Axis Title</source>
         <translation>Eje X Título</translation>
     </message>
     <message>
-        <location filename="../graphOptions.ui" line="73"/>
+        <location filename="../graphOptions.ui" line="109"/>
         <source>Y-Axis Title</source>
         <translation>Eje Y Título</translation>
     </message>
     <message>
-        <location filename="../graphOptions.ui" line="115"/>
+        <location filename="../graphOptions.ui" line="42"/>
         <source>Apply</source>
         <translation>Aplicar</translation>
+    </message>
+    <message>
+        <location filename="../graphOptions.ui" line="52"/>
+        <source>PNG Export Path</source>
+        <translation>Ruta de exportación PNG</translation>
     </message>
 </context>
 <context>
     <name>FS3MainWindow</name>
     <message>
-        <location filename="../fs3Run.py" line="437"/>
+        <location filename="../fs3Run.py" line="439"/>
         <source>All</source>
         <translation>Todos</translation>
+    </message>
+    <message>
+        <location filename="../fs3Run.py" line="197"/>
+        <source>FS3 Performance may be slow while in edit mode.</source>
+        <translation>El rendimiento de FS3 puede ser lento en el modo de edición.</translation>
+    </message>
+    <message>
+        <location filename="../fs3Run.py" line="198"/>
+        <source>
+Please ensure it is disabled when not in use.</source>
+        <translation>
+Por favor, asegúrese de que esta desactivado cuando no esté en uso.</translation>
+    </message>
+    <message>
+        <location filename="../fs3Run.py" line="255"/>
+        <source>Attribute update failed</source>
+        <translation>Error al actualizar</translation>
+    </message>
+    <message>
+        <location filename="../fs3Run.py" line="510"/>
+        <source>Invalid Value for Percentile Detected!</source>
+        <translation>¡Valor inválido para el percentil detectado!</translation>
+    </message>
+    <message>
+        <location filename="../fs3Run.py" line="736"/>
+        <source>Error: No export path detected!
+</source>
+        <translation>Error: no se detectó ruta de exportación!
+</translation>
+    </message>
+    <message>
+        <location filename="../fs3Run.py" line="737"/>
+        <source>Please open the graph settings window </source>
+        <translation>Abra la ventana de configuración de gráficos </translation>
+    </message>
+    <message>
+        <location filename="../fs3Run.py" line="738"/>
+        <source>and set an export path for the image.</source>
+        <translation>y establezca una ruta de exportación para la imagen.</translation>
     </message>
 </context>
 <context>
@@ -350,6 +394,16 @@
         <location filename="../fs3.ui" line="174"/>
         <source>5%</source>
         <translation>5%</translation>
+    </message>
+    <message>
+        <location filename="../fs3.ui" line="313"/>
+        <source>Export to PNG</source>
+        <translation>Exportar a PNG</translation>
+    </message>
+    <message>
+        <location filename="../fs3.ui" line="320"/>
+        <source>Open as HTML</source>
+        <translation>Abierto como HTML</translation>
     </message>
 </context>
 </TS>
