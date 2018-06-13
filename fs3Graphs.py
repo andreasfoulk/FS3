@@ -26,6 +26,7 @@ from qgis.core import NULL
 from PyQt5.QtCore import pyqtSlot
 from .graphOptions import GraphOptionsWindow
 from .layerFieldGetter import LayerFieldGetter
+from PyQt5.QtCore import QCoreApplication
 
 class Grapher:
     """
