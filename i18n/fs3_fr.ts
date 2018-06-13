@@ -52,46 +52,46 @@
 <context>
     <name>FS3MainWindow</name>
     <message>
-        <location filename="../fs3Run.py" line="439"/>
+        <location filename="../fs3Run.py" line="441"/>
         <source>All</source>
         <translation>Tout</translation>
     </message>
     <message>
-        <location filename="../fs3Run.py" line="197"/>
+        <location filename="../fs3Run.py" line="199"/>
         <source>FS3 Performance may be slow while in edit mode.</source>
         <translation>La Performance de FS3 peut être lente tandis que en mode d&apos;édition.</translation>
     </message>
     <message>
-        <location filename="../fs3Run.py" line="198"/>
+        <location filename="../fs3Run.py" line="200"/>
         <source>
 Please ensure it is disabled when not in use.</source>
         <translation>
 Veuillez vous assurer qu&apos;il est désactivé lorsqu&apos;il n&apos;est en utilisation.</translation>
     </message>
     <message>
-        <location filename="../fs3Run.py" line="255"/>
+        <location filename="../fs3Run.py" line="257"/>
         <source>Attribute update failed</source>
         <translation>La mise à jour d&apos;attribut a échoué</translation>
     </message>
     <message>
-        <location filename="../fs3Run.py" line="510"/>
+        <location filename="../fs3Run.py" line="512"/>
         <source>Invalid Value for Percentile Detected!</source>
         <translation>Valeur non valide pour le percentile détecté!</translation>
     </message>
     <message>
-        <location filename="../fs3Run.py" line="736"/>
+        <location filename="../fs3Run.py" line="738"/>
         <source>Error: No export path detected!
 </source>
         <translation>Erreur: Aucun chemin d&apos;exportation détecté!
 </translation>
     </message>
     <message>
-        <location filename="../fs3Run.py" line="737"/>
+        <location filename="../fs3Run.py" line="739"/>
         <source>Please open the graph settings window </source>
         <translation>Veuillez ouvrir la fenêtre des paramètres du graphique </translation>
     </message>
     <message>
-        <location filename="../fs3Run.py" line="738"/>
+        <location filename="../fs3Run.py" line="740"/>
         <source>and set an export path for the image.</source>
         <translation>et définir un chemin d&apos;exportation pour l&apos;image.</translation>
     </message>
@@ -188,49 +188,72 @@ Veuillez vous assurer qu&apos;il est désactivé lorsqu&apos;il n&apos;est en ut
     </message>
 </context>
 <context>
-    <name>Grapher</name>
+    <name>GraphOptionsWindow</name>
     <message>
-        <location filename="../fs3Graphs.py" line="150"/>
-        <source>Bar</source>
-        <translation>Barre</translation>
-    </message>
-    <message>
-        <location filename="../fs3Graphs.py" line="152"/>
-        <source>Pie</source>
-        <translation>Circulaire</translation>
-    </message>
-    <message>
-        <location filename="../fs3Graphs.py" line="154"/>
-        <source>Line</source>
-        <translation>Linéaire</translation>
-    </message>
-    <message>
-        <location filename="../fs3Graphs.py" line="156"/>
-        <source>Scatter</source>
-        <translation>Dispersion</translation>
-    </message>
-    <message>
-        <location filename="../fs3Graphs.py" line="89"/>
+        <location filename="../graphOptions.py" line="36"/>
         <source>None</source>
         <translation>Aucun</translation>
     </message>
     <message>
-        <location filename="../fs3Graphs.py" line="117"/>
-        <source>NULL</source>
-        <translation>Nul</translation>
+        <location filename="../graphOptions.py" line="28"/>
+        <source>Log</source>
+        <translation>Logarithme</translation>
     </message>
     <message>
-        <location filename="../fs3Graphs.py" line="120"/>
+        <location filename="../graphOptions.py" line="32"/>
         <source>Ascending</source>
         <translation>Ascendant</translation>
     </message>
     <message>
+        <location filename="../graphOptions.py" line="33"/>
+        <source>Descending</source>
+        <translation>Descendant</translation>
+    </message>
+</context>
+<context>
+    <name>Grapher</name>
+    <message>
+        <location filename="../fs3Graphs.py" line="175"/>
+        <source>Bar</source>
+        <translation>Barre</translation>
+    </message>
+    <message>
+        <location filename="../fs3Graphs.py" line="177"/>
+        <source>Pie</source>
+        <translation>Circulaire</translation>
+    </message>
+    <message>
+        <location filename="../fs3Graphs.py" line="179"/>
+        <source>Line</source>
+        <translation>Linéaire</translation>
+    </message>
+    <message>
+        <location filename="../fs3Graphs.py" line="181"/>
+        <source>Scatter</source>
+        <translation>Dispersion</translation>
+    </message>
+    <message>
+        <location filename="../fs3Graphs.py" line="157"/>
+        <source>None</source>
+        <translation>Aucun</translation>
+    </message>
+    <message>
+        <location filename="../fs3Graphs.py" line="154"/>
+        <source>NULL</source>
+        <translation>Nul</translation>
+    </message>
+    <message>
         <location filename="../fs3Graphs.py" line="125"/>
+        <source>Ascending</source>
+        <translation>Ascendant</translation>
+    </message>
+    <message>
+        <location filename="../fs3Graphs.py" line="132"/>
         <source>Descending</source>
         <translation>Descendant</translation>
     </message>
     <message>
-        <location filename="../fs3Graphs.py" line="130"/>
+        <location filename="../fs3Graphs.py" line="139"/>
         <source>Log</source>
         <translation>Logarithme</translation>
     </message>
