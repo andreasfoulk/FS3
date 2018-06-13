@@ -192,7 +192,7 @@ class Grapher:
         plot_path = os.path.join(tempfile.gettempdir(), 'temp_plot_name.html')
         with open(plot_path, "w") as f:
             f.write(raw_plot)
-
+            
         return plot_path
 
 

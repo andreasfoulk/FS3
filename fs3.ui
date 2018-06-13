@@ -197,7 +197,7 @@
       </widget>
       <widget class="QTabWidget" name="tabFields">
        <property name="currentIndex">
-        <number>0</number>
+        <number>3</number>
        </property>
        <widget class="QWidget" name="dataTab">
         <attribute name="title">
@@ -288,6 +288,36 @@
              <widget class="QPushButton" name="openGraphSettings">
               <property name="text">
                <string>Open Graph Settings</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="2">
+             <spacer name="graphSpacer">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Minimum</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="1" column="3">
+             <widget class="QPushButton" name="pngExportButton">
+              <property name="text">
+               <string>Export to PNG</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="3">
+             <widget class="QPushButton" name="htmlOpenButton">
+              <property name="text">
+               <string>Open as HTML</string>
               </property>
              </widget>
             </item>

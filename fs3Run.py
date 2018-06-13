@@ -152,6 +152,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
     def percentile5Update(self):
         percentile5Str = ", ".join(str(x * 5) for x in range(1, 21))
         self.percentilesLineEdit.setText(percentile5Str)
+        #success = self.graphFrame.grab().save("C:/Users/Whitetop/FS3Graph.png", format='PNG', quality=100)
 
     @pyqtSlot()
     def percentileHighEndUpdate(self):

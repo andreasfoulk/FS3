@@ -14,80 +14,7 @@
    <string>Dialog</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="7" column="0">
-    <widget class="QLineEdit" name="yAxisTitleEdit"/>
-   </item>
-   <item row="8" column="0">
-    <widget class="QLabel" name="dataTransformLabel">
-     <property name="text">
-      <string>Data Transform</string>
-     </property>
-    </widget>
-   </item>
-   <item row="10" column="0">
-    <widget class="QComboBox" name="dataTransformBox"/>
-   </item>
-   <item row="11" column="0">
-    <widget class="QLabel" name="dataSortingLabel">
-     <property name="text">
-      <string>Data Sorting</string>
-     </property>
-    </widget>
-   </item>
-   <item row="12" column="0">
-    <widget class="QComboBox" name="dataSortingBox"/>
-   </item>
-   <item row="0" column="0">
-    <widget class="QLabel" name="graphTitleLabel">
-     <property name="text">
-      <string>Graph Title</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="0">
-    <widget class="QLineEdit" name="graphTitleEdit"/>
-   </item>
-   <item row="2" column="0">
-    <widget class="QLabel" name="xAxisDefaultLabel">
-     <property name="text">
-      <string>Default X-Axis Data</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="0">
-    <widget class="QComboBox" name="xAxisDefaultBox"/>
-   </item>
-   <item row="4" column="0">
-    <widget class="QLabel" name="xAxisTitleLabel">
-     <property name="text">
-      <string>X-Axis Title</string>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="0">
-    <widget class="QLineEdit" name="xAxisTitleEdit"/>
-   </item>
-   <item row="6" column="0">
-    <widget class="QLabel" name="yAxisTitleLabel">
-     <property name="text">
-      <string>Y-Axis Title</string>
-     </property>
-    </widget>
-   </item>
-   <item row="13" column="0">
-    <spacer name="dataTransformSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="14" column="0">
+   <item row="16" column="0">
     <widget class="QFrame" name="frame">
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
@@ -118,6 +45,89 @@
       </item>
      </layout>
     </widget>
+   </item>
+   <item row="13" column="0">
+    <widget class="QLabel" name="pngExportLabel">
+     <property name="text">
+      <string>PNG Export Path</string>
+     </property>
+    </widget>
+   </item>
+   <item row="10" column="0">
+    <widget class="QComboBox" name="dataTransformBox"/>
+   </item>
+   <item row="7" column="0">
+    <widget class="QLineEdit" name="yAxisTitleEdit"/>
+   </item>
+   <item row="8" column="0">
+    <widget class="QLabel" name="dataTransformLabel">
+     <property name="text">
+      <string>Data Transform</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QLabel" name="graphTitleLabel">
+     <property name="text">
+      <string>Graph Title</string>
+     </property>
+    </widget>
+   </item>
+   <item row="12" column="0">
+    <widget class="QComboBox" name="dataSortingBox"/>
+   </item>
+   <item row="11" column="0">
+    <widget class="QLabel" name="dataSortingLabel">
+     <property name="text">
+      <string>Data Sorting</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLineEdit" name="graphTitleEdit"/>
+   </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="xAxisDefaultLabel">
+     <property name="text">
+      <string>Default X-Axis Data</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="0">
+    <widget class="QLineEdit" name="xAxisTitleEdit"/>
+   </item>
+   <item row="4" column="0">
+    <widget class="QLabel" name="xAxisTitleLabel">
+     <property name="text">
+      <string>X-Axis Title</string>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="0">
+    <widget class="QLabel" name="yAxisTitleLabel">
+     <property name="text">
+      <string>Y-Axis Title</string>
+     </property>
+    </widget>
+   </item>
+   <item row="15" column="0">
+    <spacer name="dataTransformSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="3" column="0">
+    <widget class="QComboBox" name="xAxisDefaultBox"/>
+   </item>
+   <item row="14" column="0">
+    <widget class="QLineEdit" name="pngExportEdit"/>
    </item>
   </layout>
  </widget>
