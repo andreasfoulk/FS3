@@ -14,15 +14,17 @@
 from __future__ import print_function
 
 import os
+import tempfile
+import webbrowser
 
 from qgis.core import QgsProject, NULL
 
 from PyQt5 import uic
-from PyQt5.QtCore import Qt, pyqtSlot, QUrl
+from PyQt5.QtCore import Qt, pyqtSlot, QUrl, pyqtSignal, QTimer, QCoreApplication
 from PyQt5.QtWidgets import QApplication, QMainWindow, QErrorMessage
 from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem
 from PyQt5.QtWebKitWidgets import QWebView
-from PyQt5.QtGui import QColor
+from PyQt5.QtGui import QColor, QIcon
 
 from .layerFieldGetter import LayerFieldGetter
 from .fs3Stats import FS3NumericalStatistics, FS3CharacterStatistics
@@ -30,7 +32,8 @@ from .fs3Stats import removeEmptyCells
 from .fs3Graphs import Grapher
 from .fs3Unique import FS3Uniqueness
 from .roundFunc import decimalRound
-from .graphOptions import GraphOptionsWindow
+
+from .resources import *
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
 
@@ -43,13 +46,17 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
     Handles the creation and display of the window.
     Makes use of the fs3.ui QT ui file.
     """
+    resized = pyqtSignal()
     def __init__(self, parent=None):
         super(FS3MainWindow, self).__init__(parent)
         self.setupUi(self)
         self.mainWindowSplitter.setStretchFactor(1, 10)
-        self.setWindowTitle('FS3 -- FieldStats3 -- Field Statistics 3 -- F I E L D S T A T I S T I C S T H R E E')
+        self.setWindowTitle('FS3 -- FieldStats3')
+        self.iconPath = ":/plugins/FS3/FS3Icon.png"
+        self.setWindowIcon(QIcon(self.iconPath))
 
         self.fieldGetterInst = LayerFieldGetter()
+        self.grapher = Grapher(self.graphTypeBox)
         self.currentProject = QgsProject.instance()
         self.currentLayer = None
         self.allFields = None
@@ -61,8 +68,10 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.error = QErrorMessage()
 
         ### Tabs
+        self.tabFields.currentChanged.connect(self.graphTabLoaded)
         self.dataTableLayout = QVBoxLayout()
         self.tableWidget = QTableWidget()
+
         ### Data Table Widget Connection
         self.tableWidget.cellChanged.connect(self.attributeCellChanged)
         self.horizontalHeader = self.tableWidget.horizontalHeader()
@@ -71,10 +80,17 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.statisticTable = QTableWidget()
         self.uniqueLayout = QVBoxLayout()
         self.uniqueTable = QTableWidget()
+        self.uniqueTable.verticalHeader().hide()
         self.graphLayout = QHBoxLayout()
         self.graphView = QWebView()
         self.uniqueHHeader = self.uniqueTable.horizontalHeader()
         self.uniqueHHeader.sectionClicked.connect(self.handleUniqueSortSignal)
+
+        ### Window resized
+        self.resizeTimer = QTimer()
+        self.resizeTimer.setSingleShot(True)
+        self.resizeTimer.timeout.connect(self.windowTimeout)
+        self.resized.connect(self.windowResized)
 
         ###Background Color Brush
         self.backgroundBrush = QColor.fromRgb(230, 230, 250)
@@ -108,12 +124,13 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                         .connect(self.refreshAttributes)
 
         ### Handles graph stuffs
-        self.grapher = Grapher(self.graphTypeBox)
-        self.graphTypeBox.currentIndexChanged.connect(self.refreshGraph)
-        self.selectFieldListWidget.itemSelectionChanged \
-                        .connect(self.refreshGraph)
+        self.graphTypeBox.currentIndexChanged.connect(self.refreshAttributes)
 
-        self.openGraphSettings.clicked.connect(self.openGraphOptions)
+        self.openGraphSettings.clicked.connect(self.grapher.openGraphOptions)
+        self.grapher.optionsWindow.applyButton.clicked.connect(self.refreshGraph)
+
+        self.pngExportButton.clicked.connect(self.exportToPNG)
+        self.htmlOpenButton.clicked.connect(self.openHTML)
 
     @pyqtSlot()
     def openGraphOptions(self):
@@ -121,8 +138,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         openGraphOptions
         Opens the Graph Options UI
         """
-        dialog = GraphOptionsWindow()
-        dialog.exec_()
+        self.grapher.openGraphOptions()
 
     def refresh(self):
         """
@@ -209,6 +225,9 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                 # Our work here is already done
                 return
             # Else set the layer to editable
+            editMessage = QCoreApplication.translate("FS3MainWindow", "FS3 Performance may be slow while in edit mode.")
+            editMessage += QCoreApplication.translate("FS3MainWindow", "\nPlease ensure it is disabled when not in use.")
+            self.error.showMessage(editMessage)
             self.currentLayer.startEditing()
         else:
             # Else the checkbox is unchecked
@@ -273,7 +292,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                             self.currentLayer.startEditing()
                     else:
                         # Update failed, report error
-                        updateError = 'Attribute update failed'
+                        updateError = QCoreApplication.translate("FS3MainWindow", "Attribute update failed")
                         self.error.showMessage(updateError)
 
 
@@ -353,7 +372,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         if layer != None:
             self.currentLayer = layer
             self.allFields = self.currentLayer.fields()
-            self.selectFieldListWidget.insertItem(0, "All")
+            self.selectFieldListWidget.insertItem(0, QCoreApplication.translate("FS3MainWindow", "All"))
             self.selectFieldListWidget.insertItems \
                 (1, self.fieldGetterInst.getAllFields(layer))
 
@@ -366,6 +385,9 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
             #Listen for editing mode enabled and disabled
             self.currentLayer.editingStarted.connect(self.editingStartedQGIS)
             self.currentLayer.editingStopped.connect(self.editingStoppedQGIS)
+
+            # Update grapher layer
+            self.grapher.setData(self.currentLayer)
 
 
 
@@ -380,11 +402,9 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.tableWidget.blockSignals(True)
         self.tableWidget.clear()
 
-        # Get selected fields
-        fields = []
+        # Get selected fields form list widget
         selectedFields = self.selectFieldListWidget.selectedItems()
-        for field in selectedFields:
-            fields.append(field.text())
+        fields = [field.text() for field in selectedFields]
 
         # If the field is not set yet (Layer was swapped)
         # Return until the refresh is ready
@@ -425,7 +445,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         # for each row
         row = 0
         for feature in features:
-            if 'All' in fields:
+            if QCoreApplication.translate("FS3MainWindow", "All") in fields:
                 attributes = feature.attributes()
                 self.tableWidget.setColumnCount(len(attributes))
 
@@ -470,7 +490,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
             featureInst = feature
 
 
-        if 'All' in fields:
+        if QCoreApplication.translate("FS3MainWindow", "All") in fields:
             fields = self.fieldGetterInst.getAllFields(self.currentLayer)
             self.tableWidget.setHorizontalHeaderLabels(fields)
         else:
@@ -491,13 +511,14 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                     statistics.append(self.createCharacterStatistics(statValues[i]))
                     data.append(statValues[i])
 
-            self.grapher.setData(fields, data)
-            self.fields = fields
-            self.attributes = data
             uniqueCalculation = self.createUniqueness(uniquenesses)
+            self.grapher.setData(self.currentLayer, data, uniqueCalculation, self.limitToSelected.isChecked(), fields)
+
             self.refreshUnique(fields, uniqueCalculation)
 
             self.refreshStatistics(fields, statistics)
+
+            self.refreshGraph()
 
         self.dataTableLayout.addWidget(self.tableWidget)
         self.dataTab.setLayout(self.dataTableLayout)
@@ -520,11 +541,12 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                 if float(percentile) < 0 or float(percentile) > 100:
                     raise ValueError
         except ValueError:
-            self.error.showMessage('Invalid Value for Percentile Detected!')
+            self.error.showMessage(QCoreApplication.translate("FS3MainWindow", "Invalid Value for Percentile Detected!"))
             percentileArray = []
+        originalSize = len(inputArray)
         emptyCellsRemoved = removeEmptyCells(inputArray)
         numericalStatistics = FS3NumericalStatistics()
-        numericalStatistics.initialize(emptyCellsRemoved, percentileArray)
+        numericalStatistics.initialize(emptyCellsRemoved, percentileArray, originalSize)
         numericalStatistics.roundNumericStatistics(self.currentDecimalPrecision)
         return numericalStatistics
 
@@ -543,11 +565,12 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                 if float(percentile) < 0 or float(percentile) > 100:
                     raise ValueError
         except ValueError:
-            self.error.showMessage('Invalid Value for Percentile Detected!')
+            self.error.showMessage(QCoreApplication.translate("FS3MainWindow", "Invalid Value for Percentile Detected!"))
             percentileArray = []
+        originalSize = len(inputArray)
         emptyCellsRemoved = removeEmptyCells(inputArray)
         characterStatistics = FS3CharacterStatistics()
-        characterStatistics.initialize(emptyCellsRemoved, percentileArray)
+        characterStatistics.initialize(emptyCellsRemoved, percentileArray, originalSize)
         characterStatistics.roundCharacterStatistics(self.currentDecimalPrecision)
         return characterStatistics
 
@@ -591,9 +614,16 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         for stat in stats:
             #See if the field is numeric
             if isinstance(stat, FS3NumericalStatistics):
+                emptyData = stat.totalItemCount - stat.itemCount
                 row = 0
                 self.statisticTable.setItem(row, col,
+                                            QTableWidgetItem(str(stat.totalItemCount)))
+                row += 1
+                self.statisticTable.setItem(row, col,
                                             QTableWidgetItem(str(stat.itemCount)))
+                row += 1
+                self.statisticTable.setItem(row, col,
+                                            QTableWidgetItem(str(emptyData)))
                 row += 1
                 self.statisticTable.setItem(row, col,
                                             QTableWidgetItem(str(stat.maxValue)))
@@ -629,8 +659,15 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                 if numAndCharStats:
                     row = stat.statCount
 
+                emptyData = stat.totalItemCount - stat.itemCount
+                self.statisticTable.setItem(row, col,
+                                            QTableWidgetItem(str(stat.totalItemCount)))
+                row += 1
                 self.statisticTable.setItem(row, col,
                                             QTableWidgetItem(str(stat.itemCount)))
+                row += 1
+                self.statisticTable.setItem(row, col,
+                                            QTableWidgetItem(str(emptyData)))
                 row += 1
                 self.statisticTable.setItem(row, col,
                                             QTableWidgetItem(str(stat.maxLength)))
@@ -740,6 +777,57 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.graphFrame.setLayout(self.graphLayout)
         self.graphView.show()
 
+    def resizeEvent(self, event):
+        self.resized.emit()
+        return super(FS3MainWindow, self).resizeEvent(event)
+
+    @pyqtSlot()
+    def windowResized(self):
+        self.resizeTimer.start(250)
+
+    def windowTimeout(self):
+        currentTab = self.tabFields.currentWidget()
+        if currentTab == self.graphTab:
+            #Refresh the attributes to create a new graph
+            self.refreshAttributes()
+
+    @pyqtSlot()
+    def graphTabLoaded(self):
+        currentTab = self.tabFields.currentWidget()
+        if currentTab == self.graphTab:
+            #Refresh the attributes to create a new graph
+            self.refreshAttributes()
+
+    @pyqtSlot()
+    def exportToPNG(self):
+        # Attempt to pull a file location from the grapher options
+        path = self.grapher.optionsWindow.pngExportEdit.text()
+        if (path is None) or (path == ''):
+            # The user has not entered a path yet
+            pngError = QCoreApplication.translate("FS3MainWindow", "Error: No export path detected!\n")
+            pngError += QCoreApplication.translate("FS3MainWindow", "Please open the graph settings window ")
+            pngError += QCoreApplication.translate("FS3MainWindow", "and set an export path for the image.")
+            self.error.showMessage(pngError)
+            return
+        #If a filepath can be found, attempt to save the image to it
+        path += '/FS3Graph.png'
+        success = self.graphFrame.grab().save(path,
+                                      format='PNG',
+                                      quality=100)
+        if not success:
+            #Cannot write file to that filepath
+            pngError = 'Error: Cannot write file to given filepath!\n'
+            pngError += 'Please ensure the filepath was entered correctly '
+            pngError += 'and it is a writable directory'
+            self.error.showMessage(pngError)
+            return
+
+    @pyqtSlot()
+    def openHTML(self):
+        # Pull the path of the temp directory
+        directory = tempfile.gettempdir()
+        path = directory+'/temp_plot_name.html'
+        webbrowser.open('file://'+os.path.realpath(path))
 
 class MyTableWidgetItem(QTableWidgetItem):
     """

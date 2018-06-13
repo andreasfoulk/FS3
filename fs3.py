@@ -17,7 +17,7 @@ from PyQt5.QtWidgets import QAction
 from PyQt5.QtGui import QIcon
 from .fs3Run import FS3MainWindow
 
-from .resources import QtCore
+from .resources import *
 from .layerFieldGetter import LayerFieldGetter
 import os.path
 
@@ -67,11 +67,11 @@ class FS3Plugin(object):
         Used by QGIS to make the icon and the menu items for the plugin
         """
         self.action.setObjectName("FS3 Plugin")
-        self.action.setWhatsThis("Configuration for FS3")
-        self.action.setStatusTip("This is a tip")
+        self.action.setWhatsThis("FS3 Plugin")
+        self.action.setStatusTip("FieldStats3 is a Statistics and Visualization plugin")
         self.action.triggered.connect(self.run)
-        self.iface.addToolBarIcon(self.action)
-        self.iface.addPluginToMenu("&FS3 Plugin", self.action)
+        self.iface.addVectorToolBarIcon(self.action)
+        self.iface.addPluginToVectorMenu("&FS3 Plugin", self.action)
 
 
     def unload(self):
@@ -79,8 +79,9 @@ class FS3Plugin(object):
         unload is a required method
         Used by QGIS to remove the plugin from the menu and toolbar
         """
-        self.iface.removePluginMenu(self.translation(u'&FS3 Plugin'), self.action)
-        self.iface.removeToolBarIcon(self.action)
+        self.iface.removePluginVectorMenu(self.translation(u'&FS3 Plugin'), self.action)
+        self.iface.removeVectorToolBarIcon(self.action)
+
 
     def run(self):
         """
@@ -88,8 +89,4 @@ class FS3Plugin(object):
         Runs when a window is opened
         Creates and runs an instance of the window
         """
-        layersCount = len(LayerFieldGetter.getVectorLayers())
-        if layersCount == 0:
-            self.iface.messageBar().pushMessage(self.translation("Project has NO vector layer loaded"))
-            return
         self.mainWindow.show()
