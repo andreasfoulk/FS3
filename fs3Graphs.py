@@ -43,7 +43,10 @@ class Grapher:
             self.plotlypath = os.path.join(os.path.dirname(__file__), 'jsscripts/plotly-1.34.0.min.js')
 
         self.graphTypeBox = graphTypeBox
-        graphTypes = ['Bar', 'Pie', 'Line', 'Scatter']
+        graphTypes = [QCoreApplication.translate("Grapher", "Bar"), 
+                QCoreApplication.translate("Grapher", "Pie"),
+                QCoreApplication.translate("Grapher", "Line"),
+                QCoreApplication.translate("Grapher", "Scatter")]
         self.graphTypeBox.insertItems(0, graphTypes)
 
         self.optionsWindow = GraphOptionsWindow()
@@ -66,7 +69,7 @@ class Grapher:
         if self.layer is not None:
             getter = LayerFieldGetter()
             fields = getter.getAllFields(self.layer)
-            self.optionsWindow.xAxisDefaultBox.insertItem(0, 'None')
+            self.optionsWindow.xAxisDefaultBox.insertItem(0, QCoreApplication.translate("Grapher", "None"))
             self.optionsWindow.xAxisDefaultBox.insertItems(1, fields)
 
     def setData(self, layer, attributes=[[]], uniqueness=[], limitToSelected=False, fields=['']):
@@ -83,7 +86,7 @@ class Grapher:
         self.fields = fields
 
         # Set x-axis to selected field
-        if self.optionsWindow.xAxisDefaultBox.currentText() == 'None':
+        if self.optionsWindow.xAxisDefaultBox.currentText() == QCoreApplication.translate("Grapher", "None"):
             self.xValues = list(range(len(self.attributes[0])))
         else:
             if self.layer:
@@ -102,7 +105,7 @@ class Grapher:
                     fieldIndex = feature.fieldNameIndex(self.optionsWindow.xAxisDefaultBox.currentText())
                     value = feature.attributes()[fieldIndex]
                     if not value:
-                        value = 'NULL'
+                        value = QCoreApplication.translate("Grapher", "NULL")
                     self.xValues.append(value)
 
         self.allYValues = attributes
@@ -111,20 +114,20 @@ class Grapher:
         for i in range(len(self.allYValues)):
             for j in range(len(self.allYValues[i])):
                 if not self.allYValues[i][j]:
-                    self.allYValues[i][j] = 'NULL'
+                    self.allYValues[i][j] = QCoreApplication.translate("Grapher", "NULL")
 
         # Apply sort and transform
-        if self.optionsWindow.dataSortingBox.currentText() == 'Ascending':
+        if self.optionsWindow.dataSortingBox.currentText() == QCoreApplication.translate("Grapher", "Ascending"):
             zipped = zip(self.xValues, *self.allYValues)
             zipped = sorted(zipped, key = itemgetter(1))
             self.xValues, *self.allYValues = zip(*list(zipped))
 
-        if self.optionsWindow.dataSortingBox.currentText() == 'Descending':
+        if self.optionsWindow.dataSortingBox.currentText() == QCoreApplication.translate("Grapher", "Descending"):
             zipped = zip(self.xValues, *self.allYValues)
             zipped = sorted(zipped, key = itemgetter(1), reverse = True)
             self.xValues, *self.allYValues = zip(*list(zipped))
 
-        if self.optionsWindow.dataTransformBox.currentText() == 'Log':
+        if self.optionsWindow.dataTransformBox.currentText() == QCoreApplication.translate("Grapher", "Log"):
             temp = []
             for yValues in self.allYValues:
                 try:
@@ -144,13 +147,13 @@ class Grapher:
         # refesh data to include any options from the options window
         self.setData(self.layer, self.attributes, self.uniqueness, self.limitToSelected, self.fields)
 
-        if self.graphTypeBox.currentText() == 'Bar':
+        if self.graphTypeBox.currentText() == QCoreApplication.translate("Grapher", "Bar"):
             plot_path = self.makeBarGraph()
-        elif self.graphTypeBox.currentText() == 'Pie':
+        elif self.graphTypeBox.currentText() == QCoreApplication.translate("Grapher", "Pie"):
             plot_path = self.makePieGraph()
-        elif self.graphTypeBox.currentText() == 'Line':
+        elif self.graphTypeBox.currentText() == QCoreApplication.translate("Grapher", "Line"):
             plot_path = self.makeLineGraph()
-        elif self.graphTypeBox.currentText() == 'Scatter':
+        elif self.graphTypeBox.currentText() == QCoreApplication.translate("Grapher", "Scatter"):
             plot_path = self.makeScatterGraph()
         else:
             plot_path = ''

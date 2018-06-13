@@ -45,6 +45,14 @@
     </message>
 </context>
 <context>
+    <name>FS3MainWindow</name>
+    <message>
+        <location filename="../fs3Run.py" line="437"/>
+        <source>All</source>
+        <translation>Tout</translation>
+    </message>
+</context>
+<context>
     <name>FS3NumericalStatistics</name>
     <message>
         <location filename="../fs3Stats.py" line="80"/>
@@ -133,6 +141,54 @@
         <location filename="../fs3Unique.py" line="94"/>
         <source>NULL (Empty)</source>
         <translation>Nul (Vide)</translation>
+    </message>
+</context>
+<context>
+    <name>Grapher</name>
+    <message>
+        <location filename="../fs3Graphs.py" line="150"/>
+        <source>Bar</source>
+        <translation>Barre</translation>
+    </message>
+    <message>
+        <location filename="../fs3Graphs.py" line="152"/>
+        <source>Pie</source>
+        <translation>Circulaire</translation>
+    </message>
+    <message>
+        <location filename="../fs3Graphs.py" line="154"/>
+        <source>Line</source>
+        <translation>Linéaire</translation>
+    </message>
+    <message>
+        <location filename="../fs3Graphs.py" line="156"/>
+        <source>Scatter</source>
+        <translation>Dispersion</translation>
+    </message>
+    <message>
+        <location filename="../fs3Graphs.py" line="89"/>
+        <source>None</source>
+        <translation>Aucun</translation>
+    </message>
+    <message>
+        <location filename="../fs3Graphs.py" line="117"/>
+        <source>NULL</source>
+        <translation>Nul</translation>
+    </message>
+    <message>
+        <location filename="../fs3Graphs.py" line="120"/>
+        <source>Ascending</source>
+        <translation>Ascendant</translation>
+    </message>
+    <message>
+        <location filename="../fs3Graphs.py" line="125"/>
+        <source>Descending</source>
+        <translation>Descendant</translation>
+    </message>
+    <message>
+        <location filename="../fs3Graphs.py" line="130"/>
+        <source>Log</source>
+        <translation>Logarithme</translation>
     </message>
 </context>
 <context>
