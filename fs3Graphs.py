@@ -12,18 +12,21 @@ can load them into the gui.
 import tempfile
 import os
 import platform
-import re
 from math import log10
+from operator import itemgetter
 
 import plotly
 import plotly.graph_objs as go
+import plotly.offline as offline
+
+
 from plotly import tools
-
+#from shutil import copyfile
 from qgis.core import NULL
-
 from PyQt5.QtCore import pyqtSlot
-
 from .graphOptions import GraphOptionsWindow
+from .layerFieldGetter import LayerFieldGetter
+from PyQt5.QtCore import QCoreApplication
 
 class Grapher:
     """
@@ -51,45 +54,85 @@ class Grapher:
         Opens the graph options dialog
         Connected to Open Graph Settings button in fs3Run.py
         """
+        self.setLayerFields()
         self.optionsWindow.exec_()
 
-    def setData(self, fields, attributes, uniqueness):
+    def setLayerFields(self):
+        """
+        Fill the default x-axis combobox with the current layer's fields
+        """
+        self.optionsWindow.xAxisDefaultBox.clear()
+
+        if self.layer is not None:
+            getter = LayerFieldGetter()
+            fields = getter.getAllFields(self.layer)
+            self.optionsWindow.xAxisDefaultBox.insertItem(0, 'None')
+            self.optionsWindow.xAxisDefaultBox.insertItems(1, fields)
+
+    def setData(self, layer, attributes=[[]], uniqueness=[], limitToSelected=False, fields=['']):
         """
         Sets self variables
         xValues defaults to 1 through n if no default is selected
         Checks if the data should be sorted or transformed
         Does sort or transform
         """
-        self.fields = fields
+        self.layer = layer
         self.attributes = attributes
         self.uniqueness = uniqueness
-        self.hasNull = False
+        self.limitToSelected = limitToSelected
+        self.fields = fields
 
-        # When this is something else sorting will need to be done as pairs...
-        self.xValues = list(range(len(self.attributes[0])))
-        self.yValues = attributes[0]
+        # Set x-axis to selected field
+        if self.optionsWindow.xAxisDefaultBox.currentText() == 'None':
+            self.xValues = list(range(len(self.attributes[0])))
+        else:
+            if self.layer:
+                if self.limitToSelected:
+                    if not self.layer.getSelectedFeatures().isClosed():
+                        # If there are features selected, get them
+                        features = self.layer.getSelectedFeatures()
+                    else:
+                        # Else get all features
+                        features = self.layer.getFeatures()
+                else:
+                    features = self.layer.getFeatures()
 
-        # Start by removing the null attributes and their associated fields
-        for index in range(0, len(self.yValues)):
-            if self.yValues[index] == NULL:
-                # Remove this from both lists
-                self.hasNull = True
-                self.yValues[index] = 'NULL'
-        
-        if self.optionsWindow.dataSortingBox.currentText() == 'Acending':
-            self.yValues = sorted(self.yValues)
+                self.xValues = []
+                for feature in features:
+                    fieldIndex = feature.fieldNameIndex(self.optionsWindow.xAxisDefaultBox.currentText())
+                    value = feature.attributes()[fieldIndex]
+                    if not value:
+                        value = 'NULL'
+                    self.xValues.append(value)
 
-        if self.optionsWindow.dataSortingBox.currentText() == 'Decending':
-            self.yValues = sorted(self.yValues, reverse = True)
+        self.allYValues = attributes
+
+        # Replace NULL with 'NULL'
+        for i in range(len(self.allYValues)):
+            for j in range(len(self.allYValues[i])):
+                if not self.allYValues[i][j]:
+                    self.allYValues[i][j] = 'NULL'
+
+        # Apply sort and transform
+        if self.optionsWindow.dataSortingBox.currentText() == 'Ascending':
+            zipped = zip(self.xValues, *self.allYValues)
+            zipped = sorted(zipped, key = itemgetter(1))
+            self.xValues, *self.allYValues = zip(*list(zipped))
+
+        if self.optionsWindow.dataSortingBox.currentText() == 'Descending':
+            zipped = zip(self.xValues, *self.allYValues)
+            zipped = sorted(zipped, key = itemgetter(1), reverse = True)
+            self.xValues, *self.allYValues = zip(*list(zipped))
 
         if self.optionsWindow.dataTransformBox.currentText() == 'Log':
-            try:
-                self.yValues = [log10(val) if val > 0 else 0 for val in self.yValues]
-            except TypeError:
-                # TODO Error message?
-                pass
-
-            # TODO update axis label to reflect transform?
+            temp = []
+            for yValues in self.allYValues:
+                try:
+                    temp.append([log10(val) if val > 0 else 0 for val in yValues])
+                except TypeError:
+                    # Don't do anything for characture data
+                    pass
+            self.allYValues = temp
 
 
     def makeGraph(self):
@@ -99,7 +142,7 @@ class Grapher:
         """
 
         # refesh data to include any options from the options window
-        self.setData(self.fields, self.attributes, self.uniqueness)
+        self.setData(self.layer, self.attributes, self.uniqueness, self.limitToSelected, self.fields)
 
         if self.graphTypeBox.currentText() == 'Bar':
             plot_path = self.makeBarGraph()
@@ -115,21 +158,18 @@ class Grapher:
         return plot_path
 
     def makeBarGraph(self):
-        allNull = True
-        for value in self.yValues:
-            if value != NULL:
-                allNull = False
-                break
-        if allNull:
-            return
 
-        trace = go.Bar(
-            x = self.xValues,
-            y = self.yValues,
-            name='{} x {}'.format('self.fields[0]', 'self.fields[1]')
-        )
+        data = []
+        i = 0
+        for yValues in self.allYValues:
+            trace = go.Bar(
+                    x = self.xValues,
+                    y = yValues,
+                    name = self.fields[i]
+            )
+            data.append(trace)
+            i += 1
 
-        data = [trace]
         layout = go.Layout(
                 title = self.optionsWindow.graphTitleEdit.text(),
                 barmode = 'group',
@@ -145,16 +185,13 @@ class Grapher:
 
         # first lines of additional html with the link to the local javascript
         raw_plot = '<head><meta charset="utf-8" /><script src="{}"></script><script src="{}"></script></head>'.format(self.polyfillpath, self.plotlypath)
+
         # call the plot method without all the javascript code
-        raw_plot += plotly.offline.plot(fig, output_type='div', include_plotlyjs=False, show_link=False)
-        # insert callback for javascript events
-        # raw_plot += js_callback()
+        raw_plot += plotly.offline.plot(fig, output_type='div',
+        filename='bar-graph', include_plotlyjs=False, show_link=False, image='png')
 
-        # use regex to replace the string ReplaceTheDiv with the correct plot id generated by plotly
-        match = re.search('Plotly.newPlot\("([^"]+)', raw_plot)
-        substr = match.group(1)
-        raw_plot = raw_plot.replace('ReplaceTheDiv', substr)
-
+        # Generate a temporary html file that can be viewed on a web browser
+        # Allows use of plotly's full features QGIS does not support.
         plot_path = os.path.join(tempfile.gettempdir(), 'temp_plot_name.html')
         with open(plot_path, "w") as f:
             f.write(raw_plot)
@@ -179,16 +216,13 @@ class Grapher:
 
         # first lines of additional html with the link to the local javascript
         raw_plot = '<head><meta charset="utf-8" /><script src="{}"></script><script src="{}"></script></head>'.format(self.polyfillpath, self.plotlypath)
+
         # call the plot method without all the javascript code
-        raw_plot += plotly.offline.plot(fig, output_type='div', include_plotlyjs=False, show_link=False)
-        # insert callback for javascript events
-        # raw_plot += js_callback()
+        raw_plot += plotly.offline.plot(fig, output_type='div',
+        filename='pie-graph', include_plotlyjs=False, show_link=False, image='png')
 
-        # use regex to replace the string ReplaceTheDiv with the correct plot id generated by plotly
-        match = re.search('Plotly.newPlot\("([^"]+)', raw_plot)
-        substr = match.group(1)
-        raw_plot = raw_plot.replace('ReplaceTheDiv', substr)
-
+        # Generate a temporary html file that can be viewed on a web browser
+        # Allows use of plotly's full features QGIS does not support.
         plot_path = os.path.join(tempfile.gettempdir(), 'temp_plot_name.html')
         with open(plot_path, "w") as f:
             f.write(raw_plot)
@@ -198,31 +232,16 @@ class Grapher:
 
     def makeLineGraph(self):
 
-        allNull = True
-        for attribute in self.attributes:
-            for value in attribute:
-                if value != NULL:
-                    allNull = False
-                    break
-        if allNull:
-            return
-
-        if len(self.attributes) is 1:
-            self.attributes.append([i for i in range(len(self.attributes[0]))])
-
+        data = []
+        i = 0
+        for yValues in self.allYValues:
             trace = go.Scatter(
-                x = self.attributes[1],
-                y = self.attributes[0],
-                name='{}'.format(self.fields[0])
+                    x = self.xValues,
+                    y = yValues,
+                    name = self.fields[i]
             )
-        else:
-            trace = go.Scatter(
-                x = self.attributes[0],
-                y = self.attributes[1],
-                name='{} x {}'.format(self.fields[0], self.fields[1])
-            )
-
-        data = [trace]
+            data.append(trace)
+            i += 1
 
         layout = go.Layout(
                 title = self.optionsWindow.graphTitleEdit.text(),
@@ -239,16 +258,14 @@ class Grapher:
 
         # first lines of additional html with the link to the local javascript
         raw_plot = '<head><meta charset="utf-8" /><script src="{}"></script><script src="{}"></script></head>'.format(self.polyfillpath, self.plotlypath)
+
         # call the plot method without all the javascript code
-        raw_plot += plotly.offline.plot(fig, output_type='div', include_plotlyjs=False, show_link=False)
-        # insert callback for javascript events
-        # raw_plot += js_callback()
 
-        # use regex to replace the string ReplaceTheDiv with the correct plot id generated by plotly
-        match = re.search('Plotly.newPlot\("([^"]+)', raw_plot)
-        substr = match.group(1)
-        raw_plot = raw_plot.replace('ReplaceTheDiv', substr)
+        raw_plot += plotly.offline.plot(fig, output_type='div',
+                include_plotlyjs=False, filename='/tmp/line-graph', show_link=False, image='png')
 
+        # Generate a temporary html file that can be viewed on a web browser
+        # Allows use of plotly's full features QGIS does not support.
         plot_path = os.path.join(tempfile.gettempdir(), 'temp_plot_name.html')
         with open(plot_path, "w") as f:
             f.write(raw_plot)
@@ -257,183 +274,49 @@ class Grapher:
 
 
     def makeScatterGraph(self):
+        #img_name = 'my-plot'
+        #dload = os.path.expanduser('~/Downloads')
+        #save_dir = '/tmp'
 
-        allNull = True
-        for attribute in self.attributes:
-            for value in attribute:
-                if value != NULL:
-                    allNull = False
-                    break
-        if allNull:
-            return
-
-        # Create a trace
-        if len(self.attributes) is 1:
-            self.attributes.append([i for i in range(len(self.attributes[0]))])
-
+        data = []
+        i = 0
+        for yValues in self.allYValues:
             trace = go.Scatter(
-                x = self.attributes[1],
-                y = self.attributes[0],
-                mode = 'markers'
+                    x = self.xValues,
+                    y = yValues,
+                    name = self.fields[i],
+                    mode = 'markers'
             )
-        else:
-            trace = go.Scatter(
-                x = self.attributes[0],
-                y = self.attributes[1],
-                mode = 'markers'
-            )
+            data.append(trace)
+            i += 1
 
-        data = [trace]
         layout = go.Layout(
-                title = self.optionsWindow.graphTitleEdit.text(),
-                barmode = 'group',
-                xaxis = dict(
-                        title = self.optionsWindow.xAxisTitleEdit.text()
-                        ),
-                yaxis = dict(
-                        title = self.optionsWindow.yAxisTitleEdit.text()
-                        )
+            title = self.optionsWindow.graphTitleEdit.text(),
+            barmode = 'group',
+            xaxis = dict(
+                    title = self.optionsWindow.xAxisTitleEdit.text()
+                    ),
+            yaxis = dict(
+                    title = self.optionsWindow.yAxisTitleEdit.text()
+                    )
         )
 
         fig = go.Figure(data = data, layout = layout)
 
         # first lines of additional html with the link to the local javascript
         raw_plot = '<head><meta charset="utf-8" /><script src="{}"></script><script src="{}"></script></head>'.format(self.polyfillpath, self.plotlypath)
+        
         # call the plot method without all the javascript code
-        raw_plot += plotly.offline.plot(fig, output_type='div', include_plotlyjs=False, show_link=False)
-        # insert callback for javascript events
-        # raw_plot += js_callback()
+        raw_plot += plotly.offline.plot(fig, output_type='div',
+        include_plotlyjs=False, show_link=False, filename='/tmp/scatter-graph', image='png')
 
-        # use regex to replace the string ReplaceTheDiv with the correct plot id generated by plotly
-        match = re.search('Plotly.newPlot\("([^"]+)', raw_plot)
-        substr = match.group(1)
-        raw_plot = raw_plot.replace('ReplaceTheDiv', substr)
-
+        # Generate a temporary html file that can be viewed on a web browser
+        # Allows use of plotly's full features QGIS does not support.
         plot_path = os.path.join(tempfile.gettempdir(), 'temp_plot_name.html')
         with open(plot_path, "w") as f:
             f.write(raw_plot)
 
+        #copyfile('{}/{}.png'.format(save_dir, img_name),
+        #       '{}/{}.png'.format(dload, img_name))
         return plot_path
 
-
-    def js_callback(self):
-        '''
-        returns a string that is added to the end of the plot. This string is
-        necessary for the interaction between plot and map objects
-        WARNING! The string ReplaceTheDiv is a default string that will be
-        replaced in a second moment
-        '''
-
-        js_str = '''
-        <script>
-        // additional js function to select and click on the data
-        // returns the ids of the selected/clicked feature
-        var plotly_div = document.getElementById('ReplaceTheDiv')
-        var plotly_data = plotly_div.data
-        // selecting function
-        plotly_div.on('plotly_selected', function(data){
-        var dds = {};
-        dds["mode"] = 'selection'
-        dds["type"] = data.points[0].data.type
-        featureIds = [];
-        featureIdsTernary = [];
-        data.points.forEach(function(pt){
-        featureIds.push(parseInt(pt.id))
-        featureIdsTernary.push(parseInt(pt.pointNumber))
-        dds["id"] = featureIds
-        dds["tid"] = featureIdsTernary
-            })
-        //console.log(dds)
-        window.status = JSON.stringify(dds)
-        })
-        // clicking function
-        plotly_div.on('plotly_click', function(data){
-        var featureIds = [];
-        var dd = {};
-        dd["fidd"] = data.points[0].id
-        dd["mode"] = 'clicking'
-        // loop and create dictionary depending on plot type
-        for(var i=0; i < data.points.length; i++){
-        // scatter plot
-        if(data.points[i].data.type == 'scatter'){
-            dd["uid"] = data.points[i].data.uid
-            dd["type"] = data.points[i].data.type
-            data.points.forEach(function(pt){
-            dd["fid"] = pt.id
-            })
-        }
-        // pie
-        else if(data.points[i].data.type == 'pie'){
-          dd["type"] = data.points[i].data.type
-          dd["label"] = data.points[i].label
-          dd["field"] = data.points[i].data.name
-          console.log(data.points[i].label)
-          console.log(data.points[i])
-        }
-        // histogram
-        else if(data.points[i].data.type == 'histogram'){
-            dd["type"] = data.points[i].data.type
-            dd["uid"] = data.points[i].data.uid
-            dd["field"] = data.points[i].data.name
-            // correct axis orientation
-            if(data.points[i].data.orientation == 'v'){
-                dd["id"] = data.points[i].x
-                dd["bin_step"] = data.points[i].data.xbins.size
-            }
-            else {
-                dd["id"] = data.points[i].y
-                dd["bin_step"] = data.points[i].data.ybins.size
-            }
-        }
-        // box plot
-        else if(data.points[i].data.type == 'box'){
-            dd["uid"] = data.points[i].data.uid
-            dd["type"] = data.points[i].data.type
-            dd["field"] = data.points[i].data.customdata
-                // correct axis orientation
-                if(data.points[i].data.orientation == 'v'){
-                    dd["id"] = data.points[i].x
-                }
-                else {
-                    dd["id"] = data.points[i].y
-                }
-            }
-        // violin plot
-        else if(data.points[i].data.type == 'violin'){
-            dd["uid"] = data.points[i].data.uid
-            dd["type"] = data.points[i].data.type
-            dd["field"] = data.points[i].data.customdata
-                // correct axis orientation (for violin is viceversa)
-                if(data.points[i].data.orientation == 'v'){
-                    dd["id"] = data.points[i].x
-                }
-                else {
-                    dd["id"] = data.points[i].y
-                }
-            }
-        // bar plot
-        else if(data.points[i].data.type == 'bar'){
-            dd["uid"] = data.points[i].data.uid
-            dd["type"] = data.points[i].data.type
-            dd["field"] = data.points[i].data.customdata
-                // correct axis orientation
-                if(data.points[i].data.orientation == 'v'){
-                    dd["id"] = data.points[i].x
-                }
-                else {
-                    dd["id"] = data.points[i].y
-                }
-            }
-        // ternary
-        else if(data.points[i].data.type == 'scatterternary'){
-            dd["uid"] = data.points[i].data.uid
-            dd["type"] = data.points[i].data.type
-            dd["field"] = data.points[i].data.customdata
-            dd["fid"] = data.points[i].pointNumber
-            }
-            }
-        window.status = JSON.stringify(dd)
-        });
-        </script>'''
-
-        return js_str

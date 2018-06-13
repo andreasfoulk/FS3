@@ -53,6 +53,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.setWindowIcon(QIcon(self.iconPath))
 
         self.fieldGetterInst = LayerFieldGetter()
+        self.grapher = Grapher(self.graphTypeBox)
         self.currentProject = QgsProject.instance()
         self.currentLayer = None
         self.allFields = None
@@ -67,6 +68,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.tabFields.currentChanged.connect(self.graphTabLoaded)
         self.dataTableLayout = QVBoxLayout()
         self.tableWidget = QTableWidget()
+
         ### Data Table Widget Connection
         self.tableWidget.cellChanged.connect(self.attributeCellChanged)
         self.horizontalHeader = self.tableWidget.horizontalHeader()
@@ -119,7 +121,6 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                         .connect(self.refreshAttributes)
 
         ### Handles graph stuffs
-        self.grapher = Grapher(self.graphTypeBox)
         self.graphTypeBox.currentIndexChanged.connect(self.refreshAttributes)
 
         self.openGraphSettings.clicked.connect(self.grapher.openGraphOptions)
@@ -331,6 +332,9 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
             self.currentLayer.editingStarted.connect(self.editingStartedQGIS)
             self.currentLayer.editingStopped.connect(self.editingStoppedQGIS)
 
+            # Update grapher layer
+            self.grapher.setData(self.currentLayer)
+
 
 
     @pyqtSlot()
@@ -343,11 +347,9 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
         self.tableWidget.blockSignals(True)
         self.tableWidget.clear()
 
-        # Get selected fields
-        fields = []
+        # Get selected fields form list widget
         selectedFields = self.selectFieldListWidget.selectedItems()
-        for field in selectedFields:
-            fields.append(field.text())
+        fields = [field.text() for field in selectedFields]
 
         # If the field is not set yet (Layer was swapped)
         # Return until the refresh is ready
@@ -455,7 +457,7 @@ class FS3MainWindow(QMainWindow, FORM_CLASS):
                     data.append(statValues[i])
 
             uniqueCalculation = self.createUniqueness(uniquenesses)
-            self.grapher.setData(fields, data, uniqueCalculation)
+            self.grapher.setData(self.currentLayer, data, uniqueCalculation, self.limitToSelected.isChecked(), fields)
 
             self.refreshUnique(fields, uniqueCalculation)
 
