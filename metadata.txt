@@ -1,22 +1,24 @@
-# This file contains metadata for your plugin. Since 
-# version 2.0 of QGIS this is the proper way to supply 
-# information about a plugin. The old method of 
-# embedding metadata in __init__.py will 
+# This file contains metadata for your plugin. Since
+# version 2.0 of QGIS this is the proper way to supply
+# information about a plugin. The old method of
+# embedding metadata in __init__.py will
 # is no longer supported since version 2.0.
 
-# This file should be included when you package your plugin.# Mandatory items:
+# This file should be included when you package your plugin.
+
+# Mandatory items:
 
 [general]
 name=FS3
 qgisMinimumVersion=3.0
-description=Generate, display, and compare basic statistics for numeric and text fields of vector layer(s)
-version=0.1
+description=Quickly generate, display, and compare basic statistics and graphs for numeric and text fields of vector layer(s)
+version=1.0
 author=Orden Aitchedji, McKenna Duzac, Andreas Foulk, Tanner Lee
 email=afoulk@mines.edu
 
 about=This plugin was created by Orden Aitchedji, McKenna Duzac, Andreas Foulk and Tanner Lee during the 2018 summer field section at the Colorado School Of Mines in collaboration with Brian Krzys at Newmont Exploration.
 
-tracker=https://github.com/andreasfoulk/FS3
+tracker=https://github.com/andreasfoulk/FS3/issues
 repository=https://github.com/andreasfoulk/FS3
 # End of mandatory metadata
 
@@ -26,7 +28,7 @@ repository=https://github.com/andreasfoulk/FS3
 # changelog=
 
 # Tags are comma separated with spaces allowed
-tags=python, vector, field, statistics, mines, analysis, plugin
+tags=python, vector, field, statistics, analysis, graph, export, multiple, attribute edit
 
 homepage=https://github.com/andreasfoulk/FS3
 category=Plugins
