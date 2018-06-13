@@ -1,5 +1,5 @@
 """
-    fs3.py 
+    graphOptions.py 
            -- For more information see : https://github.com/andreasfoulk/FS3
            
     Copyright (c) 2018 Orden Aitchedji, McKenna Duzac, Andreas Foulk, Tanner Lee
