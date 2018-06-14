@@ -1,6 +1,6 @@
 #!/bin/bash
 
-pyrcc5 resources.qrc -o resources_rc.py
+pyrcc5 resources.qrc -o resources.py
 
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
 
