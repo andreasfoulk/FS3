@@ -1,6 +1,6 @@
 #!/bin/bash
 
-pyrcc5 resources.qrc -o resources.py
+pyrcc5 resources.qrc -o resources_rc.py
 
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
 
@@ -25,7 +25,7 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
     cp jsscripts/*js ~/Library/Application\ Support/QGIS/QGIS3/profiles/default/python/plugins/FS3/jsscripts/.
 
     cp metadata.txt ~/Library/Application\ Support/QGIS/QGIS3/profiles/default/python/plugins/FS3/.
-    cp resources.qrc ~/Library/Application\ Support/QGIS/QGIS3/profiles/default/python/plugins/FS3/. 
+    cp resources.qrc ~/Library/Application\ Support/QGIS/QGIS3/profiles/default/python/plugins/FS3/.
     cp -r i18n ~/Library/Application\ Support/QGIS/QGIS3/profiles/default/python/plugins/FS3/.
 
 else

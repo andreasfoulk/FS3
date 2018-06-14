@@ -12,7 +12,7 @@
 name=FS3
 qgisMinimumVersion=3.0
 description=Quickly generate, display, and compare basic statistics and graphs for numeric and text fields of vector layer(s)
-version=1.0
+version=1.0.1
 author=Orden Aitchedji, McKenna Duzac, Andreas Foulk, Tanner Lee
 email=afoulk@mines.edu
 
@@ -25,7 +25,7 @@ repository=https://github.com/andreasfoulk/FS3
 # Recommended items:
 
 # Uncomment the following line and add your changelog:
-# changelog=
+# changelog=Now includes the generated resources_rc.py file
 
 # Tags are comma separated with spaces allowed
 tags=python, vector, field, statistics, analysis, graph, export, multiple, attribute edit
