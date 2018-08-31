@@ -4,6 +4,10 @@ This plugin was developed with the guidance of Brian Krzys as part of our CSM 20
 It provides a quick and easy way to look at and analyze GIS data. Allowing the user to sort the data by the field of choice,
 receive general statistics on this field, look at the unique members of this field, and produce a variety of graphs using
 this field and any others within the same dataset.
+
+### Installation
+The plugin is available through the official QGIS plugin repository.  The plugin repository's informational page for our plugin can be found here: https://plugins.qgis.org/plugins/FS3/
+
 ### Development Installation
 To install from source make sure pyrcc5 is installed then on a unix based machince from the root directory of this project run:
 ```
