@@ -6,7 +6,7 @@ receive general statistics on this field, look at the unique members of this fie
 this field and any others within the same dataset.
 
 ### Installation
-The plugin is available through the official QGIS plugin repository.  The plugin repository's informational page for our plugin can be found here: https://plugins.qgis.org/plugins/FS3/
+The plugin is available through the official QGIS plugin repository.  The plugin repository's informational page for FS3 can be found here: https://plugins.qgis.org/plugins/FS3/
 
 ### Development Installation
 To install from source make sure pyrcc5 is installed then on a unix based machince from the root directory of this project run:
