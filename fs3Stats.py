@@ -330,6 +330,6 @@ def percentileValues(inputArray, percentileArray):
     """
     percentiles = []
     for p in percentileArray:
-        val = numpy.percentile(inputArray, p)
+        val = numpy.percentile(inputArray, float(p))
         percentiles.append(val)
     return percentiles
